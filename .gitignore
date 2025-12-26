@@ -1,0 +1,10 @@
+#Build output
+out/
+
+#VS specific files
+.VS/
+
+#temp files
+*.ninja
+*.ninja_log
+*.bak
