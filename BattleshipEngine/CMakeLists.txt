@@ -4,15 +4,12 @@
 
 add_library(BattleshipEngine STATIC
     "BattleshipEngine.cpp"
-)
+ "GameEntities.h"  "Ship.h" "Ship.cpp" "Fleet.h" "Fleet.cpp" "coord.h" "coord.cpp")
 
 target_include_directories(BattleshipEngine PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-
-if (CMAKE_VERSION VERSION_GREATER 3.12)
-  set_property(TARGET BattleshipEngine PROPERTY CXX_STANDARD 20)
-endif()
+set_property(TARGET BattleshipEngine PROPERTY CXX_STANDARD 20)
 
 # TODO: Add tests and install targets if needed.
