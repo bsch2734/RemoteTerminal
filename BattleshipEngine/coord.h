@@ -12,11 +12,15 @@ struct coord {
 
 	coord& operator+=(const coord& other);
 
+	coord operator-(coord const& other) const;
+
 	coord rotate(int turns);
 
 	coord& rotateSelf(int turns);
 
 	coord applyTransform(coord translation, int rotation);
+
+	coord applyInverseTransform(coord translation, int rotation);
 
 	int d, o;
 
