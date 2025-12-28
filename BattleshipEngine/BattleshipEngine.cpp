@@ -73,6 +73,20 @@ bool BattleshipEngine::readyUp(Player p) {
     auto status = checkFleetStatus(getFleetForPlayer(p));
     if (status.any())
         return false;
+
+    (p == Player::one ? p1IsReady : p2IsReady) = true;
+    if (p1IsReady && p2IsReady)
+        _phase = Phase::playing;
+
+    Fleet& fleet = getMutableFleetForPlayer(p);
+    auto& hitMap = getHitmapForPlayer(p);
+    for (Ship& s : fleet.getShips()) {
+        for (coord c : s.getCoords()) {
+            coord transformed = c.applyTransform(s.getPos(), s.getRotation());
+            hitMap[transformed] = s.getID();
+        }
+    }
+
     return true;
 }
 
@@ -116,6 +130,10 @@ Fleet BattleshipEngine::baseFleet{
         Ship::pt,
     }
 };
+
+std::unordered_map<coord, int>& BattleshipEngine::getHitmapForPlayer(Player p) {
+    return p == Player::one? p1HitMap : p2HitMap;
+}
 
 std::bitset<8> BattleshipEngine::checkFleetStatus(Fleet f) {
     std::bitset<8> answer;

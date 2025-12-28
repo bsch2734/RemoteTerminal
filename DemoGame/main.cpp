@@ -14,6 +14,8 @@ int main() {
 		} while (!r.success);
 	}
 
+	e.readyUp(Player::one);
+
 	for (const Ship& s : e.getFleetForPlayer(Player::two).getShips()) {
 		PlaceShipResult r;
 		do {
@@ -22,4 +24,5 @@ int main() {
 			r = e.placeShip(Player::two, s.getID(), pos, rotation);
 		} while (!r.success);
 	}
+	e.readyUp(Player::two);
 }
