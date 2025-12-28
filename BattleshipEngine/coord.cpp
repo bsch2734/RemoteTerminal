@@ -60,5 +60,9 @@ coord& coord::rotateSelf(int turns) {
 	return *this;
 }
 
+coord coord::applyTransform(coord translation, int rotation) {
+	return rotate(rotation) + translation;
+}
+
 
 const coord coord::unspecified{ {INT_MAX, INT_MAX} };

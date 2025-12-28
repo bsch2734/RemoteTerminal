@@ -16,6 +16,8 @@ struct coord {
 
 	coord& rotateSelf(int turns);
 
+	coord applyTransform(coord translation, int rotation);
+
 	int d, o;
 
 	static const coord unspecified;

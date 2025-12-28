@@ -123,7 +123,7 @@ std::bitset<8> BattleshipEngine::checkFleetStatus(Fleet f) {
     for (Ship s : f.getShips()) {
         if (!s.getPos().isUnspecified()) { //only check ships that are placed
             for (coord c : s.getCoords()) {
-                coord transformed = c.rotate(s.getRotation()) + s.getPos();
+                coord transformed = c.applyTransform(s.getPos(), s.getRotation());
                 if (transformed.d >= _boardDimensions.first
                     || transformed.o >= _boardDimensions.second
                     || transformed.d < 0
