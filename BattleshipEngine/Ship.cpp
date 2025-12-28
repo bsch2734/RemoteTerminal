@@ -3,9 +3,10 @@
 
 int Ship::nextID = 0;
 
-Ship::Ship(std::vector<coord> coords, int rotation /*= 0*/, coord pos /*= coord::unspecified*/) :
+Ship::Ship(std::vector<coord> coords, std::string name /*=""*/, int rotation /*= 0*/, coord pos /*= coord::unspecified*/) :
 	rotation(rotation),
 	coords(coords),
+	_name(name),
 	pos(pos),
 	ID(nextID++)
 {
@@ -14,6 +15,7 @@ Ship::Ship(std::vector<coord> coords, int rotation /*= 0*/, coord pos /*= coord:
 Ship::Ship(const Ship& other) :
 	rotation(other.rotation),
 	coords(other.coords),
+	_name(other._name),
 	pos(other.pos),
 	ID(nextID++)
 {
@@ -54,7 +56,8 @@ Ship const Ship::carrier{
 		coord({0,2}),
 		coord({0,3}),
 		coord({0,4})
-	}
+	},
+	"Aircraft Carrier"
 };
 
 Ship const Ship::battleship{
@@ -63,7 +66,8 @@ Ship const Ship::battleship{
 		coord({0,1}),
 		coord({0,2}),
 		coord({0,3})
-	}
+	},
+	"Battleship"
 };
 
 Ship const Ship::destroyer{
@@ -71,7 +75,8 @@ Ship const Ship::destroyer{
 		coord({0,0}),
 		coord({0,1}),
 		coord({0,2}),
-	}
+	},
+	"Destroyer"
 };
 
 Ship const Ship::sub{
@@ -79,12 +84,14 @@ Ship const Ship::sub{
 		coord({0,0}),
 		coord({0,1}),
 		coord({0,2})
-	}
+	},
+	"Submarine"
 };
 
 Ship const Ship::pt{
 	{
 		coord({0,0}),
 		coord({0,1})
-	}
+	},
+	"PT Boat"
 };

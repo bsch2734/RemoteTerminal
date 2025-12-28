@@ -2,7 +2,7 @@
 
 #include "GameEntities.h"
 #include "coord.h"
-
+#include <string>
 
 class Ship {
 private:
@@ -11,12 +11,13 @@ private:
 	int rotation;
 	bool _sunk = false;
 	int ID;
+	std::string _name;
 
 	static int nextID;
 
 public:
 	Ship(const Ship& other);
-	Ship(std::vector<coord> coords, int rotation = 0, coord pos = coord::unspecified);
+	Ship(std::vector<coord> coords, std::string name = "", int rotation = 0, coord pos = coord::unspecified);
 	bool isSunk() const;
 	int getID() const;
 	int getRotation() const;
