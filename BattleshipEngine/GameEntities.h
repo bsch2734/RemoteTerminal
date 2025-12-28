@@ -18,9 +18,15 @@ enum class Phase {
 	finished
 };
 
-enum class FireResult {
-	hit,
-	miss
+enum class FireError {
+	outOfBounds,
+	notYourTurn
+};
+
+struct FireResult {
+	bool success;
+	bool isHit;
+	FireError error;
 };
 
 enum class PlaceShipError {

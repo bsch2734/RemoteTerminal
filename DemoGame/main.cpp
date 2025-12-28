@@ -25,4 +25,14 @@ int main() {
 		} while (!r.success);
 	}
 	e.readyUp(Player::two);
+
+	FireResult r;
+
+	r = e.fire(Player::one, { { 3,1 } });
+	r = e.fire(Player::one, { { 3,1 } });
+	r = e.fire(Player::two, { { 3,1 } });
+	r = e.fire(Player::one, { { 3,1 } });
+	r = e.fire(Player::two, { { 3,1 } });
+	r = e.fire(Player::one, { { 3,0 } });
+	r = e.fire(Player::two, { { 3,0 } });
 }

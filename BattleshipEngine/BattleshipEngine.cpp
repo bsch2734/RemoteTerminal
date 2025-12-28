@@ -94,8 +94,40 @@ bool BattleshipEngine::readyUp(Player p) {
 FireResult BattleshipEngine::fire(Player p, coord target) {
     FireResult answer;
     
+    if (_currentPlayer != p) {
+        answer.success = false;
+        answer.error = FireError::notYourTurn;
+        return answer;
+    }
 
-    return FireResult::miss;
+    if(    target.d >= _boardDimensions.first 
+        || target.o >= _boardDimensions.second
+        || target.d < 0
+        || target.o < 0){
+        answer.success = false;
+        answer.error = FireError::outOfBounds;
+        return answer;
+    }
+
+    auto& hitMap = getHitmapForPlayer(oponent(p));
+    auto r = hitMap.find(target);
+    if (r == hitMap.end()) {
+        answer.success = true;
+        answer.isHit = false;
+    }
+    else {
+        hitMap.erase(r);
+        
+        answer.success = true;
+        answer.isHit = true;
+    }
+
+
+
+    if (answer.success)
+        _currentPlayer = oponent(p);
+
+    return answer;
 }
 
 // --- Queries ---
