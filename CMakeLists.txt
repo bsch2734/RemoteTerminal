@@ -14,3 +14,4 @@ project ("RemoteTerminal")
 # Include sub-projects.
 add_subdirectory ("BattleshipEngine")
 add_subdirectory ("BattleshipServer")
+add_subdirectory ("DemoGame")
