@@ -31,6 +31,12 @@ coord coord::operator-(coord const& other) const {
 	return { {d-other.d, o-other.o} };
 }
 
+bool coord::operator<(const coord& other) const {
+	if (d != other.d)
+		return d < other.d;
+	return o < other.o;
+}
+
 coord coord::rotate(int turns) {
 	coord answer(*this);
 

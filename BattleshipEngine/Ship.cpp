@@ -1,9 +1,11 @@
 #include "Ship.h"
+#include <algorithm>
+#include <iterator>
 
 
 int Ship::nextID = 0;
 
-Ship::Ship(std::vector<coord> coords, std::string name /*=""*/, int rotation /*= 0*/, coord pos /*= coord::unspecified*/) :
+Ship::Ship(std::set<coord> coords, std::string name /*=""*/, int rotation /*= 0*/, coord pos /*= coord::unspecified*/) :
 	rotation(rotation),
 	coords(coords),
 	_name(name),
@@ -41,11 +43,42 @@ coord Ship::getPos() const {
 	return pos;
 }
 
+Ship::hitShipResult Ship::hit(coord where) {
+	hitShipResult answer;
+
+	if (hits.find(where) != hits.end()) {
+		answer.error = hitShipError::alreadyHit;
+		answer.success = false;
+		return answer;
+	}
+
+	std::set<coord> unhit;
+	std::set_difference(
+		coords.begin(), coords.end(), 
+		hits.begin(), hits.end(), 
+		std::inserter(unhit, unhit.end()));
+	coord transformed = where.applyInverseTransform(pos, rotation);
+	if (unhit.find(transformed) == unhit.end()) {
+		answer.success = false;
+		answer.error = hitShipError::notOnShip;
+		return answer; //oops, you didn't actually hit the ship
+	}
+
+	hits.insert(transformed);
+	if (unhit.size() == 1) //there was one unhit, you got a hit, must be sunk now
+		_sunk = true;
+
+	answer.success = true;
+	answer.sunk = _sunk;
+
+	return answer;
+}
+
 void Ship::setPos(coord pos) {
 	this->pos = pos;
 }
 
-const std::vector<coord>& Ship::getCoords() const {
+const std::set<coord>& Ship::getCoords() const {
 	return coords;
 }
 

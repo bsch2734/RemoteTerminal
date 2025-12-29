@@ -26,13 +26,7 @@ int main() {
 	}
 	e.readyUp(Player::two);
 
-	FireResult r;
-
-	r = e.fire(Player::one, { { 3,1 } });
-	r = e.fire(Player::one, { { 3,1 } });
-	r = e.fire(Player::two, { { 3,1 } });
-	r = e.fire(Player::one, { { 3,1 } });
-	r = e.fire(Player::two, { { 3,1 } });
-	r = e.fire(Player::one, { { 3,0 } });
-	r = e.fire(Player::two, { { 3,0 } });
+	while (e.phase() != Phase::finished) {
+		e.fire(e.currentTurn(), { {rand() % 10, rand() % 10} });
+	}
 }

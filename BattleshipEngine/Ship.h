@@ -3,11 +3,13 @@
 #include "GameEntities.h"
 #include "coord.h"
 #include <string>
+#include <set>
 
 class Ship {
 private:
 	coord pos;
-	std::vector<coord> coords;
+	std::set<coord> coords;
+	std::set<coord> hits;
 	int rotation;
 	bool _sunk = false;
 	int ID;
@@ -16,15 +18,27 @@ private:
 	static int nextID;
 
 public:
+	enum class hitShipError {
+		notOnShip,
+		alreadyHit
+	};
+
+	struct hitShipResult {
+		bool success;
+		bool sunk;
+		hitShipError error;
+	};
+
 	Ship(const Ship& other);
-	Ship(std::vector<coord> coords, std::string name = "", int rotation = 0, coord pos = coord::unspecified);
+	Ship(std::set<coord> coords, std::string name = "", int rotation = 0, coord pos = coord::unspecified);
 	bool isSunk() const;
 	int getID() const;
 	int getRotation() const;
 	void setRotation(int rotation);
 	coord getPos() const;
 	void setPos(coord pos);
-	const std::vector<coord>& getCoords() const;
+	hitShipResult hit(coord where);
+	const std::set<coord>& getCoords() const;
 
 	const static Ship pt;
 	const static Ship sub;

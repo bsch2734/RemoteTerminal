@@ -50,10 +50,5 @@ private:
         unplaced    = 2
     };
 
-    std::unordered_map<coord, int>& getHitmapForPlayer(Player p);
-
-    std::unordered_map<coord, int> p1HitMap;
-    std::unordered_map<coord, int> p2HitMap;
-
     std::bitset<8> checkFleetStatus(Fleet f);
 };

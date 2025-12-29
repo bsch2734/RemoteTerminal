@@ -14,6 +14,8 @@ struct coord {
 
 	coord operator-(coord const& other) const;
 
+	bool operator<(const coord& other) const;
+
 	coord rotate(int turns);
 
 	coord& rotateSelf(int turns);

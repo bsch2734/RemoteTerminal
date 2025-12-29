@@ -4,7 +4,7 @@
 
 
 BattleshipEngine::BattleshipEngine() :
-    _currentPlayer(Player::one),
+    _currentPlayer(Player::none),
     _phase(Phase::setup),
     _pOneFleet(baseFleet),
     _pTwoFleet(baseFleet),
@@ -75,16 +75,9 @@ bool BattleshipEngine::readyUp(Player p) {
         return false;
 
     (p == Player::one ? p1IsReady : p2IsReady) = true;
-    if (p1IsReady && p2IsReady)
+    if (p1IsReady && p2IsReady) {
         _phase = Phase::playing;
-
-    Fleet& fleet = getMutableFleetForPlayer(p);
-    auto& hitMap = getHitmapForPlayer(p);
-    for (Ship& s : fleet.getShips()) {
-        for (coord c : s.getCoords()) {
-            coord transformed = c.applyTransform(s.getPos(), s.getRotation());
-            hitMap[transformed] = s.getID();
-        }
+        _currentPlayer = Player::one;
     }
 
     return true;
@@ -109,23 +102,25 @@ FireResult BattleshipEngine::fire(Player p, coord target) {
         return answer;
     }
 
-    auto& hitMap = getHitmapForPlayer(oponent(p));
-    auto r = hitMap.find(target);
-    if (r == hitMap.end()) {
-        answer.success = true;
-        answer.isHit = false;
-    }
-    else {
-        hitMap.erase(r);
-        
+    auto& f = getMutableFleetForPlayer(oponent(p));
+    auto r = f.hitFleet(target);
+
+    if (r.success) {
         answer.success = true;
         answer.isHit = true;
     }
+    else {
+        answer.success = true;
+        answer.isHit = false;
+    }
 
-
-
-    if (answer.success)
-        _currentPlayer = oponent(p);
+    if (f.isDefeated()) {
+        _phase = Phase::finished;
+        _currentPlayer = Player::none;
+    }
+    else
+        if (answer.success)
+            _currentPlayer = oponent(p);
 
     return answer;
 }
@@ -162,10 +157,6 @@ Fleet BattleshipEngine::baseFleet{
         Ship::pt,
     }
 };
-
-std::unordered_map<coord, int>& BattleshipEngine::getHitmapForPlayer(Player p) {
-    return p == Player::one? p1HitMap : p2HitMap;
-}
 
 std::bitset<8> BattleshipEngine::checkFleetStatus(Fleet f) {
     std::bitset<8> answer;
