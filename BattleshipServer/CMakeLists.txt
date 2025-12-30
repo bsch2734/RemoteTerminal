@@ -4,6 +4,7 @@ add_executable(BattleshipServer
 
 target_link_libraries(BattleshipServer PRIVATE
     BattleshipEngine
+    jsoncpp_lib
 )
 
 set_property(TARGET BattleshipServer PROPERTY CXX_STANDARD 20)

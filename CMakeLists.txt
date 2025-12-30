@@ -11,7 +11,12 @@ endif()
 
 project ("RemoteTerminal")
 
+# Disable jsoncpp tests and post-build test runs
+set(JSONCPP_WITH_TESTS OFF CACHE BOOL "Disable jsoncpp tests" FORCE)
+set(JSONCPP_WITH_POST_BUILD_UNITTEST OFF CACHE BOOL "Disable jsoncpp post build unit tests" FORCE)
+
 # Include sub-projects.
+add_subdirectory(third_party/jsoncpp)
 add_subdirectory ("BattleshipEngine")
 add_subdirectory ("BattleshipServer")
 add_subdirectory ("DemoGame")
