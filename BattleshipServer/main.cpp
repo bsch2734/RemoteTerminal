@@ -1,3 +1,4 @@
+#include "ServerProtocol.h"
 #include <iostream>
 
 int main() {
