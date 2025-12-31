@@ -11,6 +11,11 @@ endif()
 
 project ("RemoteTerminal")
 
+# Force jsoncpp (and other libs) to build as static
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libs" FORCE)
+# jsoncpp-specific switches (matches their docs: BUILD_STATIC_LIBS / BUILD_SHARED_LIBS)
+set(BUILD_STATIC_LIBS ON CACHE BOOL "Build static jsoncpp libs" FORCE)
+
 # Disable jsoncpp tests and post-build test runs
 set(JSONCPP_WITH_TESTS OFF CACHE BOOL "Disable jsoncpp tests" FORCE)
 set(JSONCPP_WITH_POST_BUILD_UNITTEST OFF CACHE BOOL "Disable jsoncpp post build unit tests" FORCE)
