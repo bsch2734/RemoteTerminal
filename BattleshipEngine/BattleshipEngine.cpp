@@ -6,8 +6,8 @@
 BattleshipEngine::BattleshipEngine() :
     _currentPlayer(Player::none),
     _phase(Phase::setup),
-    _pOneFleet(baseFleet),
-    _pTwoFleet(baseFleet),
+    _pOneFleet(getBaseFleet()),
+    _pTwoFleet(getBaseFleet()),
     _boardDimensions(10,10)
 {
 }
@@ -148,15 +148,18 @@ Fleet& BattleshipEngine::getMutableFleetForPlayer(Player p) {
 }
 
 //default fleet for normal game
-Fleet BattleshipEngine::baseFleet{
-    {
-        Ship::carrier,
-        Ship::battleship,
-        Ship::destroyer,
-        Ship::sub,
-        Ship::pt,
-    }
-};
+Fleet const& BattleshipEngine::getBaseFleet() {
+    static Fleet baseFleet{
+        {
+            Ship::carrier,
+            Ship::battleship,
+            Ship::destroyer,
+            Ship::sub,
+            Ship::pt,
+        }
+    };
+    return baseFleet;
+}
 
 std::bitset<8> BattleshipEngine::checkFleetStatus(Fleet f) {
     std::bitset<8> answer;

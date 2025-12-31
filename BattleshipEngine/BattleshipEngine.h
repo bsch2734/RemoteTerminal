@@ -41,7 +41,7 @@ private:
     bool p1IsReady = false;
     bool p2IsReady = false;
 
-    static Fleet baseFleet;
+    Fleet const& getBaseFleet();
 
     enum class FleetStatusBits {
         outOfBounds = 0,
