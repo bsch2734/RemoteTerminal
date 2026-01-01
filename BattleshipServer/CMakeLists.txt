@@ -1,6 +1,6 @@
 add_executable(BattleshipServer
     "main.cpp"
- "BattleshipSession.cpp" "Action.h" "ServerProtocol.h" "ServerProtocol.cpp")
+ "BattleshipSession.cpp" "Action.h" "ServerProtocol.h" "ServerProtocol.cpp" "SessionTypes.h")
 
 target_link_libraries(BattleshipServer PRIVATE
     BattleshipEngine
