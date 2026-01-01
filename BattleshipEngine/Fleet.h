@@ -15,7 +15,8 @@ private:
 
 public:
 	enum class hitFleetError {
-		coordNotInFleet
+		coordNotInFleet,
+		coordAlreadyHit
 	};
 
 	struct hitFleetResult {

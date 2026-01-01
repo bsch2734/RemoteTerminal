@@ -51,8 +51,11 @@ Fleet::hitFleetResult Fleet::hitFleet(coord c) {
 		answer.sunk = result.sunk;
 	}
 	else {
-		if (   result.error == Ship::hitShipError::alreadyHit
-			|| result.error == Ship::hitShipError::notOnShip) {
+		if (result.error == Ship::hitShipError::alreadyHit) {
+			answer.success = false;
+			answer.error = hitFleetError::coordAlreadyHit;
+		}
+		if (result.error == Ship::hitShipError::notOnShip) {
 			answer.success = false;
 			answer.error = hitFleetError::coordNotInFleet;
 		}
