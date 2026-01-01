@@ -6,6 +6,9 @@
 BattleshipSession::BattleshipSession(std::string id, std::string playerOneId, std::string playerTwoId) {
 	_userToPlyaerMap[playerOneId] = Player::one;
 	_userToPlyaerMap[playerTwoId] = Player::two;
+	_playerToUserMap[Player::one] = playerOneId;
+	_playerToUserMap[Player::two] = playerTwoId;
+	_playerToUserMap[Player::none] = "";
 }
 
 std::string BattleshipSession::id() const {
@@ -46,6 +49,16 @@ SessionResult BattleshipSession::handleAction(std::string user, const Action& ac
 	}
 
 	return s;
+}
+
+SessionSnapshot BattleshipSession::getSnapshot() {
+	SessionSnapshot answer;
+	answer.currentUser = _playerToUserMap[_engine.currentTurn()];
+	answer.phase = _engine.phase();
+	UserView viewForP1User(_playerToUserMap[Player::one], _engine.boardViewForPlayer(Player::one));
+	UserView viewForP2User(_playerToUserMap[Player::two], _engine.boardViewForPlayer(Player::two));
+	answer.userViews.insert(viewForP1User, viewForP2User);
+	return answer;
 }
 
 Player BattleshipSession::playerFor(std::string user) const {

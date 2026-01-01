@@ -48,6 +48,17 @@ struct SessionResult {
     SessionResultData data = FireResultData();
 };
 
+struct UserView {
+    std::string userId;
+    BoardView boardView;
+};
+
+struct SessionSnapshot {
+    Phase phase;
+    std::string currentUser;
+    std::set<UserView> userViews;
+};
+
 class BattleshipSession {
 public:
     BattleshipSession(std::string id, std::string playerOneId, std::string playerTwoId);
@@ -58,7 +69,7 @@ public:
 
     SessionResult handleAction(std::string user, const Action& action);
 
-
+    SessionSnapshot getSnapshot();
 
 private:
     // Helpers
@@ -78,6 +89,7 @@ private:
 private:
     std::string _sessionId;
     std::map<std::string, Player> _userToPlyaerMap;
+    std::map<Player, std::string> _playerToUserMap;
 
     BattleshipEngine _engine;
 };
