@@ -30,6 +30,9 @@ class BattleshipEngine {
         const std::set<coord>& getHitsForPlayer(Player p) const;
         const std::set<coord>& getMissesForPlayer(Player p) const;
 
+        BoardView ownBoard(Player p) const;
+        BoardView opponentBoard(Player p) const;
+
 private:
     Fleet& getMutableFleetForPlayer(Player p);
 

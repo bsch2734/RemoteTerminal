@@ -181,6 +181,31 @@ const std::set<coord>& BattleshipEngine::getMissesForPlayer(Player p) const{
         return _p1Misses;
     return _p2Misses; //should never see player::none but this may cause issues if it does
 }
+
+BoardView BattleshipEngine::ownBoard(Player p) const {
+    std::map<coord, squareStates> occupied;
+    //layer from bottom to top so only top is visible
+    const Fleet& f = getFleetForPlayer(p);
+    for (const Ship& s : f.getShips())
+        for (const coord& c : s.getCoords())
+            occupied[c.applyTransform(s.getPos(), s.getRotation())] = squareStates::ship;
+    for (const auto& c : getMissesForPlayer(oponent(p)))
+        occupied[c] = squareStates::miss;
+    for (const auto& c : getHitsForPlayer(oponent(p)))
+        occupied[c] = squareStates::hit;
+    return BoardView(occupied);
+}
+
+BoardView BattleshipEngine::opponentBoard(Player p) const {
+    std::map<coord, squareStates> occupied;
+    //layer from bottom to top so only top is visible
+    for (const auto& c : getMissesForPlayer(p))
+        occupied[c] = squareStates::miss;
+    for (const auto& c : getHitsForPlayer(p))
+        occupied[c] = squareStates::hit;
+    return BoardView(occupied);
+}
+
 Fleet& BattleshipEngine::getMutableFleetForPlayer(Player p) {
     return p == Player::one ? _pOneFleet : _pTwoFleet;
 }
@@ -237,6 +262,3 @@ std::bitset<8> BattleshipEngine::checkFleetStatus(Fleet f) {
     }
     return answer;
 }
-
-//BoardView ownBoard(Player p) const;
-//BoardView opponentBoard(Player p) const;

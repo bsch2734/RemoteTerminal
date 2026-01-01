@@ -1,6 +1,8 @@
 #pragma once
 
+#include "coord.h"
 #include <vector>
+#include <map>
 
 enum class Player {
 	none = 0,
@@ -51,4 +53,14 @@ enum class ReadyUpError {
 struct ReadyUpResult {
 	bool succes;
 	ReadyUpError error;
+};
+
+enum class squareStates {
+	miss,
+	ship,
+	hit
+};
+
+struct BoardView {
+	std::map<coord, squareStates> occupiedSquares;
 };
