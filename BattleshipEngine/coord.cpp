@@ -37,7 +37,7 @@ bool coord::operator<(const coord& other) const {
 	return o < other.o;
 }
 
-coord coord::rotate(int turns) {
+coord coord::rotate(int turns) const{
 	coord answer(*this);
 
 	//apply mod (works with negatives)
@@ -74,11 +74,11 @@ coord& coord::rotateSelf(int turns) {
 	return *this;
 }
 
-coord coord::applyTransform(coord translation, int rotation) {
+coord coord::applyTransform(coord translation, int rotation) const{
 	return rotate(rotation) + translation;
 }
 
-coord coord::applyInverseTransform(coord translation, int rotation) {
+coord coord::applyInverseTransform(coord translation, int rotation) const{
 	return (*this - translation).rotate(-rotation);
 }
 

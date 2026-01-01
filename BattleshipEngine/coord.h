@@ -16,13 +16,13 @@ struct coord {
 
 	bool operator<(const coord& other) const;
 
-	coord rotate(int turns);
+	coord rotate(int turns) const;
 
 	coord& rotateSelf(int turns);
 
-	coord applyTransform(coord translation, int rotation);
+	coord applyTransform(coord translation, int rotation) const;
 
-	coord applyInverseTransform(coord translation, int rotation);
+	coord applyInverseTransform(coord translation, int rotation) const;
 
 	int d, o;
 
