@@ -27,16 +27,23 @@ class BattleshipEngine {
         Player currentTurn() const;
         std::string nameForId(int id) const;
 
-        //BoardView ownBoard(Player p) const;
-        //BoardView opponentBoard(Player p) const;
+        const std::set<coord>& getHitsForPlayer(Player p) const;
+        const std::set<coord>& getMissesForPlayer(Player p) const;
 
 private:
     Fleet& getMutableFleetForPlayer(Player p);
+
+    std::set<coord>& getHitsForPlayer(Player p);
+    std::set<coord>& getMissesForPlayer(Player p);
 
     Phase _phase;
     Player _currentPlayer;
     Fleet _pOneFleet;
     Fleet _pTwoFleet;
+    std::set<coord> _p1Hits;
+    std::set<coord> _p1Misses;
+    std::set<coord> _p2Hits;
+    std::set<coord> _p2Misses;
     std::pair<int, int> _boardDimensions;
 
     bool p1IsReady = false;

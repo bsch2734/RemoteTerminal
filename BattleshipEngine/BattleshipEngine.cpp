@@ -119,10 +119,13 @@ FireResult BattleshipEngine::fire(Player p, coord target) {
     if (r.success) {
         answer.success = true;
         answer.isHit = true;
+        getHitsForPlayer(p).insert(target);
         answer.isSink = r.sunk;
         answer.hitId = r.hitID;
     }
     else {
+        if(r.error != Fleet::hitFleetError::coordAlreadyHit) //not a true miss if this coord was hit before
+            getMissesForPlayer(p).insert(target);
         answer.success = true;
         answer.isHit = false;
     }
@@ -167,8 +170,31 @@ std::string BattleshipEngine::nameForId(int id) const {
     return "";
 }
 
+const std::set<coord>& BattleshipEngine::getHitsForPlayer(Player p) const{
+    if (p == Player::one)
+        return _p1Hits;
+    return _p2Hits; //should never see player::none but this may cause issues if it does
+}
+
+const std::set<coord>& BattleshipEngine::getMissesForPlayer(Player p) const{
+    if (p == Player::one)
+        return _p1Misses;
+    return _p2Misses; //should never see player::none but this may cause issues if it does
+}
 Fleet& BattleshipEngine::getMutableFleetForPlayer(Player p) {
     return p == Player::one ? _pOneFleet : _pTwoFleet;
+}
+
+std::set<coord>& BattleshipEngine::getHitsForPlayer(Player p) {
+    if (p == Player::one)
+        return _p1Hits;
+    return _p2Hits; //should never see player::none but this may cause issues if it does
+}
+
+std::set<coord>& BattleshipEngine::getMissesForPlayer(Player p) {
+    if (p == Player::one)
+        return _p1Misses;
+    return _p2Misses; //should never see player::none but this may cause issues if it does
 }
 
 //default fleet for normal game
