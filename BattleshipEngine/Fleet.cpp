@@ -48,6 +48,7 @@ Fleet::hitFleetResult Fleet::hitFleet(coord c) {
 	if (result.success) {
 		answer.success = true;
 		answer.hitID = (*r).second->getID();
+		answer.sunk = result.sunk;
 	}
 	else {
 		if (   result.error == Ship::hitShipError::alreadyHit

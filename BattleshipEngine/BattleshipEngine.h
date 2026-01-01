@@ -16,7 +16,7 @@ class BattleshipEngine {
 
         PlaceShipResult placeShip(Player p, int ID, coord pos, int rotation);
 
-        bool readyUp(Player p);
+        ReadyUpResult readyUp(Player p);
 
         // --- Gameplay ---
         FireResult fire(Player p, coord target);
@@ -25,6 +25,7 @@ class BattleshipEngine {
         Phase phase() const;
         Player getWinner() const;
         Player currentTurn() const;
+        std::string nameForId(int id) const;
 
         //BoardView ownBoard(Player p) const;
         //BoardView opponentBoard(Player p) const;

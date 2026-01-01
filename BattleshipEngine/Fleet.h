@@ -21,6 +21,7 @@ public:
 	struct hitFleetResult {
 		bool success;
 		int hitID;
+		bool sunk;
 		hitFleetError error;
 	};
 

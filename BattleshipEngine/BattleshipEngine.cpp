@@ -69,18 +69,29 @@ PlaceShipResult BattleshipEngine::placeShip( Player p, int ID, coord pos, int ro
 }
 
 //build hitmaps and move to gamplay of other player is ready
-bool BattleshipEngine::readyUp(Player p) {
+ReadyUpResult BattleshipEngine::readyUp(Player p) {
+    ReadyUpResult answer;
     auto status = checkFleetStatus(getFleetForPlayer(p));
-    if (status.any())
-        return false;
+    if (status.any()) {
+        answer.succes = false;
 
+        if (status.test((int)FleetStatusBits::unplaced))
+            answer.error = ReadyUpError::fleetNotPlaced;
+        else if (status.test((int)FleetStatusBits::overlapping)) 
+            answer.error = ReadyUpError::fleetPlacementInvalid;
+        else if (status.test((int)FleetStatusBits::outOfBounds)) 
+            answer.error = ReadyUpError::fleetPlacementInvalid;
+
+        return answer;
+    }
     (p == Player::one ? p1IsReady : p2IsReady) = true;
     if (p1IsReady && p2IsReady) {
         _phase = Phase::playing;
         _currentPlayer = Player::one;
     }
 
-    return true;
+    answer.succes = true;
+    return answer;
 }
 
 // --- Gameplay ---
@@ -108,6 +119,8 @@ FireResult BattleshipEngine::fire(Player p, coord target) {
     if (r.success) {
         answer.success = true;
         answer.isHit = true;
+        answer.isSink = r.sunk;
+        answer.hitId = r.hitID;
     }
     else {
         answer.success = true;
@@ -141,6 +154,17 @@ Player BattleshipEngine::getWinner() const{
 
 Player BattleshipEngine::currentTurn() const {
     return _currentPlayer;
+}
+
+std::string BattleshipEngine::nameForId(int id) const {
+    for (const Ship& s : getFleetForPlayer(Player::one).getShips())
+        if (s.getID() == id)
+            return s.getName();
+    for (const Ship& s : getFleetForPlayer(Player::two).getShips())
+        if (s.getID() == id)
+            return s.getName();
+
+    return "";
 }
 
 Fleet& BattleshipEngine::getMutableFleetForPlayer(Player p) {

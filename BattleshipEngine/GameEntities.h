@@ -26,6 +26,8 @@ enum class FireError {
 struct FireResult {
 	bool success;
 	bool isHit;
+	bool isSink;
+	int hitId;
 	FireError error;
 };
 
@@ -39,4 +41,14 @@ enum class PlaceShipError {
 struct PlaceShipResult {
 	bool success;
 	PlaceShipError error;
+};
+
+enum class ReadyUpError {
+	fleetNotPlaced,
+	fleetPlacementInvalid
+};
+
+struct ReadyUpResult {
+	bool succes;
+	ReadyUpError error;
 };
