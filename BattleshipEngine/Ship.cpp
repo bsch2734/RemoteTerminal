@@ -31,6 +31,10 @@ int Ship::getID() const {
 	return ID;
 }
 
+std::string Ship::getName() const {
+	return _name;
+}
+
 int Ship::getRotation() const {
 	return rotation;
 }

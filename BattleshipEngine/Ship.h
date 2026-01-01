@@ -33,6 +33,7 @@ public:
 	Ship(std::set<coord> coords, std::string name = "", int rotation = 0, coord pos = coord::unspecified);
 	bool isSunk() const;
 	int getID() const;
+	std::string getName() const;
 	int getRotation() const;
 	void setRotation(int rotation);
 	coord getPos() const;
