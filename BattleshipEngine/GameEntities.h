@@ -61,6 +61,6 @@ enum class squareStates {
 	hit
 };
 
-struct BoardView {
+struct GridView {
 	std::map<coord, squareStates> occupiedSquares;
 };
