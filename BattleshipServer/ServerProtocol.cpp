@@ -51,7 +51,7 @@ Action actionFromJson(const Json::Value& v) {
 		t = ActionType::PlaceShip;
 		d = placeShipDataFromJson(actionDataJson);
 	}
-	else if (s == "Read") {
+	else if (s == "Ready") {
 		t = ActionType::Ready;
 		d = readyDataFromJson(actionDataJson);
 	}
