@@ -182,7 +182,14 @@ const std::set<coord>& BattleshipEngine::getMissesForPlayer(Player p) const{
     return _p2Misses; //should never see player::none but this may cause issues if it does
 }
 
-GridView BattleshipEngine::ownBoard(Player p) const {
+BoardView BattleshipEngine::boardViewForPlayer(Player p) const{
+    BoardView b;
+    b.ownGrid = ownGrid(p);
+    b.oponentGrid = opponentGrid(p);
+    return b;
+}
+
+GridView BattleshipEngine::ownGrid(Player p) const {
     std::map<coord, squareStates> occupied;
     //layer from bottom to top so only top is visible
     const Fleet& f = getFleetForPlayer(p);
@@ -196,7 +203,7 @@ GridView BattleshipEngine::ownBoard(Player p) const {
     return GridView(occupied);
 }
 
-GridView BattleshipEngine::opponentBoard(Player p) const {
+GridView BattleshipEngine::opponentGrid(Player p) const {
     std::map<coord, squareStates> occupied;
     //layer from bottom to top so only top is visible
     for (const auto& c : getMissesForPlayer(p))

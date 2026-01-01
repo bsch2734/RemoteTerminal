@@ -64,3 +64,8 @@ enum class squareStates {
 struct GridView {
 	std::map<coord, squareStates> occupiedSquares;
 };
+
+struct BoardView {
+	GridView ownGrid;
+	GridView oponentGrid;
+};

@@ -30,14 +30,16 @@ class BattleshipEngine {
         const std::set<coord>& getHitsForPlayer(Player p) const;
         const std::set<coord>& getMissesForPlayer(Player p) const;
 
-        GridView ownBoard(Player p) const;
-        GridView opponentBoard(Player p) const;
+        BoardView boardViewForPlayer(Player p) const;
 
 private:
     Fleet& getMutableFleetForPlayer(Player p);
 
     std::set<coord>& getHitsForPlayer(Player p);
     std::set<coord>& getMissesForPlayer(Player p);
+
+    GridView ownGrid(Player p) const;
+    GridView opponentGrid(Player p) const;
 
     Phase _phase;
     Player _currentPlayer;
