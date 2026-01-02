@@ -39,6 +39,7 @@ public:
 	coord getPos() const;
 	void setPos(coord pos);
 	hitShipResult hit(coord where);
+	bool isPlaced() const;
 	const std::set<coord>& getCoords() const;
 
 	const static Ship pt;

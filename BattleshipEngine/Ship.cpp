@@ -78,6 +78,10 @@ Ship::hitShipResult Ship::hit(coord where) {
 	return answer;
 }
 
+bool Ship::isPlaced() const{
+	return !pos.isUnspecified();
+}
+
 void Ship::setPos(coord pos) {
 	this->pos = pos;
 }
