@@ -35,8 +35,9 @@ int main() {
         BattleshipSession& activeSession = *gameIdToSessionMap[inputGameId];
 
         SessionResult res = activeSession.handleAction(inputUserId, inputAction);
+        SessionSnapshot snapshot = activeSession.getSnapshot();
 
-        Json::Value out;// = sessionResultToJson(res, pm.gameId, pm.userId);
+        Json::Value out = toJson(ServerUpdate(res, snapshot));
 
         // write one JSON line out:
         Json::StreamWriterBuilder wb;

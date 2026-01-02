@@ -113,3 +113,7 @@ std::string gameIdFromJson(const Json::Value& v) {
 std::string userIdFromJson(const Json::Value& v) {
 	return v["userId"].asString();
 }
+
+Json::Value toJson(ServerUpdate s) {
+	return Json::Value();
+}
