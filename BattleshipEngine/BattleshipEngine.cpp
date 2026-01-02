@@ -194,6 +194,7 @@ GridView BattleshipEngine::ownGrid(Player p) const {
     //layer from bottom to top so only top is visible
     const Fleet& f = getFleetForPlayer(p);
     for (const Ship& s : f.getShips())
+        if(s.isPlaced())
         for (const coord& c : s.getCoords())
             occupied[c.applyTransform(s.getPos(), s.getRotation())] = squareStates::ship;
     for (const auto& c : getMissesForPlayer(oponent(p)))
