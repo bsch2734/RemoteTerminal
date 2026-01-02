@@ -1,5 +1,9 @@
 #pragma once
 
+using UserId = std::string;
+
+using GameId = std::string;
+
 enum class SessionActionResultError {
     //session-level errors
     shipNotFound,     //the specified shippId is not in this session
@@ -46,12 +50,12 @@ struct SessionActionResult {
 };
 
 struct UserView {
-    std::string userId;
+    UserId userId;
     BoardView boardView;
 };
 
 struct SessionSnapshot {
     Phase phase;
-    std::string currentUser;
+    UserId currentUser;
     std::vector<UserView> userViews;
 };
