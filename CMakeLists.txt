@@ -11,6 +11,12 @@ endif()
 
 project ("RemoteTerminal")
 
+# Use C++ 20
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+
 # Force jsoncpp (and other libs) to build as static
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libs" FORCE)
 # jsoncpp-specific switches (matches their docs: BUILD_STATIC_LIBS / BUILD_SHARED_LIBS)
@@ -22,6 +28,10 @@ set(JSONCPP_WITH_POST_BUILD_UNITTEST OFF CACHE BOOL "Disable jsoncpp post build 
 
 # Include sub-projects.
 add_subdirectory(third_party/jsoncpp)
+# force jsoncpp to use C++20
+set_property(TARGET jsoncpp_static PROPERTY CXX_STANDARD 20)
+set_property(TARGET jsoncpp_static PROPERTY CXX_STANDARD_REQUIRED ON)
+
 add_subdirectory ("BattleshipEngine")
 add_subdirectory ("BattleshipServer")
 add_subdirectory ("DemoGame")

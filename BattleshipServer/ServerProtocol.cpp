@@ -92,7 +92,7 @@ Json::Value toJson(const SessionActionType& t) {
 	}
 	return answer;
 }
-//
+
 SessionActionType sessionActionTypeFromJson(const Json::Value& v) {
 	SessionActionType answer = SessionActionType::Ready;
 

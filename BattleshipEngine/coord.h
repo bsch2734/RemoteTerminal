@@ -1,5 +1,6 @@
 #pragma once
 #include <utility>
+#include <functional>
 
 struct coord {
 	coord(std::pair<int, int> coordPair);
@@ -32,7 +33,7 @@ struct coord {
 
 template<>
 struct std::hash<coord> {
-	std::size_t operator()(coord c) const {
+	std::size_t operator()(const coord& c) const noexcept{
 		return std::hash<int>()(c.d) ^ (std::hash<int>()(c.o) << 1);
 	}
 };
