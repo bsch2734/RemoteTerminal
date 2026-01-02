@@ -55,15 +55,14 @@ struct ReadyUpResult {
 	ReadyUpError error;
 };
 
-enum class squareStates {
+enum class SquareState {
 	miss,
 	ship,
 	hit
 };
 
-struct GridView {
-	std::map<coord, squareStates> occupiedSquares;
-};
+using GridView = std::map<coord, SquareState>;
+using SquareView = GridView::value_type;
 
 struct BoardView {
 	GridView ownGrid;

@@ -6,19 +6,19 @@
 
 class BattleshipSession {
 public:
-    BattleshipSession(std::string id, std::string playerOneId, std::string playerTwoId);
+    BattleshipSession(GameId id, UserId playerOneId, UserId playerTwoId);
 
     std::string id() const;
 
     bool isFinished() const;
 
-    SessionActionResult handleAction(std::string user, const SessionAction& action);
+    SessionActionResult handleAction(UserId user, const SessionAction& action);
 
     SessionSnapshot getSnapshot();
 
 private:
     // Helpers
-    Player playerFor(std::string user) const;
+    Player playerFor(UserId user) const;
 
     //SessionActionResult makeError(SessionError error) const;
     //SessionActionResult makeResultFromEngine(FireResult fireResult);
@@ -33,8 +33,8 @@ private:
 
 private:
     std::string _sessionId;
-    std::map<std::string, Player> _userToPlyaerMap;
-    std::map<Player, std::string> _playerToUserMap;
+    std::map<UserId, Player> _userToPlyaerMap;
+    std::map<Player, UserId> _playerToUserMap;
 
     BattleshipEngine _engine;
 };

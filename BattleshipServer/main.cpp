@@ -4,11 +4,11 @@
 #include <unordered_map>
 
 int main() {
-    std::string gameId = "g1";
-    std::string p1 = "p1";
-    std::string p2 = "p2";
+    GameId gameId = "g1";
+    UserId p1 = "p1";
+    UserId p2 = "p2";
 
-    std::unordered_map<std::string, BattleshipSession*> gameIdToSessionMap;
+    std::unordered_map<GameId, BattleshipSession*> gameIdToSessionMap;
 
     BattleshipSession session(gameId, p1, p2);
 
@@ -28,9 +28,9 @@ int main() {
             continue;
         }
 
-        std::string inputGameId = gameIdFromJson(root);
-        std::string inputUserId = userIdFromJson(root);
-        const SessionAction& inputAction = actionFromJson(root);
+        GameId inputGameId = gameIdFromJson(root["gameid"]);
+        UserId inputUserId = userIdFromJson(root["userid"]);
+        const SessionAction& inputAction = sessionActionFromJson(root["sessionaction"]);
 
         BattleshipSession& activeSession = *gameIdToSessionMap[inputGameId];
 

@@ -3,7 +3,7 @@
 
 #include <string>
 
-BattleshipSession::BattleshipSession(std::string id, std::string playerOneId, std::string playerTwoId) {
+BattleshipSession::BattleshipSession(GameId id, UserId playerOneId, UserId playerTwoId) {
 	_userToPlyaerMap[playerOneId] = Player::one;
 	_userToPlyaerMap[playerTwoId] = Player::two;
 	_playerToUserMap[Player::one] = playerOneId;
@@ -19,7 +19,7 @@ bool BattleshipSession::isFinished() const {
 	return _engine.phase() == Phase::finished;
 }
 
-SessionActionResult BattleshipSession::handleAction(std::string user, const SessionAction& action) {
+SessionActionResult BattleshipSession::handleAction(UserId user, const SessionAction& action) {
 	SessionActionResult s;
 	Player p = playerFor(user);
 	if (p == Player::none) {
@@ -62,7 +62,7 @@ SessionSnapshot BattleshipSession::getSnapshot() {
 	return answer;
 }
 
-Player BattleshipSession::playerFor(std::string user) const {
+Player BattleshipSession::playerFor(UserId user) const {
 	auto p = _userToPlyaerMap.find(user);
 	if (p == _userToPlyaerMap.end())
 		return Player::none;

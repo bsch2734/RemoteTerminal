@@ -190,27 +190,27 @@ BoardView BattleshipEngine::boardViewForPlayer(Player p) const{
 }
 
 GridView BattleshipEngine::ownGrid(Player p) const {
-    std::map<coord, squareStates> occupied;
+    std::map<coord, SquareState> occupied;
     //layer from bottom to top so only top is visible
     const Fleet& f = getFleetForPlayer(p);
     for (const Ship& s : f.getShips())
         if(s.isPlaced())
-        for (const coord& c : s.getCoords())
-            occupied[c.applyTransform(s.getPos(), s.getRotation())] = squareStates::ship;
+            for (const coord& c : s.getCoords())
+                occupied[c.applyTransform(s.getPos(), s.getRotation())] = SquareState::ship;
     for (const auto& c : getMissesForPlayer(oponent(p)))
-        occupied[c] = squareStates::miss;
+        occupied[c] = SquareState::miss;
     for (const auto& c : getHitsForPlayer(oponent(p)))
-        occupied[c] = squareStates::hit;
+        occupied[c] = SquareState::hit;
     return GridView(occupied);
 }
 
 GridView BattleshipEngine::opponentGrid(Player p) const {
-    std::map<coord, squareStates> occupied;
+    std::map<coord, SquareState> occupied;
     //layer from bottom to top so only top is visible
     for (const auto& c : getMissesForPlayer(p))
-        occupied[c] = squareStates::miss;
+        occupied[c] = SquareState::miss;
     for (const auto& c : getHitsForPlayer(p))
-        occupied[c] = squareStates::hit;
+        occupied[c] = SquareState::hit;
     return GridView(occupied);
 }
 
