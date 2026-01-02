@@ -17,19 +17,19 @@ coord coordFromJson(const Json::Value& v) {
 	return coord({v["row"].asInt(), v["col"].asInt()});
 }
 
-Json::Value toJson(const Action& a) {
+Json::Value toJson(const SessionAction& a) {
 	Json::Value answer(Json::objectValue);
 	std::string actionType;
 	switch (a.type) {
-		case ActionType::PlaceShip: {
+		case SessionActionType::PlaceShip: {
 			actionType = "PlaceShip";
 			break;
 		}
-		case ActionType::Ready: {
+		case SessionActionType::Ready: {
 			actionType = "Ready";
 			break;
 		}
-		case ActionType::Fire: {
+		case SessionActionType::Fire: {
 			actionType = "Fire";
 			break;
 		}
@@ -39,28 +39,28 @@ Json::Value toJson(const Action& a) {
 	return answer;
 }
 
-Action actionFromJson(const Json::Value& v) {
+SessionAction actionFromJson(const Json::Value& v) {
 	std::string s = v["type"].asString();
 	
-	ActionType t{};
-	ActionData d = ReadyData();
+	SessionActionType t{};
+	SessionActionData d = ReadyData();
 
 	Json::Value actionDataJson = v["data"];
 
 	if (s == "PlaceShip") {
-		t = ActionType::PlaceShip;
+		t = SessionActionType::PlaceShip;
 		d = placeShipDataFromJson(actionDataJson);
 	}
 	else if (s == "Ready") {
-		t = ActionType::Ready;
+		t = SessionActionType::Ready;
 		d = readyDataFromJson(actionDataJson);
 	}
 	else if (s == "Fire") {
-		t = ActionType::Fire;
+		t = SessionActionType::Fire;
 		d = fireDataFromJson(actionDataJson);
 	}
 
-	return Action(t, d);
+	return SessionAction(t, d);
 }
 
 Json::Value toJson(const FireData& d) {
@@ -96,7 +96,7 @@ PlaceShipData placeShipDataFromJson(const Json::Value& v) {
 	return PlaceShipData(i, r, c);
 }
 
-Json::Value toJson(const ActionData& d) {
+Json::Value toJson(const SessionActionData& d) {
 	if (std::holds_alternative<FireData>(d))
 		return toJson(std::get<FireData>(d));
 	if (std::holds_alternative<ReadyData>(d))

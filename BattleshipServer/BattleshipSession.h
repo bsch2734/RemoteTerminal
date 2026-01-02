@@ -12,7 +12,7 @@ public:
 
     bool isFinished() const;
 
-    SessionResult handleAction(std::string user, const Action& action);
+    SessionActionResult handleAction(std::string user, const SessionAction& action);
 
     SessionSnapshot getSnapshot();
 
@@ -20,16 +20,16 @@ private:
     // Helpers
     Player playerFor(std::string user) const;
 
-    //SessionResult makeError(SessionError error) const;
-    //SessionResult makeResultFromEngine(FireResult fireResult);
-    //SessionResult makeResultFromEngine(PlaceShipResult placeResult);
-    //SessionResult makeResultNoOp(); // for Ready, etc.
+    //SessionActionResult makeError(SessionError error) const;
+    //SessionActionResult makeResultFromEngine(FireResult fireResult);
+    //SessionActionResult makeResultFromEngine(PlaceShipResult placeResult);
+    //SessionActionResult makeResultNoOp(); // for Ready, etc.
 
     //PlayerView buildView(Player p) const;
 
-    SessionResult handlePlaceShip(Player p, const Action& a);
-    SessionResult handleFire(Player p, const Action& a);
-    SessionResult handleReady(Player p);
+    SessionActionResult handlePlaceShip(Player p, const SessionAction& a);
+    SessionActionResult handleFire(Player p, const SessionAction& a);
+    SessionActionResult handleReady(Player p);
 
 private:
     std::string _sessionId;

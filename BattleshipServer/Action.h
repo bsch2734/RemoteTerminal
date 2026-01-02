@@ -4,7 +4,7 @@
 #include <variant>
 
 
-enum class ActionType {
+enum class SessionActionType {
     PlaceShip,
     Ready,
     Fire
@@ -22,9 +22,9 @@ struct FireData {
     coord target;
 };
 
-using ActionData = std::variant<PlaceShipData, ReadyData, FireData>;
+using SessionActionData = std::variant<PlaceShipData, ReadyData, FireData>;
 
-struct Action {
-    ActionType type;
-    ActionData data;
+struct SessionAction {
+    SessionActionType type;
+    SessionActionData data;
 };

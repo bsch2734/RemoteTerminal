@@ -1,6 +1,6 @@
 #pragma once
 
-enum class SessionResultError {
+enum class SessionActionResultError {
     //session-level errors
     shipNotFound,     //the specified shippId is not in this session
     userNotFound,     //the specified userId is not in this session
@@ -15,7 +15,7 @@ enum class SessionResultError {
     internalError     //generic error
 };
 
-enum class SessionResultType {
+enum class SessionActionResultType {
     FireResult,
     ReadyResult,
     PlaceShipResult
@@ -36,13 +36,13 @@ struct FireResultData {
     int hitId;
 };
 
-using SessionResultData = std::variant<PlaceShipResultData, ReadyResultData, FireResultData>;
+using SessionActionResultData = std::variant<PlaceShipResultData, ReadyResultData, FireResultData>;
 
-struct SessionResult {
+struct SessionActionResult {
     bool success = false;
-    SessionResultError error = SessionResultError::internalError;
-    SessionResultType type = SessionResultType::FireResult;
-    SessionResultData data = FireResultData();
+    SessionActionResultError error = SessionActionResultError::internalError;
+    SessionActionResultType type = SessionActionResultType::FireResult;
+    SessionActionResultData data = FireResultData();
 };
 
 struct UserView {

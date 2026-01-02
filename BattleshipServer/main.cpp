@@ -30,11 +30,11 @@ int main() {
 
         std::string inputGameId = gameIdFromJson(root);
         std::string inputUserId = userIdFromJson(root);
-        const Action& inputAction = actionFromJson(root);
+        const SessionAction& inputAction = actionFromJson(root);
 
         BattleshipSession& activeSession = *gameIdToSessionMap[inputGameId];
 
-        SessionResult res = activeSession.handleAction(inputUserId, inputAction);
+        SessionActionResult res = activeSession.handleAction(inputUserId, inputAction);
         SessionSnapshot snapshot = activeSession.getSnapshot();
 
         Json::Value out = toJson(ServerUpdate(res, snapshot));
