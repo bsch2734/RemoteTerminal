@@ -1,9 +1,9 @@
 #include "coord.h"
 #include <climits>
 
-coord::coord(std::pair<int, int> coordPair)
-		: d(coordPair.first), o(coordPair.second) {
-	}
+constexpr coord::coord(std::pair<int, int> coordPair)
+	: d(coordPair.first), o(coordPair.second) {
+}
 
 bool coord::isUnspecified() const noexcept {
 	return *this == coord::unspecified;
@@ -82,5 +82,4 @@ coord coord::applyInverseTransform(coord translation, int rotation) const{
 	return (*this - translation).rotate(-rotation);
 }
 
-
-const coord coord::unspecified{ {INT_MAX, INT_MAX} };
+constexpr coord coord::unspecified{ {INT_MAX, INT_MAX} };

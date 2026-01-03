@@ -3,7 +3,7 @@
 #include <functional>
 
 struct coord {
-	coord(std::pair<int, int> coordPair);
+	constexpr coord(std::pair<int, int> coordPair);
 
 	bool isUnspecified() const noexcept;
 
