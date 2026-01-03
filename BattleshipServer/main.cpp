@@ -1,5 +1,5 @@
 #include "BattleshipSession.h"
-#include "ServerProtocol.h"
+#include "BattleshipJsonProtocol.h"
 #include <iostream>
 #include <unordered_map>
 

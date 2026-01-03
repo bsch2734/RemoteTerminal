@@ -33,6 +33,8 @@ set_property(TARGET jsoncpp_static PROPERTY CXX_STANDARD 20)
 set_property(TARGET jsoncpp_static PROPERTY CXX_STANDARD_REQUIRED ON)
 
 add_subdirectory ("BattleshipEngine")
+add_subdirectory ("BattleshipSession")
+add_subdirectory ("BattleshipJsonProtocol")
 add_subdirectory ("BattleshipServer")
 add_subdirectory ("BattleshipWebServer")
 add_subdirectory ("DemoGame")

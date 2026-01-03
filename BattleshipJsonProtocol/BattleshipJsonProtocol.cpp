@@ -1,4 +1,4 @@
-#include "ServerProtocol.h"
+#include "BattleshipJsonProtocol.h"
 
 
 Json::Value toJson(const coord& c) {
