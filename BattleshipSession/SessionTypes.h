@@ -1,6 +1,8 @@
 #pragma once
 
 #include "GameEntities.h"
+#include <string>
+#include <variant>
 
 using UserId = std::string;
 
