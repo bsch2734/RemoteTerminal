@@ -63,3 +63,9 @@ struct SessionSnapshot {
     UserId currentUser;
     std::vector<UserView> userViews;
 };
+
+struct UserSnapshot {
+    Phase phase;
+    UserId currentUser;
+    UserView userView;
+};

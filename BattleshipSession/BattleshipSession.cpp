@@ -1,4 +1,6 @@
 #include "BattleshipSession.h"
+#include "BattleshipSession.h"
+#include "BattleshipSession.h"
 #include "Action.h"
 
 #include <string>
@@ -60,6 +62,18 @@ SessionSnapshot BattleshipSession::getSnapshot() {
 	answer.userViews.push_back(viewForP1User);
 	answer.userViews.push_back(viewForP2User);
 	return answer;
+}
+
+UserSnapshot BattleshipSession::getSnapshotForUser(UserId u) {
+	UserSnapshot answer;
+	answer.currentUser = _playerToUserMap[_engine.currentTurn()];
+	answer.phase = _engine.phase();
+	answer.userView = UserView(u, _engine.boardViewForPlayer(_userToPlyaerMap[u]));
+	return answer;
+}
+
+UserId BattleshipSession::opponentForUser(UserId& u) {
+	return _playerToUserMap[oponent(_userToPlyaerMap[u])];
 }
 
 Player BattleshipSession::playerFor(UserId user) const {

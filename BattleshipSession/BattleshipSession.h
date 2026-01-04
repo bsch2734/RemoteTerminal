@@ -16,6 +16,10 @@ public:
 
     SessionSnapshot getSnapshot();
 
+    UserSnapshot getSnapshotForUser(UserId u);
+
+    UserId opponentForUser(UserId& u);
+
 private:
     // Helpers
     Player playerFor(UserId user) const;

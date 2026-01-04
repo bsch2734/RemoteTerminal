@@ -49,15 +49,22 @@ void BattleshipWebSocketManager::onActionMessage(const drogon::WebSocketConnecti
 
     BattleshipSession* activeSession = _sessionManager.findSession(inputGameId);
 
-    SessionActionResult res = activeSession->handleAction(inputUserId, inputAction);
-    SessionSnapshot snapshot = activeSession->getSnapshot();
+    SessionActionResult handleActionResult = activeSession->handleAction(inputUserId, inputAction);
+    UserSnapshot userSnapshot = activeSession->getSnapshotForUser(inputUserId);
+    UserId opponentUser = activeSession->opponentForUser(inputUserId);
+    UserSnapshot opponentSnapshot= activeSession->getSnapshotForUser(opponentUser);
 
-    Json::Value out = toJson(ServerUpdate(res, snapshot));
+    Json::Value userOut = toJson(UserUpdate(handleActionResult, userSnapshot));
+    Json::Value opponentOut = toJson(UserUpdate(handleActionResult, opponentSnapshot));
+
+    auto& opponentConn = connectionMaps.userIdToSocketMap[opponentUser];
 
     // write one JSON line out:
     Json::StreamWriterBuilder wb;
     wb["indentation"] = ""; // single-line
-    conn->send(Json::writeString(wb, out));
+    
+    conn->send(Json::writeString(wb, userOut));
+    opponentConn->send(Json::writeString(wb, opponentOut));
 }
 
 Json::Value BattleshipWebSocketManager::parseJson(const std::string& s) {

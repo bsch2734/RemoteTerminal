@@ -44,6 +44,11 @@ struct ServerUpdate {
 	SessionSnapshot snapshot;
 };
 
+struct UserUpdate {
+	SessionActionResult result;
+	UserSnapshot snapshot;
+};
+
 Json::Value toJson(ServerUpdate s);
 
 Json::Value toJson(const std::string& s);
@@ -69,3 +74,7 @@ Json::Value toJson(const FireResultData& f);
 Json::Value toJson(const ReadyResultData& f);
 
 Json::Value toJson(const PlaceShipResultData& f);
+
+Json::Value toJson(const UserSnapshot& u);
+
+Json::Value toJson(const UserUpdate& u);

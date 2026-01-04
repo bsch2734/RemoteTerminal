@@ -321,3 +321,18 @@ Json::Value toJson(const ReadyResultData& r) {
 Json::Value toJson(const PlaceShipResultData& p) {
 	return Json::Value(Json::nullValue);
 }
+
+Json::Value toJson(const UserUpdate& u) {
+	Json::Value answer(Json::objectValue);
+	answer["result"] = toJson(u.result);
+	answer["snapshot"] = toJson(u.snapshot);
+	return answer;
+}
+
+Json::Value toJson(const UserSnapshot& u) {
+	Json::Value answer(Json::objectValue);
+	answer["phase"] = toJson(u.phase);
+	answer["currentturn"] = toJson(u.currentUser);
+	answer["userviews"] = toJson(u.userView);
+	return answer;
+}
