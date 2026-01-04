@@ -39,3 +39,5 @@ add_subdirectory ("BattleshipSessionManager")
 add_subdirectory ("BattleshipServer")
 add_subdirectory ("BattleshipWebServer")
 add_subdirectory ("DemoGame")
+
+install(TARGETS BattleshipWebServer RUNTIME DESTINATION bin)
