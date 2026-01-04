@@ -1,10 +1,6 @@
 #include "coord.h"
 #include <climits>
 
-constexpr coord::coord(std::pair<int, int> coordPair)
-	: d(coordPair.first), o(coordPair.second) {
-}
-
 bool coord::isUnspecified() const noexcept {
 	return *this == coord::unspecified;
 }
