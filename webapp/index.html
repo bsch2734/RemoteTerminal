@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Battleship Web</title>
+  </head>
+  <body>
+    <h1>Battleship</h1>
+
+    <section id="connect">
+      <label>
+        User ID:
+        <input id="userid" type="text" autocomplete="off" />
+      </label>
+
+      <label>
+        Game ID:
+        <input id="gameid" type="text" autocomplete="off" />
+      </label>
+
+      <button id="connectBtn">Connect</button>
+      <span id="status">disconnected</span>
+    </section>
+
+    <h2>Log</h2>
+    <pre id="log"></pre>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
+
