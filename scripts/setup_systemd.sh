@@ -13,7 +13,7 @@ APP_ROOT="${APP_ROOT:-/opt/battleship}"
 INSTALL_DIR="${INSTALL_DIR:-${APP_ROOT}/install}"
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-UNIT_TEMPLATE="${REPO_ROOT}/infra/systemd/battleship.service"
+UNIT_TEMPLATE="${REPO_ROOT}/infra/battleship.service"
 UNIT_DST="/etc/systemd/system/${SERVICE_NAME}.service"
 
 if [[ ! -f "${UNIT_TEMPLATE}" ]]; then
