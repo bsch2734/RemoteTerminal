@@ -3,6 +3,6 @@
 
 int main() {
     auto& app = drogon::app();
-    app.addListener("0.0.0.0", 8080);
+    app.addListener("127.0.0.0", 8080);
     app.run();
 }
