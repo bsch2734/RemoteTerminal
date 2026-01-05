@@ -104,6 +104,7 @@ button:focus-visible {
 }
 
 .cell {
+    background: #2666d1;
     border: 1px solid #999;
     width: 28px;
     height: 28px;
@@ -116,11 +117,11 @@ button:focus-visible {
 }
 
 .cell.hit {
-    background: #bbb;
+    background: #9f0202;
 }
 
 .cell.miss {
-    background: #bbb;
+    background: #ffffff;
 }
 
 .cell.hover-ok {
