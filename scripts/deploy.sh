@@ -15,6 +15,8 @@ require_cmd() {
 require_cmd git git
 require_cmd cmake cmake
 require_cmd ninja ninja-build
+require_cmd node nodejs
+require_cmd npm npm
 
 # A C++ compiler (either g++ or clang++)
 if command -v g++ >/dev/null 2>&1; then
@@ -38,12 +40,15 @@ if [[ -f "${SCRIPT_DIR}/deploy.env" ]]; then
   source "${SCRIPT_DIR}/deploy.env"
 fi
 
+# Paths (override by exporting before running deploy.sh)
 : "${APP_ROOT:=/opt/battleship}"
 : "${SRC_DIR:=${APP_ROOT}/src}"
 : "${BUILD_DIR:=${APP_ROOT}/build}"
 : "${INSTALL_DIR:=${APP_ROOT}/install}"
 : "${BUILD_TYPE:=Release}"
 : "${SERVICE_NAME:=battleship}"
+: "${WEBAPP_DIR:=${SRC_DIR}/webapp}"
+: "${WEB_ROOT:=${APP_ROOT}/www}"
 
 cd "${SRC_DIR}"
 git pull --rebase
@@ -55,6 +60,27 @@ cmake -S . -B "${BUILD_DIR}" -G Ninja \
 
 cmake --build "${BUILD_DIR}" -j
 cmake --install "${BUILD_DIR}"
+
+# ---- Deploy webapp (Vite) ----
+if [ -d "${WEBAPP_DIR}" ]; then
+  echo "[deploy] Building webapp in ${WEBAPP_DIR}..."
+
+  pushd "${WEBAPP_DIR}" >/dev/null
+
+  npm ci
+  npm run build
+
+  popd >/dev/null
+
+  echo "[deploy] Publishing webapp to ${WEB_ROOT} ..."
+
+  sudo mkdir -p "${WEB_ROOT}"
+  sudo rm -rf "${WEB_ROOT:?}/"*
+  sudo cp -r "${WEBAPP_DIR}/dist/"* "${WEB_ROOT}/"
+
+  echo "[deploy] Webapp deployed."
+fi
+
 
 sudo systemctl restart "${SERVICE_NAME}"
 sudo systemctl --no-pager --full status "${SERVICE_NAME}" | cat
