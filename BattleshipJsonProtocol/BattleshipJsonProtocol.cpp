@@ -345,7 +345,7 @@ Json::Value toJson(const UserSnapshot& u) {
 	Json::Value answer(Json::objectValue);
 	answer["phase"] = toJson(u.phase);
 	answer["currentturn"] = toJson(u.currentUser);
-	answer["userviews"] = toJson(u.userView);
+	answer["userview"] = toJson(u.userView);
 	return answer;
 }
 
