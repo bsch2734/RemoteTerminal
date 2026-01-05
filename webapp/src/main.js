@@ -204,3 +204,21 @@ connectBtn.addEventListener("click", () => {
         logLine("WebSocket closed");
     };
 });
+
+readyBtn.addEventListener("click", () => {
+    //{"gameid":"g1","userid":"p1","sessionaction":{"type":"ready","data":null}}
+    const userId = userIdInput.value;
+    const gameId = gameIdInput.value;
+
+    const readyUp = {
+        gameid: gameId,
+        userid: userId,
+        sessionaction: {
+            type: "ready",
+            data: null,
+        },
+    };
+
+    socket.send(JSON.stringify(readyUp));
+    logLine("Sent: " + JSON.stringify(readyUp));
+});
