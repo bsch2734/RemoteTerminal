@@ -1,32 +1,60 @@
 <!doctype html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Battleship Web</title>
-  </head>
-  <body>
-    <h1>Battleship</h1>
+</head>
+<section id="connect">
+    <body>
+        <h1>Battleship</h1>
 
-    <section id="connect">
-      <label>
-        User ID:
-        <input id="userid" type="text" autocomplete="off" />
-      </label>
+        <section id="connect">
+            <label>
+                User ID:
+                <input id="userid" type="text" autocomplete="off" />
+            </label>
 
-      <label>
-        Game ID:
-        <input id="gameid" type="text" autocomplete="off" />
-      </label>
+            <label>
+                Game ID:
+                <input id="gameid" type="text" autocomplete="off" />
+            </label>
 
-      <button id="connectBtn">Connect</button>
-      <span id="status">disconnected</span>
-    </section>
+            <button id="connectBtn">Connect</button>
+            <span id="status">disconnected</span>
+        </section>
 
-    <h2>Log</h2>
-    <pre id="log"></pre>
+        <h2>Log</h2>
+        <pre id="log"></pre>
 
-    <script type="module" src="/src/main.js"></script>
-  </body>
+        <script type="module" src="/src/main.js"></script>
+    </body>
+</section>
+<section id="game" style="display:none;">
+    <h2>Game</h2>
+
+    <div>
+        You are: <span id="me"></span> |
+        Opponent: <span id="opponent"></span> |
+        Phase: <span id="phase"></span>
+    </div>
+
+    <div style="margin-top: 12px;">
+        <label>
+            Ship:
+            <select id="shipSelect"></select>
+        </label>
+
+        <button id="rotateBtn" type="button">Rotate (counterclockwise)</button>
+        <button id="readyBtn" type="button">Ready</button>
+    </div>
+
+    <h3>Your board</h3>
+    <div id="ownBoard" class="board"></div>
+
+    <h3>Opponent board</h3>
+    <div id="oppBoard" class="board"></div>
+</section>
+
 </html>
 
