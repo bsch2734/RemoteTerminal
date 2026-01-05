@@ -115,6 +115,14 @@ button:focus-visible {
     background: #bbb;
 }
 
+.cell.hit {
+    background: #bbb;
+}
+
+.cell.miss {
+    background: #bbb;
+}
+
 .cell.hover-ok {
     outline: 2px solid #2a7;
 }

@@ -19,6 +19,7 @@ const rotateBtn = document.getElementById("rotateBtn");
 const readyBtn = document.getElementById("readyBtn");
 
 const ownGrid = document.getElementById("ownGrid");
+const oppGrid = document.getElementById("oppGrid");
 
 // Helper: append a line to the log
 function logLine(text) {
@@ -60,6 +61,7 @@ function showGameScreen(details) {
     ownGrid.style.setProperty("--cols", cols);
 
     ownGrid.innerHTML = "";
+    //build ownGrid
     for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
             const cell = document.createElement("div");
@@ -97,6 +99,39 @@ function showGameScreen(details) {
         }
     }
 
+    //build oppGrid
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+            const cell = document.createElement("div");
+            cell.className = "cell";
+            cell.dataset.row = String(r);
+            cell.dataset.col = String(c);
+
+            cell.addEventListener("click", () => {
+                // Send a fire action
+                // {"gameid":"g1","userid":"p1","sessionaction":{"type":"fire","data":{"target":{"row":0,"col":0}}}}
+                const userId = userIdInput.value;
+                const gameId = gameIdInput.value;
+
+                const fire = {
+                    gameid: gameId,
+                    userid: userId,
+                    sessionaction: {
+                        type: "fire",
+                        data: {
+                            target: { row: r, col: c }
+                        },
+                    },
+                };
+
+                socket.send(JSON.stringify(fire));
+                logLine("Sent: " + JSON.stringify(fire));
+            });
+
+            ownGrid.appendChild(cell);
+        }
+    }
+
     // Initial render of any existing cells from userview.boardview.owngrid
     applyUserView(details.userview);
 }
@@ -118,11 +153,23 @@ function applyUserView(userview) {
         const state = entry.state;
 
         if (typeof r !== "number" || typeof c !== "number") continue;
-        if (state !== "ship") continue; // MVP: only draw ships for now
 
         const idx = r * (lastGameDetails.boardcols) + c;
         const cell = ownGrid.children[idx];
-        if (cell) cell.classList.add("ship");
+        if (cell) cell.classList.add(state);
+    }
+
+    const opp = userview.boardview?.opponentgrid ?? [];
+    for (const entry of opp) {
+        const r = entry.coord?.row;
+        const c = entry.coord?.col;
+        const state = entry.state;
+
+        if (typeof r !== "number" || typeof c !== "number") continue;
+        
+        const idx = r * (lastGameDetails.boardcols) + c;
+        const cell = oppGrid.children[idx];
+        if (cell) cell.classList.add(state);
     }
 }
 
