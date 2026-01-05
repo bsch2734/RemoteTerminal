@@ -100,6 +100,9 @@ function showGameScreen(details) {
     }
 
     //build oppGrid
+
+    oppGrid.style.setProperty("--rows", rows);
+    oppGrid.style.setProperty("--cols", cols);
     for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
             const cell = document.createElement("div");
