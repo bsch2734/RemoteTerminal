@@ -185,11 +185,11 @@ connectBtn.addEventListener("click", () => {
 
         // Otherwise, if server later sends snapshots/results, handle them here.
         // MVP: if it contains a "userview" field, update our grid.
-        if (obj && obj.userview && lastGameDetails) {
+        if (obj && obj.snapshot && lastGameDetails) {
             // allow server to send partial updates that include userview + maybe phase
             if (typeof obj.phase === "string") lastGameDetails.phase = obj.phase;
-            lastGameDetails.userview = obj.userview;
-            applyUserView(obj.userview);
+            lastGameDetails.userview = obj.snapshot.userview;
+            applyUserView(obj.snapshot.userview);
             return;
         }
     };
