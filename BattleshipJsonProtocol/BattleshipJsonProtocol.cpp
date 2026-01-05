@@ -329,10 +329,44 @@ Json::Value toJson(const UserUpdate& u) {
 	return answer;
 }
 
+Json::Value toJson(const StartupInfo& s) {
+	Json::Value answer(Json::objectValue);
+	answer["phase"] = toJson(s.phase);
+	answer["you"] = toJson(s.you);
+	answer["opponent"] = toJson(s.opponent);
+	answer["userview"] = toJson(s.userView);
+	answer["fleet"] = toJson(s.fleet);
+	answer["boardrows"] = s.boardRows;
+	answer["boardcols"] = s.boardCols;
+	return answer;
+}
+
 Json::Value toJson(const UserSnapshot& u) {
 	Json::Value answer(Json::objectValue);
 	answer["phase"] = toJson(u.phase);
 	answer["currentturn"] = toJson(u.currentUser);
 	answer["userviews"] = toJson(u.userView);
+	return answer;
+}
+
+Json::Value toJson(const Fleet& f) {
+	Json::Value answer(Json::arrayValue);
+	for (const Ship& s : f.getShips())
+		answer.append(toJson(s));
+	return answer;
+}
+
+Json::Value toJson(const Ship& s) {
+	Json::Value answer(Json::objectValue);
+	answer["name"] = toJson(s.getName());
+	answer["id"] = s.getID();
+	answer["coords"] = toJson(s.getCoords());
+	return answer;
+}
+
+Json::Value toJson(const std::set<coord> s) {
+	Json::Value answer(Json::arrayValue);
+	for (const coord& c : s)
+		answer.append(toJson(c));
 	return answer;
 }

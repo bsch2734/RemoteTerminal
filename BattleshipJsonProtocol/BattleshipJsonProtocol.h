@@ -78,3 +78,11 @@ Json::Value toJson(const PlaceShipResultData& f);
 Json::Value toJson(const UserSnapshot& u);
 
 Json::Value toJson(const UserUpdate& u);
+
+Json::Value toJson(const StartupInfo& s);
+
+Json::Value toJson(const Fleet& f);
+
+Json::Value toJson(const Ship& s);
+
+Json::Value toJson(const std::set<coord> s);
