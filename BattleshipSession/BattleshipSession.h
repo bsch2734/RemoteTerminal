@@ -18,6 +18,8 @@ public:
 
     UserSnapshot getSnapshotForUser(UserId u);
 
+    StartupInfo getStartupInfoForUser(UserId u);
+
     UserId opponentForUser(UserId& u);
 
 private:

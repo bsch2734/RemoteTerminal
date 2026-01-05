@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GameEntities.h"
+#include "Fleet.h"
 #include <string>
 #include <variant>
 
@@ -68,4 +69,14 @@ struct UserSnapshot {
     Phase phase;
     UserId currentUser;
     UserView userView;
+};
+
+struct StartupInfo {
+    Phase phase;
+    UserId you;
+    UserId opponent;
+    const Fleet& fleet;
+    UserView userView;
+    int boardRows;
+    int boardCols;
 };

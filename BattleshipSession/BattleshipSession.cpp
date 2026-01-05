@@ -1,6 +1,4 @@
 #include "BattleshipSession.h"
-#include "BattleshipSession.h"
-#include "BattleshipSession.h"
 #include "Action.h"
 
 #include <string>
@@ -70,6 +68,18 @@ UserSnapshot BattleshipSession::getSnapshotForUser(UserId u) {
 	answer.phase = _engine.phase();
 	answer.userView = UserView(u, _engine.boardViewForPlayer(_userToPlyaerMap[u]));
 	return answer;
+}
+
+StartupInfo BattleshipSession::getStartupInfoForUser(UserId u) {
+	return StartupInfo(
+		_engine.phase(),
+		u,
+		opponentForUser(u),
+		_engine.getFleetForPlayer(_userToPlyaerMap[u]),
+		UserView(u, _engine.boardViewForPlayer(_userToPlyaerMap[u])),
+		_engine.boardRows(),
+		_engine.boardCols()	
+	);
 }
 
 UserId BattleshipSession::opponentForUser(UserId& u) {
