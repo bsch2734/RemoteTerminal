@@ -1,4 +1,5 @@
-﻿#include "GameEntities.h"
+﻿#include "BattleshipEngine.h"
+#include "GameEntities.h"
 #include "BattleshipEngine.h"
 #include "unordered_set"
 
@@ -168,6 +169,14 @@ std::string BattleshipEngine::nameForId(int id) const {
             return s.getName();
 
     return "";
+}
+
+int BattleshipEngine::boardRows() {
+    return _boardDimensions.first;
+}
+
+int BattleshipEngine::boardCols() {
+    return _boardDimensions.second;
 }
 
 const std::set<coord>& BattleshipEngine::getHitsForPlayer(Player p) const{

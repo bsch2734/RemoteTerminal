@@ -27,6 +27,9 @@ class BattleshipEngine {
         Player currentTurn() const;
         std::string nameForId(int id) const;
 
+        int boardRows();
+        int boardCols();
+
         const std::set<coord>& getHitsForPlayer(Player p) const;
         const std::set<coord>& getMissesForPlayer(Player p) const;
 
