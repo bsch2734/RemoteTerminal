@@ -34,10 +34,30 @@ void BattleshipWebSocketManager::onJoinMessage(const drogon::WebSocketConnection
     Json::Value root = parseJson(message);
     UserId u = root["userid"].asString();
     GameId g = root["gameid"].asString();
-    _sessionManager.addUserToGame(u, g);
-    connectionMaps.socketToUserIdMap[conn] = u;
-    connectionMaps.userIdToSocketMap[u] = conn;
-    //no reply for now, client assumes it worked
+    AddUserToGameResult r = _sessionManager.addUserToGame(u, g);
+    if (r.success) {
+        connectionMaps.socketToUserIdMap[conn] = u;
+        connectionMaps.userIdToSocketMap[u] = conn;
+
+        //both users here, send them start message
+        if (r.readyToStart) {
+            BattleshipSession* activeSession = _sessionManager.findSession(g);
+            UserId opponentUser = activeSession->opponentForUser(u);
+            auto& opponentConn = connectionMaps.userIdToSocketMap[opponentUser];
+
+            StartupInfo userStartupInfo = activeSession->getStartupInfoForUser(u);
+            StartupInfo opponentStartupInfo = activeSession->getStartupInfoForUser(opponentUser);
+
+            Json::StreamWriterBuilder wb;
+            wb["indentation"] = ""; // single-line
+            conn->send(Json::writeString(wb, toJson(userStartupInfo)));
+            opponentConn->send(Json::writeString(wb, toJson(opponentStartupInfo)));
+        }
+        //first user only, send waiting message
+        else {
+            conn->send("{ \"waiting\":true }");
+        }
+    }
 }
 
 void BattleshipWebSocketManager::onActionMessage(const drogon::WebSocketConnectionPtr& conn, std::string&& message) {
