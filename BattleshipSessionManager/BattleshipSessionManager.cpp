@@ -8,7 +8,7 @@ AddUserToGameResult BattleshipSessionManager::addUserToGame(UserId u, GameId g) 
 	if (inProgressGame != _gameIdToSessionMap.end()) {
 		answer.success = false;
 		answer.error = AddUserToGameError::gameFull;
-		answer.readyToPlay = true;
+		answer.readyToStart = false;
 		return answer;
 	}
 
@@ -16,7 +16,7 @@ AddUserToGameResult BattleshipSessionManager::addUserToGame(UserId u, GameId g) 
 	//game does not exist yet
 	if (lobbyGame == _lobbyGames.end()) {
 		_lobbyGames.insert({ g, u });
-		answer.readyToPlay = false;
+		answer.readyToStart = false;
 		answer.success = true;
 		return answer;
 	}
@@ -35,7 +35,7 @@ AddUserToGameResult BattleshipSessionManager::addUserToGame(UserId u, GameId g) 
 	_lobbyGames.erase(lobbyGame);
 	
 	answer.success = true;
-	answer.readyToPlay = true;
+	answer.readyToStart = true;
 	
 	return answer;
 }

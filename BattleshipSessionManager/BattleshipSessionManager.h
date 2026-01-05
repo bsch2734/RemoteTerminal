@@ -9,7 +9,7 @@ enum class AddUserToGameError {
 
 struct AddUserToGameResult {
 	bool success = false;
-	bool readyToPlay = false;
+	bool readyToStart = false;
 	AddUserToGameError error;
 };
 
