@@ -1,3 +1,5 @@
+import "./style.css"
+
 // Grab references to HTML elements by id
 const userIdInput = document.getElementById("userid");
 const gameIdInput = document.getElementById("gameid");
