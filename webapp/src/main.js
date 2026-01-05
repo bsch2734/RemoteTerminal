@@ -128,7 +128,7 @@ function showGameScreen(details) {
                 logLine("Sent: " + JSON.stringify(fire));
             });
 
-            ownGrid.appendChild(cell);
+            oppGrid.appendChild(cell);
         }
     }
 
