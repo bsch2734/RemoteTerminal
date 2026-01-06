@@ -71,20 +71,22 @@ void BattleshipWebSocketManager::onActionMessage(const drogon::WebSocketConnecti
 
     SessionActionResult handleActionResult = activeSession->handleAction(inputUserId, inputAction);
     UserSnapshot userSnapshot = activeSession->getSnapshotForUser(inputUserId);
-    UserId opponentUser = activeSession->opponentForUser(inputUserId);
-    UserSnapshot opponentSnapshot= activeSession->getSnapshotForUser(opponentUser);
 
     Json::Value userOut = toJson(UserUpdate(handleActionResult, userSnapshot));
-    Json::Value opponentOut = toJson(UserUpdate(handleActionResult, opponentSnapshot));
-
-    auto& opponentConn = connectionMaps.userIdToSocketMap[opponentUser];
 
     // write one JSON line out:
     Json::StreamWriterBuilder wb;
-    wb["indentation"] = ""; // single-line
-    
+    wb["indentation"] = ""; // single-line    
     conn->send(Json::writeString(wb, userOut));
-    opponentConn->send(Json::writeString(wb, opponentOut));
+
+    //no need to send opponent updates if action failed (nothing has changed)
+    if (handleActionResult.success) {
+        UserId opponentUser = activeSession->opponentForUser(inputUserId);
+        UserSnapshot opponentSnapshot = activeSession->getSnapshotForUser(opponentUser);
+        Json::Value opponentOut = toJson(UserUpdate(handleActionResult, opponentSnapshot));
+        auto& opponentConn = connectionMaps.userIdToSocketMap[opponentUser];
+        opponentConn->send(Json::writeString(wb, opponentOut));
+    }
 }
 
 Json::Value BattleshipWebSocketManager::parseJson(const std::string& s) {
