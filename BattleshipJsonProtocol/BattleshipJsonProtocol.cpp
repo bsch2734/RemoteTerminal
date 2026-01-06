@@ -218,7 +218,7 @@ Json::Value toJson(const UserView& u) {
 Json::Value toJson(const BoardView& b) {
 	Json::Value answer(Json::objectValue);
 	answer["owngrid"] = toJson(b.ownGrid);
-	answer["opponentgrid"] = toJson(b.oponentGrid);
+	answer["opponentgrid"] = toJson(b.opponentGrid);
 	return answer;
 }
 

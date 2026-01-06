@@ -194,7 +194,7 @@ const std::set<coord>& BattleshipEngine::getMissesForPlayer(Player p) const{
 BoardView BattleshipEngine::boardViewForPlayer(Player p) const{
     BoardView b;
     b.ownGrid = ownGrid(p);
-    b.oponentGrid = opponentGrid(p);
+    b.opponentGrid = opponentGrid(p);
     return b;
 }
 

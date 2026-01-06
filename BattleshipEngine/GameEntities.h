@@ -66,5 +66,5 @@ using SquareView = GridView::value_type;
 
 struct BoardView {
 	GridView ownGrid;
-	GridView oponentGrid;
+	GridView opponentGrid;
 };
