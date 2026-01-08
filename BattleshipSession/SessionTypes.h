@@ -69,12 +69,15 @@ struct UserSnapshot {
     Phase phase;
     UserId currentUser;
     UserView userView;
+    bool youReady;
+    bool opponentReady;
 };
 
 struct StartupInfo {
     Phase phase;
     UserId you;
     UserId opponent;
+    GameId gameId;
     const Fleet& fleet;
     UserView userView;
     int boardRows;

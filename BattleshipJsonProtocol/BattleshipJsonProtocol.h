@@ -33,23 +33,11 @@ GameId userIdFromJson(const Json::Value& v);
 
 Json::Value toJson(const SessionActionResultType& r);
 
-Json::Value toJson(const SessionActionResult& r);
+Json::Value toJson(const SessionActionResult& r); 
 
 Json::Value toJson(const SessionSnapshot& r);
 
 Json::Value toJson(Phase p);
-
-struct ServerUpdate {
-	SessionActionResult result;
-	SessionSnapshot snapshot;
-};
-
-struct UserUpdate {
-	SessionActionResult result;
-	UserSnapshot snapshot;
-};
-
-Json::Value toJson(ServerUpdate s);
 
 Json::Value toJson(const std::string& s);
 
@@ -75,9 +63,7 @@ Json::Value toJson(const ReadyResultData& f);
 
 Json::Value toJson(const PlaceShipResultData& f);
 
-Json::Value toJson(const UserSnapshot& u);
-
-Json::Value toJson(const UserUpdate& u);
+Json::Value toJson(const UserSnapshot& u);//
 
 Json::Value toJson(const StartupInfo& s);
 

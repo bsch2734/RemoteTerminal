@@ -30,23 +30,27 @@ function logLine(text) {
 let socket = null;
 
 let rotation = 0; //number of counterclockwise rotations
-let lastGameDetails = null;
+let lastsetupinfo = null;
 
 rotateBtn.addEventListener("click", () => {
     rotation = (rotation + 1) % 4;
 });
 
-function showGameScreen(details) {
+function applySetupInfo(setupinfo) {
+    lastsetupinfo = setupinfo;
+
+    // show game/ hide connect screen
     connectSection.style.display = "none";
     gameSection.style.display = "block";
 
-    meSpan.textContent = details.you ?? "";
-    opponentSpan.textContent = details.opponent ?? "";
-    phaseSpan.textContent = details.phase ?? "";
+    // Populate game info
+    meSpan.textContent = lastsetupinfo.you ?? "";
+    opponentSpan.textContent = lastsetupinfo.opponent ?? "";
+    phaseSpan.textContent = lastsetupinfo.phase ?? "";
 
     // Populate ships
     shipSelect.innerHTML = "";
-    for (const ship of details.fleet ?? []) {
+    for (const ship of lastsetupinfo.fleet ?? []) {
         const opt = document.createElement("option");
         opt.value = String(ship.id);
         opt.textContent = `${ship.name}`;
@@ -54,8 +58,8 @@ function showGameScreen(details) {
     }
 
     // Build grid
-    const rows = details.boardrows;
-    const cols = details.boardcols;
+    const rows = lastsetupinfo.boardrows;
+    const cols = lastsetupinfo.boardcols;
 
     ownGrid.style.setProperty("--rows", rows);
     ownGrid.style.setProperty("--cols", cols);
@@ -66,17 +70,14 @@ function showGameScreen(details) {
         for (let c = 0; c < cols; c++) {
             const cell = document.createElement("div");
             cell.className = "cell";
-            cell.dataset.row = String(r);
-            cell.dataset.col = String(c);
 
             cell.addEventListener("click", () => {
                 const shipIdStr = shipSelect.value;
                 if (!shipIdStr) return;
 
                 // Send a placeship action
-                // {"gameid":"g1","userid":"p1","sessionaction":{"type":"placeship","data":{"position":{"row":0,"col":0},"rotation":0,"shipid":20}}}
-                const userId = userIdInput.value;
-                const gameId = gameIdInput.value;
+                const userId = lastsetupinfo.you;
+                const gameId = lastsetupinfo.gameid;
 
                 const placeShip = {
                     gameid: gameId,
@@ -100,6 +101,7 @@ function showGameScreen(details) {
     }
 
     //build oppGrid
+    oppGrid.innerHTML = "";
 
     oppGrid.style.setProperty("--rows", rows);
     oppGrid.style.setProperty("--cols", cols);
@@ -107,14 +109,11 @@ function showGameScreen(details) {
         for (let c = 0; c < cols; c++) {
             const cell = document.createElement("div");
             cell.className = "cell";
-            cell.dataset.row = String(r);
-            cell.dataset.col = String(c);
 
             cell.addEventListener("click", () => {
                 // Send a fire action
-                // {"gameid":"g1","userid":"p1","sessionaction":{"type":"fire","data":{"target":{"row":0,"col":0}}}}
-                const userId = userIdInput.value;
-                const gameId = gameIdInput.value;
+                const userId = lastsetupinfo.you;
+                const gameId = lastsetupinfo.gameid;
 
                 const fire = {
                     gameid: gameId,
@@ -126,30 +125,32 @@ function showGameScreen(details) {
                         },
                     },
                 };
-
                 socket.send(JSON.stringify(fire));
                 logLine("Sent: " + JSON.stringify(fire));
             });
-
             oppGrid.appendChild(cell);
         }
     }
-
-    // Initial render of any existing cells from userview.boardview.owngrid
-    applyUserView(details.userview);
 }
 
-function applyUserView(userview) {
-    if (!userview) return;
+function applySnapshot(snapshot) {
+    if (!snapshot) return;
 
-    phaseSpan.textContent = lastGameDetails?.phase ?? phaseSpan.textContent;
+    //display current phase
+    phaseSpan.textContent = snapshot.phase;
+
+    //display whose turn it is
+    //todo: make an HTML element to show the current turn
+
+    //display ready status for each player
+    //todo: make HTML elements to show the ready statuses
 
     // Clear ship classes
     for (const cell of ownGrid.children) {
         cell.classList.remove("ship");
     }
 
-    const own = userview.boardview?.owngrid ?? [];
+    const own = snapshot.userview.boardview?.owngrid ?? [];
     for (const entry of own) {
         const r = entry.coord?.row;
         const c = entry.coord?.col;
@@ -157,12 +158,12 @@ function applyUserView(userview) {
 
         if (typeof r !== "number" || typeof c !== "number") continue;
 
-        const idx = r * (lastGameDetails.boardcols) + c;
+        const idx = r * (lastsetupinfo.boardcols) + c;
         const cell = ownGrid.children[idx];
         if (cell) cell.classList.add(state);
     }
 
-    const opp = userview.boardview?.opponentgrid ?? [];
+    const opp = snapshot.userview.boardview?.opponentgrid ?? [];
     for (const entry of opp) {
         const r = entry.coord?.row;
         const c = entry.coord?.col;
@@ -170,22 +171,86 @@ function applyUserView(userview) {
 
         if (typeof r !== "number" || typeof c !== "number") continue;
         
-        const idx = r * (lastGameDetails.boardcols) + c;
+        const idx = r * (lastsetupinfo.boardcols) + c;
         const cell = oppGrid.children[idx];
         if (cell) cell.classList.add(state);
     }
 }
 
-function looksLikeGameDetails(obj) {
-    return obj &&
-        typeof obj === "object" &&
-        typeof obj.boardrows === "number" &&
-        typeof obj.boardcols === "number" &&
-        Array.isArray(obj.fleet) &&
-        typeof obj.you === "string" &&
-        typeof obj.opponent === "string" &&
-        typeof obj.phase === "string" &&
-        obj.userview;
+function applyActionResult(actionresult){
+    switch (actionresult.type) {
+        case "fireresult":
+            applyFireActionResult(actionresult);
+            break;
+        case "placeshipresult":
+            applyPlaceShipActionResult(actionresult);
+            break;
+        case "readyresult":
+            applyReadyActionResult(actionresult);
+            break;
+    }
+}
+
+function applyFireActionResult(fireactionresult) {
+    if (fireactionresult.success) {
+        if (fireactionresult.data.ishit) {
+            "Hit!\n"; //todo: make a place to post the messages
+            if (fireactionresult.data.issunk) {
+                "You sank their " + fireactionresult.data.sunkname + "\n"; //todo: make a place to post the messages
+            }
+        }
+    } else {
+        switch (fireactionresult.error) {
+            case ("notyourturn"):
+                "It's not your turn"; //todo: make a place to post the messages
+                break;
+            case ("invalidplacement"):
+                "You can't fire there"; //todo: make a place to post the messages
+                break;
+            default:
+                "Unknown error while firing"; //todo: make a place to post the messages
+                break;
+        }
+    }
+}
+
+function applyPlaceShipActionResult(placeshipactionresult) {
+    if (placeshipactionresult.success) {
+        //no need to log anything, there is visual feedback
+    } else {
+        switch (placeshipactionresult.error) {
+            case ("wrongphase"):
+                "You can only place ships during setup"; //todo: make a place to post the messages
+                break;
+            case ("invalidplacement"):
+                "You can't place this ship there"; //todo: make a place to post the messages
+                break;
+            case ("shipnotfound"):
+                "You don't own that ship"; //todo: make a place to post the messages
+                break;
+            default:
+                "Unknown error while placing a ship"; //todo: make a place to post the messages
+                break;                
+        }
+    }
+}
+
+function applyReadyActionResult(applyreadyactionresult) {
+    if (applyreadyactionresult.success) {
+        readyBtn.classList.add("isready")
+    } else {
+        switch (applyreadyactionresult.error) {
+            case ("invalidplacement"):
+                "You must place all of your ships to ready up"; //todo: make a place to post the messages
+                break;
+            case ("notyourturn"):
+                "Your fleet is placed but not in a valid state"; //todo: make a place to post the messages
+                break;
+            default:
+                "Unknown error while readying up"; //todo: make a place to post the messages
+                break;
+        }
+    }
 }
 
 // What happens when the user clicks "Connect"
@@ -215,7 +280,7 @@ connectBtn.addEventListener("click", () => {
         socket.send(JSON.stringify(helloMessage));
         logLine("Sent hello: " + JSON.stringify(helloMessage));
     };
-
+     
     socket.onmessage = (event) => {
         logLine("Received: " + event.data);
 
@@ -226,21 +291,18 @@ connectBtn.addEventListener("click", () => {
             return;
         }
 
-        // If it's the big game details message, switch screens
-        if (looksLikeGameDetails(obj)) {
-            lastGameDetails = obj;
-            showGameScreen(obj);
-            return;
-        }
-
-        // Otherwise, if server later sends snapshots/results, handle them here.
-        // MVP: if it contains a "userview" field, update our grid.
-        if (obj && obj.snapshot && lastGameDetails) {
-            // allow server to send partial updates that include userview + maybe phase
-            if (typeof obj.phase === "string") lastGameDetails.phase = obj.phase;
-            lastGameDetails.userview = obj.snapshot.userview;
-            applyUserView(obj.snapshot.userview);
-            return;
+        for (const key in obj) {
+            switch (key) {
+                case "actionresult":
+                    applyActionResult(obj[key]);
+                    break;
+                case "snapshot":
+                    applySnapshot(obj[key]);
+                    break;
+                case "setupinfo":
+                    applySetupInfo(obj[key]);
+                    break;
+            }
         }
     };
 
@@ -256,7 +318,6 @@ connectBtn.addEventListener("click", () => {
 });
 
 readyBtn.addEventListener("click", () => {
-    //{"gameid":"g1","userid":"p1","sessionaction":{"type":"ready","data":null}}
     const userId = userIdInput.value;
     const gameId = gameIdInput.value;
 

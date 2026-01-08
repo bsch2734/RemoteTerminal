@@ -37,12 +37,14 @@ int main() {
         SessionActionResult res = activeSession.handleAction(inputUserId, inputAction);
         SessionSnapshot snapshot = activeSession.getSnapshot();
 
-        Json::Value out = toJson(ServerUpdate(res, snapshot));
+        Json::Value resOut = toJson(res);
+        Json::Value snapshotOut = toJson(snapshot);
 
         // write one JSON line out:
         Json::StreamWriterBuilder wb;
         wb["indentation"] = ""; // single-line
-        std::cout << Json::writeString(wb, out) << "\n";
+        std::cout << Json::writeString(wb, resOut) << "\n";
+        std::cout << Json::writeString(wb, snapshotOut) << "\n";
         std::cout.flush();
     }
 

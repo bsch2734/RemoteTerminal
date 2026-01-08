@@ -9,10 +9,11 @@ BattleshipSession::BattleshipSession(GameId id, UserId playerOneId, UserId playe
 	_playerToUserMap[Player::one] = playerOneId;
 	_playerToUserMap[Player::two] = playerTwoId;
 	_playerToUserMap[Player::none] = "";
+	_gameId = id;
 }
 
-std::string BattleshipSession::id() const {
-	return _sessionId;
+GameId BattleshipSession::getGameId() const {
+	return _gameId;
 }
 
 bool BattleshipSession::isFinished() const {
@@ -67,6 +68,8 @@ UserSnapshot BattleshipSession::getSnapshotForUser(UserId u) {
 	answer.currentUser = _playerToUserMap[_engine.currentTurn()];
 	answer.phase = _engine.phase();
 	answer.userView = UserView(u, _engine.boardViewForPlayer(_userToPlayerMap[u]));
+	answer.youReady = _engine.isPlayerReady(_userToPlayerMap[u]);
+	answer.opponentReady = _engine.isPlayerReady(_userToPlayerMap[opponentForUser(u)]);
 	return answer;
 }
 
@@ -75,6 +78,7 @@ StartupInfo BattleshipSession::getStartupInfoForUser(UserId u) {
 		_engine.phase(),
 		u,
 		opponentForUser(u),
+		_gameId,
 		_engine.getFleetForPlayer(_userToPlayerMap[u]),
 		UserView(u, _engine.boardViewForPlayer(_userToPlayerMap[u])),
 		_engine.boardRows(),

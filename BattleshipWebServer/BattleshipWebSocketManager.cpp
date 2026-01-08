@@ -26,6 +26,9 @@ void BattleshipWebSocketManager::onConnect(const drogon::HttpRequestPtr& req, co
 }
 
 void BattleshipWebSocketManager::onDisconnect(const drogon::WebSocketConnectionPtr& conn) {
+    //send game over message
+    
+    //delete games and socket references
 	connectionMaps.userIdToSocketMap.erase(connectionMaps.socketToUserIdMap[conn]);
 	connectionMaps.socketToUserIdMap.erase(conn);
 }
@@ -72,7 +75,9 @@ void BattleshipWebSocketManager::onActionMessage(const drogon::WebSocketConnecti
     SessionActionResult handleActionResult = activeSession->handleAction(inputUserId, inputAction);
     UserSnapshot userSnapshot = activeSession->getSnapshotForUser(inputUserId);
 
-    Json::Value userOut = toJson(UserUpdate(handleActionResult, userSnapshot));
+    Json::Value userOut(Json::objectValue);
+    userOut["snapshot"] = toJson(userSnapshot);
+    userOut["actionresult"] = toJson(handleActionResult);
 
     // write one JSON line out:
     Json::StreamWriterBuilder wb;
@@ -83,7 +88,9 @@ void BattleshipWebSocketManager::onActionMessage(const drogon::WebSocketConnecti
     if (handleActionResult.success) {
         UserId opponentUser = activeSession->opponentForUser(inputUserId);
         UserSnapshot opponentSnapshot = activeSession->getSnapshotForUser(opponentUser);
-        Json::Value opponentOut = toJson(UserUpdate(handleActionResult, opponentSnapshot));
+        Json::Value opponentOut(Json::objectValue);
+        opponentOut["snapshot"] = toJson(opponentSnapshot);
+        opponentOut["actionresult"] = toJson(handleActionResult);
         auto& opponentConn = connectionMaps.userIdToSocketMap[opponentUser];
         opponentConn->send(Json::writeString(wb, opponentOut));
     }

@@ -8,7 +8,7 @@ class BattleshipSession {
 public:
     BattleshipSession(GameId id, UserId playerOneId, UserId playerTwoId);
 
-    std::string id() const;
+    std::string getGameId() const;
 
     bool isFinished() const;
 
@@ -38,7 +38,7 @@ private:
     SessionActionResult handleReady(Player p);
 
 private:
-    std::string _sessionId;
+    GameId _gameId;
     std::map<UserId, Player> _userToPlayerMap;
     std::map<Player, UserId> _playerToUserMap;
 

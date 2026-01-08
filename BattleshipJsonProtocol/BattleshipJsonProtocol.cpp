@@ -184,15 +184,6 @@ Json::Value toJson(Phase p) {
 	return answer;
 }
 
-Json::Value toJson(ServerUpdate s) {
-	Json::Value answer(Json::objectValue);
-
-	answer["result"] = toJson(s.result);
-	answer["snapshot"] = toJson(s.snapshot);
-
-	return answer;
-}
-
 Json::Value toJson(const std::string& u) {
 	Json::Value answer(Json::stringValue);
 	answer = u;
@@ -322,18 +313,12 @@ Json::Value toJson(const PlaceShipResultData& p) {
 	return Json::Value(Json::nullValue);
 }
 
-Json::Value toJson(const UserUpdate& u) {
-	Json::Value answer(Json::objectValue);
-	answer["result"] = toJson(u.result);
-	answer["snapshot"] = toJson(u.snapshot);
-	return answer;
-}
-
 Json::Value toJson(const StartupInfo& s) {
 	Json::Value answer(Json::objectValue);
 	answer["phase"] = toJson(s.phase);
 	answer["you"] = toJson(s.you);
 	answer["opponent"] = toJson(s.opponent);
+	answer["gameid"] = toJson(s.gameId);
 	answer["userview"] = toJson(s.userView);
 	answer["fleet"] = toJson(s.fleet);
 	answer["boardrows"] = s.boardRows;
@@ -346,6 +331,8 @@ Json::Value toJson(const UserSnapshot& u) {
 	answer["phase"] = toJson(u.phase);
 	answer["currentturn"] = toJson(u.currentUser);
 	answer["userview"] = toJson(u.userView);
+	answer["youready"] = u.youReady;
+	answer["opponentready"] = u.opponentReady;
 	return answer;
 }
 
