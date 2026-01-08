@@ -49,7 +49,7 @@ function showGameScreen(details) {
     for (const ship of details.fleet ?? []) {
         const opt = document.createElement("option");
         opt.value = String(ship.id);
-        opt.textContent = `${ship.name} (#${ship.id})`;
+        opt.textContent = `${ship.name}`;
         shipSelect.appendChild(opt);
     }
 
