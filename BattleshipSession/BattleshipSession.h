@@ -39,7 +39,7 @@ private:
 
 private:
     std::string _sessionId;
-    std::map<UserId, Player> _userToPlyaerMap;
+    std::map<UserId, Player> _userToPlayerMap;
     std::map<Player, UserId> _playerToUserMap;
 
     BattleshipEngine _engine;

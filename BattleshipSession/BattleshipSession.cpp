@@ -4,8 +4,8 @@
 #include <string>
 
 BattleshipSession::BattleshipSession(GameId id, UserId playerOneId, UserId playerTwoId) {
-	_userToPlyaerMap[playerOneId] = Player::one;
-	_userToPlyaerMap[playerTwoId] = Player::two;
+	_userToPlayerMap[playerOneId] = Player::one;
+	_userToPlayerMap[playerTwoId] = Player::two;
 	_playerToUserMap[Player::one] = playerOneId;
 	_playerToUserMap[Player::two] = playerTwoId;
 	_playerToUserMap[Player::none] = "";
@@ -66,7 +66,7 @@ UserSnapshot BattleshipSession::getSnapshotForUser(UserId u) {
 	UserSnapshot answer;
 	answer.currentUser = _playerToUserMap[_engine.currentTurn()];
 	answer.phase = _engine.phase();
-	answer.userView = UserView(u, _engine.boardViewForPlayer(_userToPlyaerMap[u]));
+	answer.userView = UserView(u, _engine.boardViewForPlayer(_userToPlayerMap[u]));
 	return answer;
 }
 
@@ -75,20 +75,20 @@ StartupInfo BattleshipSession::getStartupInfoForUser(UserId u) {
 		_engine.phase(),
 		u,
 		opponentForUser(u),
-		_engine.getFleetForPlayer(_userToPlyaerMap[u]),
-		UserView(u, _engine.boardViewForPlayer(_userToPlyaerMap[u])),
+		_engine.getFleetForPlayer(_userToPlayerMap[u]),
+		UserView(u, _engine.boardViewForPlayer(_userToPlayerMap[u])),
 		_engine.boardRows(),
 		_engine.boardCols()	
 	);
 }
 
 UserId BattleshipSession::opponentForUser(UserId& u) {
-	return _playerToUserMap[oponent(_userToPlyaerMap[u])];
+	return _playerToUserMap[oponent(_userToPlayerMap[u])];
 }
 
 Player BattleshipSession::playerFor(UserId user) const {
-	auto p = _userToPlyaerMap.find(user);
-	if (p == _userToPlyaerMap.end())
+	auto p = _userToPlayerMap.find(user);
+	if (p == _userToPlayerMap.end())
 		return Player::none;
 	return p->second;
 }
