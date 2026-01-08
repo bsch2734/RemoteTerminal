@@ -18,6 +18,8 @@ class BattleshipEngine {
 
         ReadyUpResult readyUp(Player p);
 
+        bool isPlayerReady(Player p);
+
         // --- Gameplay ---
         FireResult fire(Player p, coord target);
 

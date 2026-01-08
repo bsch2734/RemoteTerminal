@@ -1,4 +1,5 @@
 ﻿#include "BattleshipEngine.h"
+#include "BattleshipEngine.h"
 #include "GameEntities.h"
 #include "BattleshipEngine.h"
 #include "unordered_set"
@@ -93,6 +94,14 @@ ReadyUpResult BattleshipEngine::readyUp(Player p) {
 
     answer.succes = true;
     return answer;
+}
+
+bool BattleshipEngine::isPlayerReady(Player p) {
+    if (p == Player::one)
+        return p1IsReady;
+    if (p == Player::two)
+        return p2IsReady;
+    return false;
 }
 
 // --- Gameplay ---
