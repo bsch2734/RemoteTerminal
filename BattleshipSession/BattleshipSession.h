@@ -6,25 +6,25 @@
 
 class BattleshipSession {
 public:
-    BattleshipSession(GameId id, UserId playerOneId, UserId playerTwoId);
+    BattleshipSession(const GameId& id, const UserId& playerOneId, const UserId& playerTwoId);
 
     std::string getGameId() const;
 
     bool isFinished() const;
 
-    SessionActionResult handleAction(UserId user, const SessionAction& action);
+    SessionActionResult handleAction(const UserId& user, const SessionAction& action);
 
     SessionSnapshot getSnapshot();
 
-    UserSnapshot getSnapshotForUser(UserId u);
+    UserSnapshot getSnapshotForUser(const UserId& u);
 
-    StartupInfo getStartupInfoForUser(UserId u);
+    StartupInfo getStartupInfoForUser(const UserId& u);
 
-    UserId opponentForUser(UserId& u);
+    UserId opponentForUser(const UserId& u);
 
 private:
     // Helpers
-    Player playerFor(UserId user) const;
+    Player playerFor(const UserId& user) const;
 
     //SessionActionResult makeError(SessionError error) const;
     //SessionActionResult makeResultFromEngine(FireResult fireResult);

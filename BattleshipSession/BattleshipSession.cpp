@@ -3,7 +3,7 @@
 
 #include <string>
 
-BattleshipSession::BattleshipSession(GameId id, UserId playerOneId, UserId playerTwoId) {
+BattleshipSession::BattleshipSession(const GameId& id, const UserId& playerOneId, const UserId& playerTwoId) {
 	_userToPlayerMap[playerOneId] = Player::one;
 	_userToPlayerMap[playerTwoId] = Player::two;
 	_playerToUserMap[Player::one] = playerOneId;
@@ -20,7 +20,7 @@ bool BattleshipSession::isFinished() const {
 	return _engine.phase() == Phase::finished;
 }
 
-SessionActionResult BattleshipSession::handleAction(UserId user, const SessionAction& action) {
+SessionActionResult BattleshipSession::handleAction(const UserId& user, const SessionAction& action) {
 	SessionActionResult s;
 	Player p = playerFor(user);
 	if (p == Player::none) {
@@ -63,7 +63,7 @@ SessionSnapshot BattleshipSession::getSnapshot() {
 	return answer;
 }
 
-UserSnapshot BattleshipSession::getSnapshotForUser(UserId u) {
+UserSnapshot BattleshipSession::getSnapshotForUser(const UserId& u) {
 	UserSnapshot answer;
 	answer.currentUser = _playerToUserMap[_engine.currentTurn()];
 	answer.phase = _engine.phase();
@@ -73,7 +73,7 @@ UserSnapshot BattleshipSession::getSnapshotForUser(UserId u) {
 	return answer;
 }
 
-StartupInfo BattleshipSession::getStartupInfoForUser(UserId u) {
+StartupInfo BattleshipSession::getStartupInfoForUser(const UserId& u) {
 	return StartupInfo(
 		_engine.phase(),
 		u,
@@ -86,11 +86,11 @@ StartupInfo BattleshipSession::getStartupInfoForUser(UserId u) {
 	);
 }
 
-UserId BattleshipSession::opponentForUser(UserId& u) {
+UserId BattleshipSession::opponentForUser(const UserId& u) {
 	return _playerToUserMap[oponent(_userToPlayerMap[u])];
 }
 
-Player BattleshipSession::playerFor(UserId user) const {
+Player BattleshipSession::playerFor(const UserId& user) const {
 	auto p = _userToPlayerMap.find(user);
 	if (p == _userToPlayerMap.end())
 		return Player::none;
