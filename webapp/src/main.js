@@ -265,7 +265,11 @@ connectBtn.addEventListener("click", () => {
 
     statusSpan.textContent = "connecting...";
 
-    socket = new WebSocket("wss://remoteterminal.titohq.com/ws");
+    const WS_URL = import.meta.env.VITE_WS_URL;
+    if (!WS_URL) {
+        throw new Error("Missing VITE_WS_URL. Create webapp/.env.local (see .env.example).");
+    }
+    socket = new WebSocket(WS_URL);
 
     socket.onopen = () => {
         statusSpan.textContent = "connected";
