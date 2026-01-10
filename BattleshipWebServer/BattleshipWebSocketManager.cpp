@@ -1,5 +1,5 @@
+//BattleshipWebSocketManager.cpp
 #include "BattleshipWebSocketManager.h"
-#include "BattleshipJsonProtocol.h"
 
 namespace {
 	BattleshipWebSocketManager globalManager;
@@ -11,14 +11,14 @@ BattleshipWebSocketManager& getBattleshipWebSocketManager() {
 
 BattleshipWebSocketManager::ConnectionMaps BattleshipWebSocketManager::connectionMaps{};
 
-BattleshipSessionManager BattleshipWebSocketManager::_sessionManager;
-
 void BattleshipWebSocketManager::onMessage(const drogon::WebSocketConnectionPtr& conn, std::string&& message) {
-	auto r = connectionMaps.socketToUserIdMap.find(conn);
-	if (r == connectionMaps.socketToUserIdMap.end()) //socket not bound to user, this should be join message
-		onJoinMessage(conn, std::move(message));
+	UserId u = userForSocket(conn);
+	MessageResult messageResult;
+	if (u == "") //socket not bound to user
+		messageResult = _messageRouter.onUnauthenticatedMessage(std::move(message));
 	else
-		onActionMessage(conn, std::move(message));
+		messageResult = _messageRouter.onAuthenticatedMessage(u, std::move(message));
+	processMessageResultFromConn(messageResult, conn);
 }
 
 void BattleshipWebSocketManager::onConnect(const drogon::HttpRequestPtr& req, const drogon::WebSocketConnectionPtr& conn) {
@@ -26,84 +26,50 @@ void BattleshipWebSocketManager::onConnect(const drogon::HttpRequestPtr& req, co
 }
 
 void BattleshipWebSocketManager::onDisconnect(const drogon::WebSocketConnectionPtr& conn) {
-    //send game over message
-    
-    //delete games and socket references
-	connectionMaps.userIdToSocketMap.erase(connectionMaps.socketToUserIdMap[conn]);
+	unbindSocket(conn);
+}
+
+bool BattleshipWebSocketManager::bindUserToSocket(const UserId& u, const drogon::WebSocketConnectionPtr& conn) {
+	if (socketForUser(u)) //only one connection per user to prevent cheating when UserIds are not authenticated
+		return false;
+	connectionMaps.socketToUserIdMap[conn] = u;
+	connectionMaps.userIdToSocketMap[u] = conn;
+	return true;
+}
+
+void BattleshipWebSocketManager::unbindSocket(const drogon::WebSocketConnectionPtr& conn) {
+	UserId u = userForSocket(conn);
+	if (u == "")
+		return;
+	connectionMaps.userIdToSocketMap.erase(u);
 	connectionMaps.socketToUserIdMap.erase(conn);
 }
 
-void BattleshipWebSocketManager::onJoinMessage(const drogon::WebSocketConnectionPtr& conn, std::string&& message) {
-    Json::Value root = parseJson(message);
-    UserId u = root["userid"].asString();
-    GameId g = root["gameid"].asString();
-    AddUserToGameResult r = _sessionManager.addUserToGame(u, g);
-    if (r.success) {
-        connectionMaps.socketToUserIdMap[conn] = u;
-        connectionMaps.userIdToSocketMap[u] = conn;
-
-        //both users here, send them start message
-        if (r.readyToStart) {
-            BattleshipSession* activeSession = _sessionManager.findSession(g);
-            UserId opponentUser = activeSession->opponentForUser(u);
-            auto& opponentConn = connectionMaps.userIdToSocketMap[opponentUser];
-
-            StartupInfo userStartupInfo = activeSession->getStartupInfoForUser(u);
-            StartupInfo opponentStartupInfo = activeSession->getStartupInfoForUser(opponentUser);
-
-            Json::StreamWriterBuilder wb;
-            wb["indentation"] = ""; // single-line
-            conn->send(Json::writeString(wb, toJson(userStartupInfo)));
-            opponentConn->send(Json::writeString(wb, toJson(opponentStartupInfo)));
-        }
-        //first user only, send waiting message
-        else {
-            conn->send("{ \"waiting\":true }");
-        }
-    }
+void BattleshipWebSocketManager::sendToUser(const UserId& u, const std::string& s) {
+	sendToSocket(socketForUser(u), s);
 }
 
-void BattleshipWebSocketManager::onActionMessage(const drogon::WebSocketConnectionPtr& conn, std::string&& message) {
-    Json::Value root = parseJson(message);
-
-    GameId inputGameId = gameIdFromJson(root["gameid"]);
-    UserId inputUserId = connectionMaps.socketToUserIdMap[conn];
-    const SessionAction& inputAction = sessionActionFromJson(root["sessionaction"]);
-
-    BattleshipSession* activeSession = _sessionManager.findSession(inputGameId);
-
-    SessionActionResult handleActionResult = activeSession->handleAction(inputUserId, inputAction);
-    UserSnapshot userSnapshot = activeSession->getSnapshotForUser(inputUserId);
-
-    Json::Value userOut(Json::objectValue);
-    userOut["snapshot"] = toJson(userSnapshot);
-    userOut["actionresult"] = toJson(handleActionResult);
-
-    // write one JSON line out:
-    Json::StreamWriterBuilder wb;
-    wb["indentation"] = ""; // single-line    
-    conn->send(Json::writeString(wb, userOut));
-
-    //no need to send opponent updates if action failed (nothing has changed)
-    if (handleActionResult.success) {
-        UserId opponentUser = activeSession->opponentForUser(inputUserId);
-        UserSnapshot opponentSnapshot = activeSession->getSnapshotForUser(opponentUser);
-        Json::Value opponentOut(Json::objectValue);
-        opponentOut["snapshot"] = toJson(opponentSnapshot);
-        opponentOut["actionresult"] = toJson(handleActionResult);
-        auto& opponentConn = connectionMaps.userIdToSocketMap[opponentUser];
-        opponentConn->send(Json::writeString(wb, opponentOut));
-    }
+void BattleshipWebSocketManager::sendToSocket(const drogon::WebSocketConnectionPtr& conn, const std::string& s) {
+	if(conn)
+		conn->send(s);
 }
 
-Json::Value BattleshipWebSocketManager::parseJson(const std::string& s) {
-    Json::CharReaderBuilder rb;
-    Json::Value root;
-    std::string errs;
-    std::istringstream iss(s);
+UserId BattleshipWebSocketManager::userForSocket(const drogon::WebSocketConnectionPtr& conn) {
+	auto p = connectionMaps.socketToUserIdMap.find(conn);
+	return p == connectionMaps.socketToUserIdMap.end() ? "" : p->second;
+}
 
-    if (!Json::parseFromStream(rb, iss, &root, &errs))
-        return Json::nullValue;
+drogon::WebSocketConnectionPtr BattleshipWebSocketManager::socketForUser(const UserId& u) {
+	auto p = connectionMaps.userIdToSocketMap.find(u);
+	return p == connectionMaps.userIdToSocketMap.end() ? nullptr : p->second;
+}
 
-    return root;
+void BattleshipWebSocketManager::processMessageResultFromConn(const MessageResult& m, const drogon::WebSocketConnectionPtr& conn) {
+	if (m.senderAction == SenderAction::Bind)
+		bindUserToSocket(m.replyingUser, conn);
+	if (!m.directReply.empty())
+		sendToSocket(conn, m.directReply);
+	for (const auto& userAndMessages : m.repliesByUserId)
+		for (const auto& message : userAndMessages.second)
+			sendToUser(userAndMessages.first, message);
 }

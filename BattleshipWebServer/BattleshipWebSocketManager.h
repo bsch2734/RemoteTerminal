@@ -1,5 +1,6 @@
 #pragma once
 #include "BattleshipSession.h"
+#include "BattleshipMessageRouter.h"
 #include "BattleshipSessionManager.h"
 #include <drogon/WebSocketController.h>
 #include <string>
@@ -14,18 +15,27 @@ public:
     void onDisconnect(const drogon::WebSocketConnectionPtr& conn);
 
 private:
-    void onJoinMessage(const drogon::WebSocketConnectionPtr& conn, std::string&& message);
-
-    void onActionMessage(const drogon::WebSocketConnectionPtr& conn, std::string&& message);
 
     struct ConnectionMaps {
         std::map<drogon::WebSocketConnectionPtr, UserId> socketToUserIdMap;
         std::map<UserId, drogon::WebSocketConnectionPtr> userIdToSocketMap;
     };
 
-    static Json::Value parseJson(const std::string& s);
+    void processMessageResultFromConn(const MessageResult& m, const drogon::WebSocketConnectionPtr& conn);
 
-    static BattleshipSessionManager _sessionManager;
+    bool bindUserToSocket(const UserId& u, const drogon::WebSocketConnectionPtr& conn);
+
+    void unbindSocket(const drogon::WebSocketConnectionPtr& conn);
+
+    void sendToUser(const UserId& u, const std::string& s);
+
+    void sendToSocket(const drogon::WebSocketConnectionPtr& conn, const std::string& s);
+
+    UserId userForSocket(const drogon::WebSocketConnectionPtr& conn);
+
+    drogon::WebSocketConnectionPtr socketForUser(const UserId& u);
+
+    BattleshipMessageRouter _messageRouter;
 
     static ConnectionMaps connectionMaps;
 };
