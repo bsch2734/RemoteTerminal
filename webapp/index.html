@@ -3,58 +3,92 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Battleship Web</title>
+    <title>Battleship</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<section id="connect">
-    <label>
-        User ID:
-        <input id="userid" type="text" autocomplete="off" />
-    </label>
+<body>
+    <div id="app">
+        <!-- Connection Screen -->
+        <section id="connect" class="card">
+            <h1>⚓ Battleship</h1>
+            <p class="subtitle">Enter your credentials to join a game</p>
 
-    <label>
-        Game ID:
-        <input id="gameid" type="text" autocomplete="off" />
-    </label>
+            <div class="form-group">
+                <label for="userid">User ID</label>
+                <input id="userid" type="text" autocomplete="off" placeholder="Enter your user ID" />
+            </div>
 
-    <button id="connectBtn">Connect</button>
-    <span id="status">disconnected</span>
-</section>
-<section id="game" style="display:none;">
-    <h2>Game</h2>
+            <div class="form-group">
+                <label for="gameid">Game ID</label>
+                <input id="gameid" type="text" autocomplete="off" placeholder="Enter game ID to join" />
+            </div>
 
-    <div>
-        You are: <span id="me"></span> |
-        Opponent: <span id="opponent"></span> |
-        Phase: <span id="phase"></span>
+            <button id="connectBtn" class="btn-primary">Connect</button>
+            <div class="status-badge" id="statusBadge">
+                <span class="status-dot"></span>
+                <span id="status">Disconnected</span>
+            </div>
+        </section>
+
+        <!-- Game Screen -->
+        <section id="game" class="hidden">
+            <!-- Header Info Bar -->
+            <header class="game-header">
+                <div class="player-info">
+                    <span class="label">You</span>
+                    <span id="me" class="player-name">—</span>
+                    <span id="youReadyBadge" class="ready-badge hidden">Ready</span>
+                </div>
+                <div class="phase-info">
+                    <span id="phase" class="phase-badge">Setup</span>
+                    <span id="turnIndicator" class="turn-indicator hidden">Your Turn</span>
+                </div>
+                <div class="player-info">
+                    <span class="label">Opponent</span>
+                    <span id="opponent" class="player-name">—</span>
+                    <span id="opponentReadyBadge" class="ready-badge hidden">Ready</span>
+                </div>
+            </header>
+
+            <!-- Message Toast -->
+            <div id="messageToast" class="message-toast hidden">
+                <span id="messageText"></span>
+            </div>
+
+            <!-- Controls -->
+            <div id="setupControls" class="controls-bar">
+                <div class="control-group">
+                    <label for="shipSelect">Select Ship</label>
+                    <select id="shipSelect"></select>
+                </div>
+                <button id="rotateBtn" class="btn-secondary">
+                    <span class="rotate-icon">↻</span> Rotate
+                </button>
+                <button id="readyBtn" class="btn-primary">Ready Up</button>
+            </div>
+
+            <!-- Grids Container -->
+            <div class="grids-container">
+                <div class="grid-wrapper">
+                    <h3>Your Fleet</h3>
+                    <div id="ownGrid" class="grid"></div>
+                </div>
+                <div class="grid-wrapper">
+                    <h3>Enemy Waters</h3>
+                    <div id="oppGrid" class="grid"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Debug Log (collapsible) -->
+        <details class="debug-panel">
+            <summary>Debug Log</summary>
+            <pre id="log"></pre>
+        </details>
     </div>
 
-    <div style="margin-top: 12px;">
-        <label>
-            Ship:
-            <select id="shipSelect"></select>
-        </label>
-
-        <button id="rotateBtn" type="button">Rotate (counterclockwise)</button>
-        <button id="readyBtn" type="button">Ready</button>
-    </div>
-
-    <h3>Your grid</h3>
-    <div id="ownGrid" class="grid"></div>
-
-    <h3>Opponent grid</h3>
-    <div id="oppGrid" class="grid"></div>
-</section>
-<section id="debug">
-    <body>
-        <h1>Battleship</h1>
-
-
-        <h2>Log</h2>
-        <pre id="log"></pre>
-
-        <script type="module" src="/src/main.js"></script>
-    </body>
-</section>
-
+    <script type="module" src="/src/main.js"></script>
+</body>
 </html>
-

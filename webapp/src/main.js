@@ -1,10 +1,11 @@
-import "./style.css"
+import "./style.css";
 
-// Grab references to HTML elements by id
+// === DOM References ===
 const userIdInput = document.getElementById("userid");
 const gameIdInput = document.getElementById("gameid");
 const connectBtn = document.getElementById("connectBtn");
 const statusSpan = document.getElementById("status");
+const statusBadge = document.getElementById("statusBadge");
 const logPre = document.getElementById("log");
 
 const connectSection = document.getElementById("connect");
@@ -13,282 +14,225 @@ const gameSection = document.getElementById("game");
 const meSpan = document.getElementById("me");
 const opponentSpan = document.getElementById("opponent");
 const phaseSpan = document.getElementById("phase");
+const turnIndicator = document.getElementById("turnIndicator");
+const youReadyBadge = document.getElementById("youReadyBadge");
+const opponentReadyBadge = document.getElementById("opponentReadyBadge");
 
+const setupControls = document.getElementById("setupControls");
 const shipSelect = document.getElementById("shipSelect");
 const rotateBtn = document.getElementById("rotateBtn");
 const readyBtn = document.getElementById("readyBtn");
 
+const messageToast = document.getElementById("messageToast");
+const messageText = document.getElementById("messageText");
+
 const ownGrid = document.getElementById("ownGrid");
 const oppGrid = document.getElementById("oppGrid");
 
-// Helper: append a line to the log
+// === State ===
+let socket = null;
+let rotation = 0;
+let lastSetupInfo = null;
+let messageTimeout = null;
+
+// === Utility Functions ===
 function logLine(text) {
-    logPre.textContent += text + "\n";
+    const timestamp = new Date().toLocaleTimeString();
+    logPre.textContent += `[${timestamp}] ${text}\n`;
+    logPre.scrollTop = logPre.scrollHeight;
 }
 
-// WebSocket reference (null until connected)
-let socket = null;
+function showMessage(text, type = "info") {
+    messageText.textContent = text;
+    messageToast.className = `message-toast ${type}`;
+    messageToast.classList.remove("hidden");
+    
+    if (messageTimeout) clearTimeout(messageTimeout);
+    messageTimeout = setTimeout(() => {
+        messageToast.classList.add("hidden");
+    }, 4000);
+}
 
-let rotation = 0; //number of counterclockwise rotations
-let lastsetupinfo = null;
+function setConnectionStatus(status) {
+    statusSpan.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+    statusBadge.className = `status-badge ${status}`;
+}
 
-rotateBtn.addEventListener("click", () => {
-    rotation = (rotation + 1) % 4;
-});
-
-function applySetupInfo(setupinfo) {
-    lastsetupinfo = setupinfo;
-
-    // show game/ hide connect screen
-    connectSection.style.display = "none";
-    gameSection.style.display = "block";
-
-    // Populate game info
-    meSpan.textContent = lastsetupinfo.you ?? "";
-    opponentSpan.textContent = lastsetupinfo.opponent ?? "";
-    phaseSpan.textContent = lastsetupinfo.phase ?? "";
-
-    // Populate ships
-    shipSelect.innerHTML = "";
-    for (const ship of lastsetupinfo.fleet ?? []) {
-        const opt = document.createElement("option");
-        opt.value = String(ship.id);
-        opt.textContent = `${ship.name}`;
-        shipSelect.appendChild(opt);
+function updatePhaseDisplay(phase) {
+    phaseSpan.textContent = phase;
+    phaseSpan.className = `phase-badge ${phase}`;
+    
+    // Show/hide setup controls based on phase
+    if (phase === "setup") {
+        setupControls.classList.remove("hidden");
+    } else {
+        setupControls.classList.add("hidden");
     }
+}
 
-    // Build grid
-    const rows = lastsetupinfo.boardrows;
-    const cols = lastsetupinfo.boardcols;
+function updateTurnIndicator(currentTurn, myUserId) {
+    if (!currentTurn) {
+        turnIndicator.classList.add("hidden");
+        return;
+    }
+    
+    turnIndicator.classList.remove("hidden");
+    
+    if (currentTurn === myUserId) {
+        turnIndicator.textContent = "Your Turn";
+        turnIndicator.className = "turn-indicator";
+    } else {
+        turnIndicator.textContent = "Opponent's Turn";
+        turnIndicator.className = "turn-indicator not-your-turn";
+    }
+}
 
+function updateReadyStatus(youReady, opponentReady) {
+    youReadyBadge.classList.toggle("hidden", !youReady);
+    opponentReadyBadge.classList.toggle("hidden", !opponentReady);
+    readyBtn.classList.toggle("is-ready", youReady);
+}
+
+// === Grid Building ===
+function buildGrids(rows, cols) {
     ownGrid.style.setProperty("--rows", rows);
     ownGrid.style.setProperty("--cols", cols);
+    oppGrid.style.setProperty("--rows", rows);
+    oppGrid.style.setProperty("--cols", cols);
 
     ownGrid.innerHTML = "";
-    //build ownGrid
+    oppGrid.innerHTML = "";
+
+    // Build own grid
     for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
             const cell = document.createElement("div");
             cell.className = "cell";
+            cell.dataset.row = r;
+            cell.dataset.col = c;
 
-            cell.addEventListener("click", () => {
-                const shipIdStr = shipSelect.value;
-                if (!shipIdStr) return;
-
-                // Send a placeship action
-                const userId = lastsetupinfo.you;
-                const gameId = lastsetupinfo.gameid;
-
-                const placeShip = {
-                    gameid: gameId,
-                    userid: userId,
-                    sessionaction: {
-                        type: "placeship",
-                        data: {
-                            position: { row: r, col: c },
-                            rotation: rotation,
-                            shipid: Number(shipIdStr),
-                        },
-                    },
-                };
-
-                socket.send(JSON.stringify(placeShip));
-                logLine("Sent: " + JSON.stringify(placeShip));
-            });
-
+            cell.addEventListener("click", () => handleOwnGridClick(r, c));
             ownGrid.appendChild(cell);
         }
     }
 
-    //build oppGrid
-    oppGrid.innerHTML = "";
-
-    oppGrid.style.setProperty("--rows", rows);
-    oppGrid.style.setProperty("--cols", cols);
+    // Build opponent grid
     for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
             const cell = document.createElement("div");
             cell.className = "cell";
+            cell.dataset.row = r;
+            cell.dataset.col = c;
 
-            cell.addEventListener("click", () => {
-                // Send a fire action
-                const userId = lastsetupinfo.you;
-                const gameId = lastsetupinfo.gameid;
-
-                const fire = {
-                    gameid: gameId,
-                    userid: userId,
-                    sessionaction: {
-                        type: "fire",
-                        data: {
-                            target: { row: r, col: c }
-                        },
-                    },
-                };
-                socket.send(JSON.stringify(fire));
-                logLine("Sent: " + JSON.stringify(fire));
-            });
+            cell.addEventListener("click", () => handleOppGridClick(r, c));
             oppGrid.appendChild(cell);
         }
     }
 }
 
-function applySnapshot(snapshot) {
-    if (!snapshot) return;
+// === Click Handlers ===
+function handleOwnGridClick(row, col) {
+    const shipIdStr = shipSelect.value;
+    if (!shipIdStr || !lastSetupInfo) return;
 
-    //display current phase
-    phaseSpan.textContent = snapshot.phase;
+    const message = {
+        gameid: lastSetupInfo.gameid,
+        userid: lastSetupInfo.you,
+        sessionaction: {
+            type: "placeship",
+            data: {
+                position: { row, col },
+                rotation: rotation,
+                shipid: Number(shipIdStr),
+            },
+        },
+    };
 
-    //display whose turn it is
-    //todo: make an HTML element to show the current turn
+    sendMessage(message);
+}
 
-    //display ready status for each player
-    //todo: make HTML elements to show the ready statuses
+function handleOppGridClick(row, col) {
+    if (!lastSetupInfo) return;
 
-    // Clear ship classes
-    for (const cell of ownGrid.children) {
-        cell.classList.remove("ship");
-    }
+    const message = {
+        gameid: lastSetupInfo.gameid,
+        userid: lastSetupInfo.you,
+        sessionaction: {
+            type: "fire",
+            data: {
+                target: { row, col },
+            },
+        },
+    };
 
-    const own = snapshot.userview.boardview?.owngrid ?? [];
-    for (const entry of own) {
-        const r = entry.coord?.row;
-        const c = entry.coord?.col;
-        const state = entry.state;
+    sendMessage(message);
+}
 
-        if (typeof r !== "number" || typeof c !== "number") continue;
-
-        const idx = r * (lastsetupinfo.boardcols) + c;
-        const cell = ownGrid.children[idx];
-        if (cell) cell.classList.add(state);
-    }
-
-    const opp = snapshot.userview.boardview?.opponentgrid ?? [];
-    for (const entry of opp) {
-        const r = entry.coord?.row;
-        const c = entry.coord?.col;
-        const state = entry.state;
-
-        if (typeof r !== "number" || typeof c !== "number") continue;
-        
-        const idx = r * (lastsetupinfo.boardcols) + c;
-        const cell = oppGrid.children[idx];
-        if (cell) cell.classList.add(state);
+function sendMessage(msg) {
+    if (socket && socket.readyState === WebSocket.OPEN) {
+        socket.send(JSON.stringify(msg));
+        logLine("Sent: " + JSON.stringify(msg));
     }
 }
 
-function applyActionResult(actionresult){
-    switch (actionresult.type) {
-        case "fireresult":
-            applyFireActionResult(actionresult);
-            break;
-        case "placeshipresult":
-            applyPlaceShipActionResult(actionresult);
-            break;
-        case "readyresult":
-            applyReadyActionResult(actionresult);
-            break;
-    }
-}
+// === Event Handlers ===
+rotateBtn.addEventListener("click", () => {
+    rotation = (rotation + 1) % 4;
+    const directions = ["?", "?", "?", "?"];
+    showMessage(`Rotation: ${directions[rotation]}`, "info");
+});
 
-function applyFireActionResult(fireactionresult) {
-    if (fireactionresult.success) {
-        if (fireactionresult.data.ishit) {
-            "Hit!\n"; //todo: make a place to post the messages
-            if (fireactionresult.data.issunk) {
-                "You sank their " + fireactionresult.data.sunkname + "\n"; //todo: make a place to post the messages
-            }
-        }
-    } else {
-        switch (fireactionresult.error) {
-            case ("notyourturn"):
-                "It's not your turn"; //todo: make a place to post the messages
-                break;
-            case ("invalidplacement"):
-                "You can't fire there"; //todo: make a place to post the messages
-                break;
-            default:
-                "Unknown error while firing"; //todo: make a place to post the messages
-                break;
-        }
-    }
-}
+readyBtn.addEventListener("click", () => {
+    if (!lastSetupInfo) return;
 
-function applyPlaceShipActionResult(placeshipactionresult) {
-    if (placeshipactionresult.success) {
-        //no need to log anything, there is visual feedback
-    } else {
-        switch (placeshipactionresult.error) {
-            case ("wrongphase"):
-                "You can only place ships during setup"; //todo: make a place to post the messages
-                break;
-            case ("invalidplacement"):
-                "You can't place this ship there"; //todo: make a place to post the messages
-                break;
-            case ("shipnotfound"):
-                "You don't own that ship"; //todo: make a place to post the messages
-                break;
-            default:
-                "Unknown error while placing a ship"; //todo: make a place to post the messages
-                break;                
-        }
-    }
-}
+    const message = {
+        gameid: lastSetupInfo.gameid,
+        userid: lastSetupInfo.you,
+        sessionaction: {
+            type: "ready",
+            data: null,
+        },
+    };
 
-function applyReadyActionResult(applyreadyactionresult) {
-    if (applyreadyactionresult.success) {
-        readyBtn.classList.add("isready")
-    } else {
-        switch (applyreadyactionresult.error) {
-            case ("invalidplacement"):
-                "You must place all of your ships to ready up"; //todo: make a place to post the messages
-                break;
-            case ("notyourturn"):
-                "Your fleet is placed but not in a valid state"; //todo: make a place to post the messages
-                break;
-            default:
-                "Unknown error while readying up"; //todo: make a place to post the messages
-                break;
-        }
-    }
-}
+    sendMessage(message);
+});
 
-// What happens when the user clicks "Connect"
 connectBtn.addEventListener("click", () => {
-    const userId = userIdInput.value;
-    const gameId = gameIdInput.value;
+    const userId = userIdInput.value.trim();
+    const gameId = gameIdInput.value.trim();
 
     if (!userId || !gameId) {
-        alert("Please enter both User ID and Game ID");
+        showMessage("Please enter both User ID and Game ID", "error");
         return;
     }
 
-    statusSpan.textContent = "connecting...";
+    setConnectionStatus("connecting");
 
     const WS_URL = import.meta.env.VITE_WS_URL;
     if (!WS_URL) {
+        showMessage("Missing VITE_WS_URL configuration", "error");
         throw new Error("Missing VITE_WS_URL. Create webapp/.env.local (see .env.example).");
     }
+
     socket = new WebSocket(WS_URL);
 
     socket.onopen = () => {
-        statusSpan.textContent = "connected";
+        setConnectionStatus("connected");
         logLine("WebSocket connected");
 
         const helloMessage = {
             type: "hello",
             userid: userId,
-            gameid: gameId
+            gameid: gameId,
         };
 
-        socket.send(JSON.stringify(helloMessage));
-        logLine("Sent hello: " + JSON.stringify(helloMessage));
+        sendMessage(helloMessage);
     };
-     
+
     socket.onmessage = (event) => {
         logLine("Received: " + event.data);
 
-        let obj = null;
+        let obj;
         try {
             obj = JSON.parse(event.data);
         } catch {
@@ -297,43 +241,164 @@ connectBtn.addEventListener("click", () => {
 
         for (const key in obj) {
             switch (key) {
-                case "actionresult":
-                    applyActionResult(obj[key]);
+                case "setupinfo":
+                    applySetupInfo(obj[key]);
                     break;
                 case "snapshot":
                     applySnapshot(obj[key]);
                     break;
-                case "setupinfo":
-                    applySetupInfo(obj[key]);
+                case "actionresult":
+                    applyActionResult(obj[key]);
+                    break;
+                case "waiting":
+                    showMessage("Waiting for opponent to join...", "info");
+                    break;
+                case "error":
+                    showMessage(`Error: ${obj[key]}`, "error");
                     break;
             }
         }
     };
 
     socket.onerror = () => {
-        statusSpan.textContent = "error";
+        setConnectionStatus("disconnected");
+        showMessage("Connection error", "error");
         logLine("WebSocket error");
     };
 
     socket.onclose = () => {
-        statusSpan.textContent = "disconnected";
+        setConnectionStatus("disconnected");
         logLine("WebSocket closed");
     };
 });
 
-readyBtn.addEventListener("click", () => {
-    const userId = userIdInput.value;
-    const gameId = gameIdInput.value;
+// === Apply Server Data ===
+function applySetupInfo(setupInfo) {
+    lastSetupInfo = setupInfo;
 
-    const readyUp = {
-        gameid: gameId,
-        userid: userId,
-        sessionaction: {
-            type: "ready",
-            data: null,
-        },
-    };
+    // Switch views
+    connectSection.classList.add("hidden");
+    gameSection.classList.remove("hidden");
 
-    socket.send(JSON.stringify(readyUp));
-    logLine("Sent: " + JSON.stringify(readyUp));
-});
+    // Populate info
+    meSpan.textContent = setupInfo.you || "—";
+    opponentSpan.textContent = setupInfo.opponent || "—";
+    updatePhaseDisplay(setupInfo.phase || "setup");
+
+    // Populate ship selector
+    shipSelect.innerHTML = "";
+    for (const ship of setupInfo.fleet || []) {
+        const opt = document.createElement("option");
+        opt.value = String(ship.id);
+        opt.textContent = ship.name;
+        shipSelect.appendChild(opt);
+    }
+
+    // Build grids
+    buildGrids(setupInfo.boardrows, setupInfo.boardcols);
+
+    showMessage("Game started! Place your ships.", "success");
+}
+
+function applySnapshot(snapshot) {
+    if (!snapshot) return;
+
+    updatePhaseDisplay(snapshot.phase);
+    updateTurnIndicator(snapshot.currentturn, lastSetupInfo?.you);
+    updateReadyStatus(snapshot.youready, snapshot.opponentready);
+
+    // Clear all state classes from grids
+    for (const cell of ownGrid.children) {
+        cell.classList.remove("ship", "hit", "miss");
+    }
+    for (const cell of oppGrid.children) {
+        cell.classList.remove("ship", "hit", "miss");
+    }
+
+    const cols = lastSetupInfo?.boardcols || 10;
+
+    // Apply own grid state
+    const ownGridData = snapshot.userview?.boardview?.owngrid || [];
+    for (const entry of ownGridData) {
+        const r = entry.coord?.row;
+        const c = entry.coord?.col;
+        const state = entry.state;
+
+        if (typeof r !== "number" || typeof c !== "number") continue;
+
+        const idx = r * cols + c;
+        const cell = ownGrid.children[idx];
+        if (cell && state) cell.classList.add(state);
+    }
+
+    // Apply opponent grid state
+    const oppGridData = snapshot.userview?.boardview?.opponentgrid || [];
+    for (const entry of oppGridData) {
+        const r = entry.coord?.row;
+        const c = entry.coord?.col;
+        const state = entry.state;
+
+        if (typeof r !== "number" || typeof c !== "number") continue;
+
+        const idx = r * cols + c;
+        const cell = oppGrid.children[idx];
+        if (cell && state) cell.classList.add(state);
+    }
+}
+
+function applyActionResult(result) {
+    switch (result.type) {
+        case "fireresult":
+            applyFireResult(result);
+            break;
+        case "placeshipresult":
+            applyPlaceShipResult(result);
+            break;
+        case "readyresult":
+            applyReadyResult(result);
+            break;
+    }
+}
+
+function applyFireResult(result) {
+    if (result.success) {
+        if (result.data?.ishit) {
+            if (result.data.issunk) {
+                showMessage(`?? Hit! You sank their ${result.data.sunkname}!`, "success");
+            } else {
+                showMessage("?? Hit!", "success");
+            }
+        } else {
+            showMessage("?? Miss!", "info");
+        }
+    } else {
+        const errorMessages = {
+            notyourturn: "It's not your turn",
+            invalidplacement: "You can't fire there",
+        };
+        showMessage(errorMessages[result.error] || "Unable to fire", "error");
+    }
+}
+
+function applyPlaceShipResult(result) {
+    if (!result.success) {
+        const errorMessages = {
+            wrongphase: "Ships can only be placed during setup",
+            invalidplacement: "Invalid placement - ships cannot overlap or go out of bounds",
+            shipnotfound: "Ship not found",
+        };
+        showMessage(errorMessages[result.error] || "Unable to place ship", "error");
+    }
+}
+
+function applyReadyResult(result) {
+    if (result.success) {
+        showMessage("You're ready! Waiting for opponent...", "success");
+    } else {
+        const errorMessages = {
+            invalidplacement: "Place all ships before readying up",
+            notyourturn: "Your fleet placement is invalid",
+        };
+        showMessage(errorMessages[result.error] || "Unable to ready up", "error");
+    }
+}
