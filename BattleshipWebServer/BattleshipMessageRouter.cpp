@@ -7,16 +7,19 @@ MessageResult BattleshipMessageRouter::onUnauthenticatedMessage(std::string&& me
     //if an unauthenticated user, assume their message is a join request
     Json::Value root = parseJson(message);
     //we are assuming root is a Json::Object
-    Json::Value userIdJson = root.find("userid");
-    Json::Value gameIdJson = root.find("gameid");
-    if (userIdJson.type() != Json::stringValue || gameIdJson.type() != Json::stringValue) {
+    const Json::Value* userIdJson = root.findString("userid");
+    const Json::Value* gameIdJson = root.findString("gameid");
+    if (!userIdJson || !gameIdJson) {
         answer.replyingUser = "";
         answer.directReply = "{\"error\":\"missinginfo\"}";
         answer.senderAction = SenderAction::RejectMessage;
         return answer;
     }
-    UserId u = userIdJson.asString();
-    GameId g = gameIdJson.asString();
+ 
+    auto t = userIdJson->type();
+    auto t2 = root.type();
+    UserId u = userIdJson->asString();
+    GameId g = gameIdJson->asString();
     answer.replyingUser = u;
     //need to check if this user is already connected and reject if so
     AddUserToGameResult r = _sessionManager.addUserToGame(u, g);
@@ -63,16 +66,16 @@ MessageResult BattleshipMessageRouter::onAuthenticatedMessage(const UserId& user
 
     Json::Value root = parseJson(message);
     //we are assuming root is a Json::Object
-    Json::Value gameIdJson = root.find("gameid");
-    Json::Value sessionActionJson = root.find("sessionaction");
-    if (gameIdJson.type() != Json::stringValue || sessionActionJson.type() != Json::objectValue) {
+    const Json::Value* gameIdJson = root.findString("gameid");
+    const Json::Value* sessionActionJson = root.findObject("sessionaction");
+    if (!gameIdJson || !sessionActionJson) {
         answer.directReply = "{\"error\":\"missinginfo\"}";
         answer.senderAction = SenderAction::RejectMessage;
         return answer;
     }
     
-    GameId inputGameId = gameIdJson.asString();
-    const SessionAction& inputAction = sessionActionFromJson(sessionActionJson);
+    GameId inputGameId = gameIdJson->asString();
+    const SessionAction& inputAction = sessionActionFromJson(*sessionActionJson);
 
     BattleshipSession* activeSession = _sessionManager.findSession(inputGameId);
 
