@@ -140,9 +140,11 @@ SessionActionResult BattleshipSession::handleFire(Player p, const SessionAction&
 	if (answer.success) {
 		FireResultData d;
 		d.isHit = r.isHit;
-		d.hitId = r.hitId;
 		d.isSunk = r.isSink;
-		d.sunkName = _engine.nameForId(r.hitId);
+		if (r.isSink) {
+			d.sunkName = _engine.nameForId(r.hitId);
+			d.hitId = r.hitId;
+		}
 		answer.data = d;
 	}
 	else {

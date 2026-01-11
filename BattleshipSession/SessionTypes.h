@@ -39,10 +39,10 @@ struct ReadyResultData {
 };
 
 struct FireResultData {
-    bool isHit;
-    bool isSunk;
-    std::string sunkName;
-    int hitId;
+    bool isHit = false;
+    bool isSunk = false;
+    std::string sunkName = "";
+    int hitId = 0;
 };
 
 using SessionActionResultData = std::variant<PlaceShipResultData, ReadyResultData, FireResultData>;
