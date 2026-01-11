@@ -77,3 +77,23 @@ struct StartupInfo {
     int boardRows;
     int boardCols;
 };
+
+using OutboundMessage = std::variant<UserSnapshot, StartupInfo, SessionActionResult>;
+
+struct AddressedMessage {
+    UserId toUser;
+    OutboundMessage message;
+};
+
+class AddressedMessageBundle {
+public:
+    AddressedMessageBundle addMessage(const UserId& toUser, const OutboundMessage& message) {
+        messages.emplace_back(AddressedMessage{toUser, message});
+        return *this;
+    }
+    auto begin() { return messages.begin();	}
+    auto end() { return messages.end(); }
+	
+private:
+	std::vector<AddressedMessage> messages;
+};
