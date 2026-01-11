@@ -42,7 +42,7 @@ let socket = null;
 let rotation = 0;
 let lastSetupInfo = null;
 let messageTimeout = null;
-let previousPhase = null;
+let lastPhase = null;
 let placedShipIds = new Set();
 
 // === Utility Functions ===
@@ -78,12 +78,6 @@ function updatePhaseDisplay(phase) {
     } else {
         setupControls.classList.add("hidden");
     }
-
-    // Check for game end
-    if (phase === "finished" && previousPhase !== "finished") {
-        // Game just ended - we'll determine winner from snapshot
-    }
-    previousPhase = phase;
 }
 
 function updateTurnIndicator(currentTurn, myUserId) {
@@ -346,6 +340,7 @@ connectBtn.addEventListener("click", () => {
 function applySetupInfo(setupInfo) {
     lastSetupInfo = setupInfo;
     placedShipIds.clear();
+    lastPhase = null;
 
     // Switch views
     connectSection.classList.add("hidden");
@@ -375,20 +370,22 @@ function applySnapshot(snapshot) {
     if (!snapshot) return;
 
     const myUserId = lastSetupInfo?.you;
+    const currentPhase = snapshot.phase;
     
-    updatePhaseDisplay(snapshot.phase);
-    updateTurnIndicator(snapshot.currentturn, myUserId);
-    updateReadyStatus(snapshot.youready, snapshot.opponentready);
-
-    // Check for game end
-    if (snapshot.phase === "finished" && previousPhase !== "finished") {
-        // Determine if we won by checking if we have any ships left
-        // If it's our turn when game ended, we likely just won (sank last ship)
-        // Alternatively, check the grids for ship states
+    // Check for game end BEFORE updating lastPhase
+    if (currentPhase === "finished" && lastPhase !== "finished") {
+        // Determine if we won by checking if we have any unhit ships left
         const ownGridData = snapshot.userview?.boardview?.owngrid || [];
         const hasShipsLeft = ownGridData.some(entry => entry.state === "ship");
         showGameOver(hasShipsLeft);
     }
+    
+    // Now update the phase tracking
+    lastPhase = currentPhase;
+    
+    updatePhaseDisplay(currentPhase);
+    updateTurnIndicator(snapshot.currentturn, myUserId);
+    updateReadyStatus(snapshot.youready, snapshot.opponentready);
 
     // Clear all state classes from grids
     for (const cell of ownGrid.children) {
