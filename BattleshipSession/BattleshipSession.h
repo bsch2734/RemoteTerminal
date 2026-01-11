@@ -26,13 +26,6 @@ private:
     // Helpers
     Player playerFor(const UserId& user) const;
 
-    //SessionActionResult makeError(SessionError error) const;
-    //SessionActionResult makeResultFromEngine(FireResult fireResult);
-    //SessionActionResult makeResultFromEngine(PlaceShipResult placeResult);
-    //SessionActionResult makeResultNoOp(); // for Ready, etc.
-
-    //PlayerView buildView(Player p) const;
-
     SessionActionResult handlePlaceShip(Player p, const SessionAction& a);
     SessionActionResult handleFire(Player p, const SessionAction& a);
     SessionActionResult handleReady(Player p);
