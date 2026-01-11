@@ -14,8 +14,6 @@ public:
 
     SessionActionResult handleAction(const UserId& user, const SessionAction& action);
 
-    SessionSnapshot getSnapshot();
-
     UserSnapshot getSnapshotForUser(const UserId& u);
 
     StartupInfo getStartupInfoForUser(const UserId& u);

@@ -59,12 +59,6 @@ struct UserView {
     BoardView boardView;
 };
 
-struct SessionSnapshot {
-    Phase phase;
-    UserId currentUser;
-    std::vector<UserView> userViews;
-};
-
 struct UserSnapshot {
     Phase phase;
     UserId currentUser;

@@ -52,17 +52,6 @@ SessionActionResult BattleshipSession::handleAction(const UserId& user, const Se
 	return s;
 }
 
-SessionSnapshot BattleshipSession::getSnapshot() {
-	SessionSnapshot answer;
-	answer.currentUser = _playerToUserMap[_engine.currentTurn()];
-	answer.phase = _engine.phase();
-	UserView viewForP1User(_playerToUserMap[Player::one], _engine.boardViewForPlayer(Player::one));
-	UserView viewForP2User(_playerToUserMap[Player::two], _engine.boardViewForPlayer(Player::two));
-	answer.userViews.push_back(viewForP1User);
-	answer.userViews.push_back(viewForP2User);
-	return answer;
-}
-
 UserSnapshot BattleshipSession::getSnapshotForUser(const UserId& u) {
 	UserSnapshot answer;
 	answer.currentUser = _playerToUserMap[_engine.currentTurn()];

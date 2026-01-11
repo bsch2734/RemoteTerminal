@@ -33,9 +33,7 @@ GameId userIdFromJson(const Json::Value& v);
 
 Json::Value toJson(const SessionActionResultType& r);
 
-Json::Value toJson(const SessionActionResult& r); 
-
-Json::Value toJson(const SessionSnapshot& r);
+Json::Value toJson(const SessionActionResult& r);
 
 Json::Value toJson(Phase p);
 

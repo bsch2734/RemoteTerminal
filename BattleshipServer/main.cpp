@@ -35,16 +35,14 @@ int main() {
         BattleshipSession& activeSession = *gameIdToSessionMap[inputGameId];
 
         SessionActionResult res = activeSession.handleAction(inputUserId, inputAction);
-        SessionSnapshot snapshot = activeSession.getSnapshot();
+		//SessionSnapshot snapshot = activeSession.getSnapshot(); snapshot has been deprecated
 
         Json::Value resOut = toJson(res);
-        Json::Value snapshotOut = toJson(snapshot);
 
         // write one JSON line out:
         Json::StreamWriterBuilder wb;
         wb["indentation"] = ""; // single-line
         std::cout << Json::writeString(wb, resOut) << "\n";
-        std::cout << Json::writeString(wb, snapshotOut) << "\n";
         std::cout.flush();
     }
 

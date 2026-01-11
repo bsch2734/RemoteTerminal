@@ -157,14 +157,6 @@ Json::Value toJson(const SessionActionResult& r) {
 	return answer;
 }
 
-Json::Value toJson(const SessionSnapshot& r) {
-	Json::Value answer(Json::objectValue);
-	answer["phase"] = toJson(r.phase);
-	answer["currentturn"] = toJson(r.currentUser);
-	answer["userviews"] = toJson(r.userViews);
-	return answer;
-}
-
 Json::Value toJson(Phase p) {
 	Json::Value answer(Json::stringValue);
 	switch (p) {
