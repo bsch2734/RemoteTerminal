@@ -26,14 +26,24 @@ const readyBtn = document.getElementById("readyBtn");
 const messageToast = document.getElementById("messageToast");
 const messageText = document.getElementById("messageText");
 
+const gameOverOverlay = document.getElementById("gameOverOverlay");
+const gameOverTitle = document.getElementById("gameOverTitle");
+const gameOverMessage = document.getElementById("gameOverMessage");
+
 const ownGrid = document.getElementById("ownGrid");
 const oppGrid = document.getElementById("oppGrid");
+const ownColLabels = document.getElementById("ownColLabels");
+const ownRowLabels = document.getElementById("ownRowLabels");
+const oppColLabels = document.getElementById("oppColLabels");
+const oppRowLabels = document.getElementById("oppRowLabels");
 
 // === State ===
 let socket = null;
 let rotation = 0;
 let lastSetupInfo = null;
 let messageTimeout = null;
+let previousPhase = null;
+let placedShipIds = new Set();
 
 // === Utility Functions ===
 function logLine(text) {
@@ -50,7 +60,7 @@ function showMessage(text, type = "info") {
     if (messageTimeout) clearTimeout(messageTimeout);
     messageTimeout = setTimeout(() => {
         messageToast.classList.add("hidden");
-    }, 4000);
+    }, 3500);
 }
 
 function setConnectionStatus(status) {
@@ -68,6 +78,12 @@ function updatePhaseDisplay(phase) {
     } else {
         setupControls.classList.add("hidden");
     }
+
+    // Check for game end
+    if (phase === "finished" && previousPhase !== "finished") {
+        // Game just ended - we'll determine winner from snapshot
+    }
+    previousPhase = phase;
 }
 
 function updateTurnIndicator(currentTurn, myUserId) {
@@ -93,12 +109,52 @@ function updateReadyStatus(youReady, opponentReady) {
     readyBtn.classList.toggle("is-ready", youReady);
 }
 
+function showGameOver(isVictory) {
+    gameOverOverlay.classList.remove("hidden");
+    const content = gameOverOverlay.querySelector(".game-over-content");
+    
+    if (isVictory) {
+        content.classList.add("victory");
+        content.classList.remove("defeat");
+        gameOverTitle.textContent = "Victory!";
+        gameOverMessage.textContent = "You sank all enemy ships!";
+    } else {
+        content.classList.add("defeat");
+        content.classList.remove("victory");
+        gameOverTitle.textContent = "Defeat";
+        gameOverMessage.textContent = "Your fleet has been destroyed.";
+    }
+}
+
 // === Grid Building ===
+function buildGridLabels(colContainer, rowContainer, rows, cols) {
+    colContainer.innerHTML = "";
+    rowContainer.innerHTML = "";
+    
+    // Column labels: 1, 2, 3, ...
+    for (let c = 0; c < cols; c++) {
+        const label = document.createElement("span");
+        label.textContent = String(c + 1);
+        colContainer.appendChild(label);
+    }
+    
+    // Row labels: A, B, C, ...
+    for (let r = 0; r < rows; r++) {
+        const label = document.createElement("span");
+        label.textContent = String.fromCharCode(65 + r); // A=65
+        rowContainer.appendChild(label);
+    }
+}
+
 function buildGrids(rows, cols) {
     ownGrid.style.setProperty("--rows", rows);
     ownGrid.style.setProperty("--cols", cols);
     oppGrid.style.setProperty("--rows", rows);
     oppGrid.style.setProperty("--cols", cols);
+
+    // Build labels
+    buildGridLabels(ownColLabels, ownRowLabels, rows, cols);
+    buildGridLabels(oppColLabels, oppRowLabels, rows, cols);
 
     ownGrid.innerHTML = "";
     oppGrid.innerHTML = "";
@@ -175,10 +231,24 @@ function sendMessage(msg) {
     }
 }
 
+function selectNextShip(currentShipId) {
+    placedShipIds.add(currentShipId);
+    
+    // Find next unplaced ship
+    const options = Array.from(shipSelect.options);
+    for (const opt of options) {
+        const id = Number(opt.value);
+        if (!placedShipIds.has(id)) {
+            shipSelect.value = opt.value;
+            return;
+        }
+    }
+}
+
 // === Event Handlers ===
 rotateBtn.addEventListener("click", () => {
     rotation = (rotation + 1) % 4;
-    const directions = ["?", "?", "?", "?"];
+    const directions = ["Right", "Up", "Left", "Down"];
     showMessage(`Rotation: ${directions[rotation]}`, "info");
 });
 
@@ -275,6 +345,7 @@ connectBtn.addEventListener("click", () => {
 // === Apply Server Data ===
 function applySetupInfo(setupInfo) {
     lastSetupInfo = setupInfo;
+    placedShipIds.clear();
 
     // Switch views
     connectSection.classList.add("hidden");
@@ -303,9 +374,21 @@ function applySetupInfo(setupInfo) {
 function applySnapshot(snapshot) {
     if (!snapshot) return;
 
+    const myUserId = lastSetupInfo?.you;
+    
     updatePhaseDisplay(snapshot.phase);
-    updateTurnIndicator(snapshot.currentturn, lastSetupInfo?.you);
+    updateTurnIndicator(snapshot.currentturn, myUserId);
     updateReadyStatus(snapshot.youready, snapshot.opponentready);
+
+    // Check for game end
+    if (snapshot.phase === "finished" && previousPhase !== "finished") {
+        // Determine if we won by checking if we have any ships left
+        // If it's our turn when game ended, we likely just won (sank last ship)
+        // Alternatively, check the grids for ship states
+        const ownGridData = snapshot.userview?.boardview?.owngrid || [];
+        const hasShipsLeft = ownGridData.some(entry => entry.state === "ship");
+        showGameOver(hasShipsLeft);
+    }
 
     // Clear all state classes from grids
     for (const cell of ownGrid.children) {
@@ -362,14 +445,34 @@ function applyActionResult(result) {
 
 function applyFireResult(result) {
     if (result.success) {
+        const isMyShot = result.data?.ishit !== undefined;
+        
+        // Both players receive this result - determine who fired
+        // If hitid matches one of our fleet ships, we were hit (opponent fired)
+        // Otherwise we fired
+        const hitId = result.data?.hitid;
+        const myFleetIds = (lastSetupInfo?.fleet || []).map(s => s.id);
+        const wasHitOnMe = hitId !== undefined && myFleetIds.includes(hitId);
+        
         if (result.data?.ishit) {
             if (result.data.issunk) {
-                showMessage(`?? Hit! You sank their ${result.data.sunkname}!`, "success");
+                if (wasHitOnMe) {
+                    showMessage(`Your ${result.data.sunkname} was sunk!`, "error");
+                } else {
+                    showMessage(`You sank their ${result.data.sunkname}!`, "success");
+                }
             } else {
-                showMessage("?? Hit!", "success");
+                if (wasHitOnMe) {
+                    showMessage("Your ship was hit!", "error");
+                } else {
+                    showMessage("Hit!", "success");
+                }
             }
         } else {
-            showMessage("?? Miss!", "info");
+            // Miss - only show for the shooter (they get miss, target gets nothing meaningful)
+            if (!wasHitOnMe) {
+                showMessage("Miss", "info");
+            }
         }
     } else {
         const errorMessages = {
@@ -381,7 +484,11 @@ function applyFireResult(result) {
 }
 
 function applyPlaceShipResult(result) {
-    if (!result.success) {
+    if (result.success) {
+        // Select the next ship automatically
+        const currentShipId = Number(shipSelect.value);
+        selectNextShip(currentShipId);
+    } else {
         const errorMessages = {
             wrongphase: "Ships can only be placed during setup",
             invalidplacement: "Invalid placement - ships cannot overlap or go out of bounds",
@@ -393,7 +500,8 @@ function applyPlaceShipResult(result) {
 
 function applyReadyResult(result) {
     if (result.success) {
-        showMessage("You're ready! Waiting for opponent...", "success");
+        // Don't show "waiting" message here - let the snapshot handle the phase transition
+        // The snapshot will tell us if both players are ready
     } else {
         const errorMessages = {
             invalidplacement: "Place all ships before readying up",

@@ -57,27 +57,43 @@
                 <span id="messageText"></span>
             </div>
 
+            <!-- Game Over Overlay -->
+            <div id="gameOverOverlay" class="game-over-overlay hidden">
+                <div class="game-over-content">
+                    <h2 id="gameOverTitle">Game Over</h2>
+                    <p id="gameOverMessage"></p>
+                </div>
+            </div>
+
             <!-- Controls -->
             <div id="setupControls" class="controls-bar">
                 <div class="control-group">
-                    <label for="shipSelect">Select Ship</label>
+                    <label for="shipSelect">Ship</label>
                     <select id="shipSelect"></select>
                 </div>
-                <button id="rotateBtn" class="btn-secondary">
-                    <span class="rotate-icon">↻</span> Rotate
-                </button>
-                <button id="readyBtn" class="btn-primary">Ready Up</button>
+                <button id="rotateBtn" class="btn-secondary btn-sm">↻ Rotate</button>
+                <button id="readyBtn" class="btn-primary btn-sm">Ready</button>
             </div>
 
             <!-- Grids Container -->
             <div class="grids-container">
                 <div class="grid-wrapper">
                     <h3>Your Fleet</h3>
-                    <div id="ownGrid" class="grid"></div>
+                    <div class="grid-with-labels">
+                        <div class="corner-spacer"></div>
+                        <div id="ownColLabels" class="col-labels"></div>
+                        <div id="ownRowLabels" class="row-labels"></div>
+                        <div id="ownGrid" class="grid"></div>
+                    </div>
                 </div>
                 <div class="grid-wrapper">
                     <h3>Enemy Waters</h3>
-                    <div id="oppGrid" class="grid"></div>
+                    <div class="grid-with-labels">
+                        <div class="corner-spacer"></div>
+                        <div id="oppColLabels" class="col-labels"></div>
+                        <div id="oppRowLabels" class="row-labels"></div>
+                        <div id="oppGrid" class="grid"></div>
+                    </div>
                 </div>
             </div>
         </section>
