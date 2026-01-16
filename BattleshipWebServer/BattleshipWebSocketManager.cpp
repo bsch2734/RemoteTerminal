@@ -13,7 +13,7 @@ BattleshipWebSocketManager::ConnectionMaps BattleshipWebSocketManager::connectio
 
 void BattleshipWebSocketManager::onMessage(const drogon::WebSocketConnectionPtr& conn, std::string&& message) {
 	UserId u = userForSocket(conn);
-	MessageResult messageResult;
+	WireMessageResult messageResult;
 	if (u == "") //socket not bound to user
 		messageResult = _messageRouter.onUnauthenticatedMessage(std::move(message));
 	else
@@ -64,12 +64,13 @@ drogon::WebSocketConnectionPtr BattleshipWebSocketManager::socketForUser(const U
 	return p == connectionMaps.userIdToSocketMap.end() ? nullptr : p->second;
 }
 
-void BattleshipWebSocketManager::processMessageResultFromConn(const MessageResult& m, const drogon::WebSocketConnectionPtr& conn) {
+void BattleshipWebSocketManager::processMessageResultFromConn(const WireMessageResult& m, const drogon::WebSocketConnectionPtr& conn) {
 	if (m.senderAction == SenderAction::Bind)
-		bindUserToSocket(m.replyingUser, conn);
-	if (!m.directReply.empty())
-		sendToSocket(conn, m.directReply);
-	for (const auto& userAndMessages : m.repliesByUserId)
-		for (const auto& message : userAndMessages.second)
-			sendToUser(userAndMessages.first, message);
+		bindUserToSocket(m.userToBind, conn);
+
+	for (const AddressedWireMessage& addressedMessage : m.addressedMessages)
+		if (std::holds_alternative<ToSender>(addressedMessage.address))
+			sendToSocket(conn, addressedMessage.message);
+		else if (std::holds_alternative<ToUser>(addressedMessage.address))
+			sendToUser(std::get<ToUser>(addressedMessage.address).userId, addressedMessage.message);
 }

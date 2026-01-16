@@ -349,3 +349,82 @@ Json::Value toJson(const std::set<coord> s) {
 		answer.append(toJson(c));
 	return answer;
 }
+
+Json::Value toJson(const AddUserToGameResult& r) {
+	Json::Value answer(Json::objectValue);
+
+	answer["success"] = r.success;
+	answer["readytostart"] = r.readyToStart;
+	answer["error"] = toJson(r.error);
+
+	if (!r.readyToStart)
+		answer["waiting"] = true; // backwards compatability for now, fix to be more in line with rest of code
+
+	return answer;
+}
+
+Json::Value toJson(const AddUserToGameError& e) {
+	Json::Value answer(Json::stringValue);
+	switch (e) {
+		case AddUserToGameError::userAlreadyInGame: {
+			answer = "useralreadyingame";
+			break;
+		}
+		case AddUserToGameError::gameFull: {
+			answer = "gamefull";
+			break;
+		}
+	}
+	return answer;
+}
+
+Json::Value toJson(const OutboundMessage& r) {
+	Json::Value answer(Json::objectValue);
+
+	if (std::holds_alternative<UserSnapshot>(r))
+		answer["snapshot"] = toJson(std::get<UserSnapshot>(r));
+	else if (std::holds_alternative<StartupInfo>(r))
+		answer["setupinfo"] = toJson(std::get<StartupInfo>(r));
+	else if (std::holds_alternative<SessionActionResult>(r))
+		answer["actionresult"] = toJson(std::get<SessionActionResult>(r));
+	else if (std::holds_alternative<AddUserToGameResult>(r))
+		answer = toJson(std::get<AddUserToGameResult>(r));
+
+	return answer;
+}
+
+JoinRequest joinRequestFromJson(const Json::Value& v) {
+	JoinRequest answer(
+		userIdFromJson(v["userid"]),
+		gameIdFromJson(v["gameid"])
+	);
+	return answer;
+}
+
+Json::Value parseJson(const std::string& s) {
+	Json::CharReaderBuilder rb;
+	Json::Value root;
+	std::string errs;
+	std::istringstream iss(s);
+
+	if (!Json::parseFromStream(rb, iss, &root, &errs))
+		return Json::nullValue;
+
+	return root;
+}
+
+ActionRequest actionRequestFromJson(const Json::Value& v) {
+	ActionRequest answer(
+		gameIdFromJson(v["gameid"]),
+		userIdFromJson(v["userid"]),
+		sessionActionFromJson(v["sessionaction"])
+	);
+	return answer;
+}
+
+OutboundWireMessage outboundWireMessageFromJson(const Json::Value v) {
+	Json::StreamWriterBuilder wb;
+	wb["indentation"] = ""; // single-line
+
+	return Json::writeString(wb, v);
+}

@@ -12,11 +12,13 @@ public:
 
     bool isFinished() const;
 
-    SessionActionResult handleAction(const UserId& user, const SessionAction& action);
+    AddressedMessageBundle handleAction(const UserId& user, const SessionAction& action);
 
-    UserSnapshot getSnapshotForUser(const UserId& u);
+    AddressedMessageBundle getSnapshotMessageBundles();
 
-    StartupInfo getStartupInfoForUser(const UserId& u);
+    AddressedMessageBundle getStartupInfoMessageBundles();
+
+	AddressedMessageBundle getSnapshotMessageBundleForUser(const UserId& u);
 
     UserId opponentForUser(const UserId& u);
 

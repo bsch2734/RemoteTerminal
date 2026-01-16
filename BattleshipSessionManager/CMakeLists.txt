@@ -9,6 +9,7 @@ target_include_directories(BattleshipSessionManager PUBLIC
 
 target_link_libraries(BattleshipSessionManager PUBLIC
 	BattleshipSession
+	BattleshipJsonProtocol
 )
 
 set_property(TARGET BattleshipEngine PROPERTY CXX_STANDARD 20)

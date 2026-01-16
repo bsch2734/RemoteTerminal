@@ -2,6 +2,7 @@
 
 #include <string>
 #include <json/json.h>
+#include "BattleshipMessageRouter.h"
 #include "GameEntities.h"
 #include "coord.h"
 #include "Action.h"
@@ -61,7 +62,7 @@ Json::Value toJson(const ReadyResultData& f);
 
 Json::Value toJson(const PlaceShipResultData& f);
 
-Json::Value toJson(const UserSnapshot& u);//
+Json::Value toJson(const UserSnapshot& u);
 
 Json::Value toJson(const StartupInfo& s);
 
@@ -70,3 +71,17 @@ Json::Value toJson(const Fleet& f);
 Json::Value toJson(const Ship& s);
 
 Json::Value toJson(const std::set<coord> s);
+
+Json::Value toJson(const AddUserToGameResult& r);
+
+Json::Value toJson(const AddUserToGameError& e);
+
+Json::Value toJson(const OutboundMessage& r);
+
+JoinRequest joinRequestFromJson(const Json::Value& v);
+
+Json::Value parseJson(const std::string& s);
+
+ActionRequest actionRequestFromJson(const Json::Value& v);
+
+OutboundWireMessage outboundWireMessageFromJson(const Json::Value v);

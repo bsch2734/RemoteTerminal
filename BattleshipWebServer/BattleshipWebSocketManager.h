@@ -21,7 +21,7 @@ private:
         std::map<UserId, drogon::WebSocketConnectionPtr> userIdToSocketMap;
     };
 
-    void processMessageResultFromConn(const MessageResult& m, const drogon::WebSocketConnectionPtr& conn);
+    void processMessageResultFromConn(const WireMessageResult& m, const drogon::WebSocketConnectionPtr& conn);
 
     bool bindUserToSocket(const UserId& u, const drogon::WebSocketConnectionPtr& conn);
 

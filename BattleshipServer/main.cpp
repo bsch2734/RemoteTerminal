@@ -34,10 +34,10 @@ int main() {
 
         BattleshipSession& activeSession = *gameIdToSessionMap[inputGameId];
 
-        SessionActionResult res = activeSession.handleAction(inputUserId, inputAction);
+        auto res = activeSession.handleAction(inputUserId, inputAction);
 		//SessionSnapshot snapshot = activeSession.getSnapshot(); snapshot has been deprecated
 
-        Json::Value resOut = toJson(res);
+        Json::Value resOut/* = toJson(res)*/;
 
         // write one JSON line out:
         Json::StreamWriterBuilder wb;

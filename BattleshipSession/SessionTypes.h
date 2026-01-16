@@ -78,22 +78,63 @@ struct StartupInfo {
     int boardCols;
 };
 
-using OutboundMessage = std::variant<UserSnapshot, StartupInfo, SessionActionResult>;
+enum class AddUserToGameError {
+    userAlreadyInGame,
+    gameFull
+};
+
+struct AddUserToGameResult {
+    bool success = false;
+    bool readyToStart = false;
+    AddUserToGameError error;
+};
+
+using OutboundMessage = std::variant<UserSnapshot, StartupInfo, SessionActionResult, AddUserToGameResult>;
+
+struct ToSender{};
+
+struct ToUser {
+	UserId userId;
+};
+
+using OutboundMessageReciever = std::variant<ToSender, ToUser>;
 
 struct AddressedMessage {
-    UserId toUser;
+    OutboundMessageReciever address;
     OutboundMessage message;
 };
 
 class AddressedMessageBundle {
 public:
-    AddressedMessageBundle addMessage(const UserId& toUser, const OutboundMessage& message) {
-        messages.emplace_back(AddressedMessage{toUser, message});
+    AddressedMessageBundle& addMessage(const OutboundMessageReciever& reciever, const OutboundMessage& message) {
+        messages.emplace_back(AddressedMessage{reciever, message});
         return *this;
     }
-    auto begin() { return messages.begin();	}
+
+    AddressedMessageBundle& addMessageBundle(const AddressedMessageBundle& bundle) {
+        for (const auto& msg : bundle.messages) {
+            messages.emplace_back(msg);
+        }
+        return *this;
+	}
+
+    auto begin() { return messages.begin(); }
     auto end() { return messages.end(); }
+
+    auto begin() const { return messages.begin(); }
+    auto end() const { return messages.end(); }
 	
 private:
 	std::vector<AddressedMessage> messages;
+};
+
+struct JoinRequest {
+    UserId userId;
+    GameId gameId;
+};
+
+struct ActionRequest {
+    GameId gameId;
+    UserId userId;
+    SessionAction action;
 };

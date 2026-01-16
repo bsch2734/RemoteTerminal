@@ -1,42 +1,80 @@
 #include "BattleshipSessionManager.h"
 
-AddUserToGameResult BattleshipSessionManager::addUserToGame(UserId u, GameId g) {
-	AddUserToGameResult answer;
+MessageResult BattleshipSessionManager::handleJoinRequest(const JoinRequest& request) {
+	MessageResult result; //rename to answer at some point
+
+	SenderAction& action = result.senderAction;
+	AddressedMessageBundle& messageBundle = result.addressedMessages;
+	UserId& userToBind = result.userToBind;
+
+	UserId u = request.userId;
+	GameId g = request.gameId;
+	userToBind = u;
 
 	//game is already in progress
 	auto inProgressGame = _gameIdToSessionMap.find(g);
 	if (inProgressGame != _gameIdToSessionMap.end()) {
-		answer.success = false;
-		answer.error = AddUserToGameError::gameFull;
-		answer.readyToStart = false;
-		return answer;
+		action = SenderAction::RejectMessage;
+		AddUserToGameResult r;
+		r.success = false;
+		r.error = AddUserToGameError::gameFull;
+		r.readyToStart = false;
+		messageBundle.addMessage(ToUser(u), r);
+		return result;
 	}
 
 	auto lobbyGame = _lobbyGames.find(g);
 	//game does not exist yet
 	if (lobbyGame == _lobbyGames.end()) {
+		action = SenderAction::Bind;
+		AddUserToGameResult r;
 		_lobbyGames.insert({ g, u });
-		answer.readyToStart = false;
-		answer.success = true;
-		return answer;
+		r.readyToStart = false;
+		r.success = true;
+		messageBundle.addMessage(ToUser(u), r);
+		return result;
 	}
 
 	//game exists only in lobby
 	//...and this user is trying to join twice
 	if (lobbyGame->second == u) {
-		answer.success = false;
-		answer.error = AddUserToGameError::userAlreadyInGame;
-		return answer;
+		action = SenderAction::TerminateSession;
+		AddUserToGameResult r;
+		r.success = false;
+		r.error = AddUserToGameError::userAlreadyInGame;
+		r.readyToStart = false;
+		messageBundle.addMessage(ToUser(u), r);
+		return result;
 	}
 
 	//...and this is the second user
+	//can add rand here to assign who is player one and two
+	action = SenderAction::Bind;
 	BattleshipSession* s = new BattleshipSession(g, lobbyGame->second, u);
 	_gameIdToSessionMap[g] = s;
 	_lobbyGames.erase(lobbyGame);
-	
-	answer.success = true;
-	answer.readyToStart = true;
-	
+	AddUserToGameResult r;
+	r.success = true;
+	r.readyToStart = true;
+	messageBundle.addMessage(ToUser(u), r);
+
+	//send both users startup info
+	AddressedMessageBundle startupMessages = s->getStartupInfoMessageBundles();
+	for (const AddressedMessage& m : startupMessages)
+		messageBundle.addMessage(m.address, m.message);
+
+	return result;
+}
+
+MessageResult BattleshipSessionManager::handleActionRequest(const ActionRequest& request){
+	MessageResult answer;
+
+	answer.userToBind = request.userId;
+	answer.senderAction = SenderAction::None;
+
+	BattleshipSession* session = findSession(request.gameId);
+	answer.addressedMessages = session->handleAction(request.userId, request.action);
+
 	return answer;
 }
 
