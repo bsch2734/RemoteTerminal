@@ -84,16 +84,18 @@ ValidatePlacementResult BattleshipEngine::validatePlacement(Player p, int ID, co
     // Calculate placement coords and check validity
     for (const coord& c : targetShip->getCoords()) {
         coord transformed = c.applyTransform(pos, rotation);
-        r.coords.insert(transformed);
         
-        // Check out of bounds
+        // Check out of bounds - don't include invalid coords in result
         if (transformed.d < 0 || transformed.d >= _boardDimensions.first ||
             transformed.o < 0 || transformed.o >= _boardDimensions.second) {
             r.valid = false;
             r.error = PlaceShipError::OutOfBounds;
+            continue;
         }
         
-        // Check overlap (only set error if not already invalid)
+        r.coords.insert(transformed);
+        
+        // Check overlap
         if (r.valid && occupied.find(transformed) != occupied.end()) {
             r.valid = false;
             r.error = PlaceShipError::OverlapsAnotherShip;
