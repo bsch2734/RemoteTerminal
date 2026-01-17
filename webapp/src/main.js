@@ -372,7 +372,7 @@ connectBtn.addEventListener("click", () => {
 function applySetupInfo(setupInfo) {
     lastSetupInfo = setupInfo;
     placedShipIds.clear();
-    lastPhase = null;
+    lastPhase = setupInfo.phase || "setup";
 
     // Switch views
     connectSection.classList.add("hidden");
@@ -381,7 +381,7 @@ function applySetupInfo(setupInfo) {
     // Populate info
     meSpan.textContent = setupInfo.you || "—";
     opponentSpan.textContent = setupInfo.opponent || "—";
-    updatePhaseDisplay(setupInfo.phase || "setup");
+    updatePhaseDisplay(lastPhase);
 
     // Populate ship selector
     shipSelect.innerHTML = "";
