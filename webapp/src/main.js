@@ -278,6 +278,17 @@ rotateBtn.addEventListener("click", () => {
     showMessage(`Rotation: ${directions[rotation]}`, "info");
 });
 
+// Keyboard shortcut for rotation
+document.addEventListener("keydown", (e) => {
+    if (e.key === "r" || e.key === "R") {
+        // Don't trigger if user is typing in an input
+        if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+        if (lastPhase !== "setup") return;
+        
+        rotateBtn.click();
+    }
+});
+
 readyBtn.addEventListener("click", () => {
     if (!lastSetupInfo) return;
 

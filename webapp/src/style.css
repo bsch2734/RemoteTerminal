@@ -199,6 +199,20 @@ button {
     background: var(--accent-success);
 }
 
+/* Keyboard shortcut hint */
+kbd {
+    display: inline-block;
+    padding: 0.1rem 0.35rem;
+    font-family: var(--font-family);
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 3px;
+    margin-left: 0.3rem;
+}
+
 /* === Status Badge === */
 .status-badge {
     display: inline-flex;
