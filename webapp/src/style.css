@@ -559,6 +559,17 @@ button {
     transform: translate(-50%, -50%);
 }
 
+/* Ship placement preview overlay */
+.cell.preview-valid {
+    background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
+    opacity: 0.7;
+}
+
+.cell.preview-invalid {
+    background: linear-gradient(135deg, var(--accent-danger) 0%, #b91c1c 100%);
+    opacity: 0.7;
+}
+
 .cell.hover-ok {
     outline: 2px solid var(--accent-success);
     outline-offset: -1px;

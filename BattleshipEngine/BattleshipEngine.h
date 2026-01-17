@@ -16,6 +16,8 @@ class BattleshipEngine {
 
         PlaceShipResult placeShip(Player p, int ID, coord pos, int rotation);
 
+        ValidatePlacementResult validatePlacement(Player p, int ID, coord pos, int rotation) const;
+
         ReadyUpResult readyUp(Player p);
 
         bool isPlayerReady(Player p);

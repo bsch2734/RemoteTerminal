@@ -27,7 +27,8 @@ enum class SessionActionResultError {
 enum class SessionActionResultType {
     FireResult,
     ReadyResult,
-    PlaceShipResult
+    PlaceShipResult,
+    CheckPlacementResult
 };
 
 struct PlaceShipResultData {
@@ -45,7 +46,12 @@ struct FireResultData {
     int hitId = 0;
 };
 
-using SessionActionResultData = std::variant<PlaceShipResultData, ReadyResultData, FireResultData>;
+struct CheckPlacementResultData {
+    bool valid = false;
+    std::set<coord> coords;
+};
+
+using SessionActionResultData = std::variant<PlaceShipResultData, ReadyResultData, FireResultData, CheckPlacementResultData>;
 
 struct SessionActionResult {
     bool success = false;

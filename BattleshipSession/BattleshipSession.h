@@ -29,6 +29,7 @@ private:
     SessionActionResult handlePlaceShip(Player p, const SessionAction& a);
     SessionActionResult handleFire(Player p, const SessionAction& a);
     SessionActionResult handleReady(Player p);
+    SessionActionResult handleCheckPlacement(Player p, const SessionAction& a);
 
 private:
     GameId _gameId;

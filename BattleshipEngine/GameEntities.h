@@ -3,6 +3,7 @@
 #include "coord.h"
 #include <vector>
 #include <map>
+#include <set>
 
 enum class Player {
 	none = 0,
@@ -43,6 +44,12 @@ enum class PlaceShipError {
 struct PlaceShipResult {
 	bool success;
 	PlaceShipError error;
+};
+
+struct ValidatePlacementResult {
+	bool valid;
+	PlaceShipError error;
+	std::set<coord> coords;
 };
 
 enum class ReadyUpError {

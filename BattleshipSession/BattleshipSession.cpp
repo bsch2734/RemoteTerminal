@@ -44,6 +44,11 @@ AddressedMessageBundle BattleshipSession::handleAction(const UserId& user, const
 			s = handleFire(p, action);
 			break;
 		}
+		case SessionActionType::CheckPlacement: {
+			// Only return the action result with preview data, no snapshot
+			s = handleCheckPlacement(p, action);
+			return a.addMessage(ToUser(user), s);
+		}
 		default: {
 			s.success = false;
 			s.error = SessionActionResultError::unknownAction;
@@ -227,5 +232,21 @@ SessionActionResult BattleshipSession::handleReady(Player p) {
 		}
 	}
 
+	return answer;
+}
+
+SessionActionResult BattleshipSession::handleCheckPlacement(Player p, const SessionAction& a) {
+	SessionActionResult answer;
+	answer.success = true;
+	answer.type = SessionActionResultType::CheckPlacementResult;
+	
+	PlaceShipData psd = std::get<PlaceShipData>(a.data);
+	auto r = _engine.validatePlacement(p, psd.shipId, psd.posision, psd.rotation);
+	
+	CheckPlacementResultData data;
+	data.valid = r.valid;
+	data.coords = r.coords;
+	answer.data = data;
+	
 	return answer;
 }

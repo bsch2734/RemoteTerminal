@@ -62,6 +62,8 @@ Json::Value toJson(const ReadyResultData& f);
 
 Json::Value toJson(const PlaceShipResultData& f);
 
+Json::Value toJson(const CheckPlacementResultData& f);
+
 Json::Value toJson(const UserSnapshot& u);
 
 Json::Value toJson(const StartupInfo& s);

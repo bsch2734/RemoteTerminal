@@ -37,6 +37,8 @@ SessionAction sessionActionFromJson(const Json::Value& v) {
 		d = readyDataFromJson(actionDataJson);
 	else if (t == SessionActionType::Fire)
 		d = fireDataFromJson(actionDataJson);
+	else if (t == SessionActionType::CheckPlacement)
+		d = placeShipDataFromJson(actionDataJson); // Uses same data format as PlaceShip
 
 	return SessionAction(t, d);
 }
@@ -89,6 +91,10 @@ Json::Value toJson(const SessionActionType& t) {
 			answer = "fire";
 			break;
 		}
+		case SessionActionType::CheckPlacement: {
+			answer = "checkplacement";
+			break;
+		}
 	}
 	return answer;
 }
@@ -103,6 +109,8 @@ SessionActionType sessionActionTypeFromJson(const Json::Value& v) {
 		answer = SessionActionType::Ready;
 	if (s == "fire")
 		answer = SessionActionType::Fire;
+	if (s == "checkplacement")
+		answer = SessionActionType::CheckPlacement;
 
 	return answer;
 }
@@ -139,6 +147,10 @@ Json::Value toJson(const SessionActionResultType& r) {
 		}
 		case SessionActionResultType::FireResult: {
 			answer = "fireresult";
+			break;
+		}
+		case SessionActionResultType::CheckPlacementResult: {
+			answer = "checkplacementresult";
 			break;
 		}
 	}
@@ -248,6 +260,8 @@ Json::Value toJson(const SessionActionResultData& s) {
 		answer = toJson(std::get<ReadyResultData>(s));
 	else if (std::holds_alternative<PlaceShipResultData>(s))
 		answer = toJson(std::get<PlaceShipResultData>(s));
+	else if (std::holds_alternative<CheckPlacementResultData>(s))
+		answer = toJson(std::get<CheckPlacementResultData>(s));
 	return answer;
 }
 
@@ -303,6 +317,13 @@ Json::Value toJson(const ReadyResultData& r) {
 
 Json::Value toJson(const PlaceShipResultData& p) {
 	return Json::Value(Json::nullValue);
+}
+
+Json::Value toJson(const CheckPlacementResultData& c) {
+	Json::Value answer(Json::objectValue);
+	answer["valid"] = c.valid;
+	answer["coords"] = toJson(c.coords);
+	return answer;
 }
 
 Json::Value toJson(const StartupInfo& s) {

@@ -162,6 +162,8 @@ function buildGrids(rows, cols) {
             cell.dataset.col = c;
 
             cell.addEventListener("click", () => handleOwnGridClick(r, c));
+            cell.addEventListener("mouseenter", () => handleOwnGridHover(r, c));
+            cell.addEventListener("mouseleave", () => clearPreview());
             ownGrid.appendChild(cell);
         }
     }
@@ -199,6 +201,36 @@ function handleOwnGridClick(row, col) {
     };
 
     sendMessage(message);
+}
+
+function handleOwnGridHover(row, col) {
+    const shipIdStr = shipSelect.value;
+    if (!shipIdStr || !lastSetupInfo) return;
+    
+    // Only show preview during setup phase
+    if (lastPhase !== "setup") return;
+
+    const message = {
+        gameid: lastSetupInfo.gameid,
+        userid: lastSetupInfo.you,
+        sessionaction: {
+            type: "checkplacement",
+            data: {
+                position: { row, col },
+                rotation: rotation,
+                shipid: Number(shipIdStr),
+            },
+        },
+    };
+
+    sendMessage(message);
+}
+
+function clearPreview() {
+    // Clear preview overlay classes from all cells
+    for (const cell of ownGrid.children) {
+        cell.classList.remove("preview-valid", "preview-invalid");
+    }
 }
 
 function handleOppGridClick(row, col) {
@@ -387,7 +419,7 @@ function applySnapshot(snapshot) {
     updateTurnIndicator(snapshot.currentturn, myUserId);
     updateReadyStatus(snapshot.youready, snapshot.opponentready);
 
-    // Clear all state classes from grids
+    // Clear all state classes from grids (but not preview classes)
     for (const cell of ownGrid.children) {
         cell.classList.remove("ship", "hit", "miss");
     }
@@ -436,6 +468,9 @@ function applyActionResult(result) {
             break;
         case "readyresult":
             applyReadyResult(result);
+            break;
+        case "checkplacementresult":
+            applyCheckPlacementResult(result);
             break;
     }
 }
@@ -505,5 +540,35 @@ function applyReadyResult(result) {
             notyourturn: "Your fleet placement is invalid",
         };
         showMessage(errorMessages[result.error] || "Unable to ready up", "error");
+    }
+}
+
+function applyCheckPlacementResult(result) {
+    if (!result.success) return;
+    
+    const data = result.data;
+    if (!data) return;
+    
+    const cols = lastSetupInfo?.boardcols || 10;
+    const previewClass = data.valid ? "preview-valid" : "preview-invalid";
+    
+    // Clear any existing preview
+    clearPreview();
+    
+    // Apply preview overlay to the specified coords
+    for (const coord of data.coords || []) {
+        const r = coord.row;
+        const c = coord.col;
+        
+        if (typeof r !== "number" || typeof c !== "number") continue;
+        
+        // Only show preview for in-bounds cells
+        if (r < 0 || c < 0) continue;
+        
+        const idx = r * cols + c;
+        const cell = ownGrid.children[idx];
+        if (cell) {
+            cell.classList.add(previewClass);
+        }
     }
 }

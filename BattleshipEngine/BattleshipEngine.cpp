@@ -1,7 +1,5 @@
 ﻿#include "BattleshipEngine.h"
-#include "BattleshipEngine.h"
 #include "GameEntities.h"
-#include "BattleshipEngine.h"
 #include "unordered_set"
 
 
@@ -31,42 +29,77 @@ PlaceShipResult BattleshipEngine::placeShip( Player p, int ID, coord pos, int ro
         return r;
     }
 
-    Fleet& fleetCopy = getMutableFleetForPlayer(p);
-    //find the ship for the player
-    Ship* movingShip = nullptr;
-    for (Ship& s : fleetCopy.getShips())
-        if (s.getID() == ID)
-            movingShip = &s;
-    if (movingShip == nullptr) {
+    // Validate the placement
+    auto validation = validatePlacement(p, ID, pos, rotation);
+    
+    if (!validation.valid) {
         r.success = false;
-        r.error = PlaceShipError::invalidID;
+        r.error = validation.error;
         return r;
     }
 
-    Ship originalMovingShip = *movingShip;
-    movingShip->setPos(pos);
-    movingShip->setRotation(rotation);
-
-    auto status = checkFleetStatus(fleetCopy);
-
-    if (status.test((int)FleetStatusBits::unplaced)) {
-        r.success = true;
-    }
-    if (status.test((int)FleetStatusBits::overlapping)) {
-        r.success = false;
-        r.error = PlaceShipError::OverlapsAnotherShip;
-    }
-    if (status.test((int)FleetStatusBits::outOfBounds)) {
-        r.success = false;
-        r.error = PlaceShipError::OutOfBounds;
+    // Validation passed, now actually place the ship
+    Fleet& fleet = getMutableFleetForPlayer(p);
+    for (Ship& s : fleet.getShips()) {
+        if (s.getID() == ID) {
+            s.setPos(pos);
+            s.setRotation(rotation);
+            break;
+        }
     }
 
-    if (!r.success) {
-        //revert if failed
-        movingShip->setPos(originalMovingShip.getPos());
-        movingShip->setRotation(originalMovingShip.getRotation());
-    }
+    return r;
+}
 
+ValidatePlacementResult BattleshipEngine::validatePlacement(Player p, int ID, coord pos, int rotation) const {
+    ValidatePlacementResult r;
+    r.valid = true;
+
+    const Fleet& fleet = getFleetForPlayer(p);
+    
+    // Find the ship
+    const Ship* targetShip = nullptr;
+    for (const Ship& s : fleet.getShips())
+        if (s.getID() == ID)
+            targetShip = &s;
+    
+    if (targetShip == nullptr) {
+        r.valid = false;
+        r.error = PlaceShipError::invalidID;
+        return r;
+    }
+    
+    // Collect coords of other placed ships
+    std::unordered_set<coord> occupied;
+    for (const Ship& s : fleet.getShips()) {
+        if (s.getID() == ID)
+            continue;
+        if (s.isPlaced()) {
+            for (const coord& c : s.getCoords()) {
+                occupied.insert(c.applyTransform(s.getPos(), s.getRotation()));
+            }
+        }
+    }
+    
+    // Calculate placement coords and check validity
+    for (const coord& c : targetShip->getCoords()) {
+        coord transformed = c.applyTransform(pos, rotation);
+        r.coords.insert(transformed);
+        
+        // Check out of bounds
+        if (transformed.d < 0 || transformed.d >= _boardDimensions.first ||
+            transformed.o < 0 || transformed.o >= _boardDimensions.second) {
+            r.valid = false;
+            r.error = PlaceShipError::OutOfBounds;
+        }
+        
+        // Check overlap (only set error if not already invalid)
+        if (r.valid && occupied.find(transformed) != occupied.end()) {
+            r.valid = false;
+            r.error = PlaceShipError::OverlapsAnotherShip;
+        }
+    }
+    
     return r;
 }
 

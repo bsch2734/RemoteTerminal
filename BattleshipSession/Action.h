@@ -7,7 +7,8 @@
 enum class SessionActionType {
     PlaceShip,
     Ready,
-    Fire
+    Fire,
+    CheckPlacement
 };
 
 struct PlaceShipData {
@@ -22,6 +23,7 @@ struct FireData {
     coord target;
 };
 
+// Note: CheckPlacement uses PlaceShipData directly, not in the variant
 using SessionActionData = std::variant<PlaceShipData, ReadyData, FireData>;
 
 struct SessionAction {
