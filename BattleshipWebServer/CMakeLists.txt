@@ -1,6 +1,6 @@
 add_executable(BattleshipWebServer
 	main.cpp
- "WsGameController.cpp" "BattleshipWebSocketManager" )
+ "WsGameController.cpp" "BattleshipWebSocketManager.cpp" )
 
 find_package(Drogon CONFIG REQUIRED)
 
