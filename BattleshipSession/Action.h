@@ -14,7 +14,7 @@ enum class SessionActionType {
 struct PlaceShipData {
     int shipId;
     int rotation;
-    coord posision;
+    coord position;
 };
 
 struct ReadyData {};

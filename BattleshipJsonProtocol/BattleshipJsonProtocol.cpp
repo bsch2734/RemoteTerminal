@@ -63,7 +63,7 @@ ReadyData readyDataFromJson(const Json::Value& v) {
 
 Json::Value toJson(const PlaceShipData& d) {
 	Json::Value answer(Json::objectValue);
-	answer["position"] = toJson(d.posision);
+	answer["position"] = toJson(d.position);
 	answer["rotation"] = d.rotation;
 	answer["shipid"] = d.shipId;
 	return answer;

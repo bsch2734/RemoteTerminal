@@ -147,7 +147,7 @@ SessionActionResult BattleshipSession::handlePlaceShip(Player p, const SessionAc
 	SessionActionResult answer;
 	
 	PlaceShipData psd = std::get<PlaceShipData>(a.data);
-	auto r = _engine.placeShip(p, psd.shipId, psd.posision, psd.rotation);
+	auto r = _engine.placeShip(p, psd.shipId, psd.position, psd.rotation);
 
 	answer.success = r.success;
 	answer.type = SessionActionResultType::PlaceShipResult;
@@ -241,7 +241,7 @@ SessionActionResult BattleshipSession::handleCheckPlacement(Player p, const Sess
 	answer.type = SessionActionResultType::CheckPlacementResult;
 	
 	PlaceShipData psd = std::get<PlaceShipData>(a.data);
-	auto r = _engine.validatePlacement(p, psd.shipId, psd.posision, psd.rotation);
+	auto r = _engine.validatePlacement(p, psd.shipId, psd.position, psd.rotation);
 	
 	CheckPlacementResultData data;
 	data.valid = r.valid;
