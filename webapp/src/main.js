@@ -44,6 +44,7 @@ let lastSetupInfo = null;
 let messageTimeout = null;
 let lastPhase = null;
 let placedShipIds = new Set();
+let hoveredCell = null; // Track currently hovered cell for preview refresh
 
 // === Utility Functions ===
 function logLine(text) {
@@ -204,6 +205,8 @@ function handleOwnGridClick(row, col) {
 }
 
 function handleOwnGridHover(row, col) {
+    hoveredCell = { row, col };
+    
     const shipIdStr = shipSelect.value;
     if (!shipIdStr || !lastSetupInfo) return;
     
@@ -227,6 +230,7 @@ function handleOwnGridHover(row, col) {
 }
 
 function clearPreview() {
+    hoveredCell = null;
     // Clear preview overlay classes from all cells
     for (const cell of ownGrid.children) {
         cell.classList.remove("preview-valid", "preview-invalid");
@@ -276,6 +280,11 @@ rotateBtn.addEventListener("click", () => {
     rotation = (rotation + 1) % 4;
     const directions = ["Right", "Up", "Left", "Down"];
     showMessage(`Rotation: ${directions[rotation]}`, "info");
+    
+    // Refresh preview if hovering over a cell
+    if (hoveredCell) {
+        handleOwnGridHover(hoveredCell.row, hoveredCell.col);
+    }
 });
 
 // Keyboard shortcut for rotation
