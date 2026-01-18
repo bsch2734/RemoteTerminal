@@ -11,7 +11,7 @@ enum class Player {
 	two = 2
 };
 
-inline Player oponent(Player p) {
+inline Player opponent(Player p) {
 	return (p == Player::one) ? Player::two : Player::one;
 }
 
@@ -58,7 +58,7 @@ enum class ReadyUpError {
 };
 
 struct ReadyUpResult {
-	bool succes;
+	bool success;
 	ReadyUpError error;
 };
 

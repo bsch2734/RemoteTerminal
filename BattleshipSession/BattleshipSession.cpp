@@ -74,14 +74,14 @@ AddressedMessageBundle BattleshipSession::getSnapshotMessageBundles() {
 	p1Snapshot.phase = _engine.phase();
 	p1Snapshot.userView = UserView(_playerToUserMap[Player::one], _engine.boardViewForPlayer(Player::one));
 	p1Snapshot.youReady = _engine.isPlayerReady(Player::one);
-	p1Snapshot.opponentReady = _engine.isPlayerReady(oponent(Player::one));
+	p1Snapshot.opponentReady = _engine.isPlayerReady(opponent(Player::one));
 
 	UserSnapshot p2Snapshot;
 	p2Snapshot.currentUser = p1Snapshot.currentUser;
 	p2Snapshot.phase = p1Snapshot.phase;
 	p2Snapshot.userView = UserView(_playerToUserMap[Player::two], _engine.boardViewForPlayer(Player::two));
 	p2Snapshot.youReady = _engine.isPlayerReady(Player::two);
-	p2Snapshot.opponentReady = _engine.isPlayerReady(oponent(Player::two));
+	p2Snapshot.opponentReady = _engine.isPlayerReady(opponent(Player::two));
 	
 	answer.addMessage(ToUser(_playerToUserMap[Player::one]), p1Snapshot);
 	answer.addMessage(ToUser(_playerToUserMap[Player::two]), p2Snapshot);
@@ -95,7 +95,7 @@ AddressedMessageBundle BattleshipSession::getStartupInfoMessageBundles() {
 	StartupInfo p1startupInfo(
 		_engine.phase(),
 		_playerToUserMap[Player::one],
-		_playerToUserMap[oponent(Player::one)],
+		_playerToUserMap[opponent(Player::one)],
 		_gameId,
 		_engine.getFleetForPlayer(Player::one),
 		UserView(_playerToUserMap[Player::one], _engine.boardViewForPlayer(Player::one)),
@@ -106,7 +106,7 @@ AddressedMessageBundle BattleshipSession::getStartupInfoMessageBundles() {
 	StartupInfo p2startupInfo(
 		_engine.phase(),
 		_playerToUserMap[Player::two],
-		_playerToUserMap[oponent(Player::two)],
+		_playerToUserMap[opponent(Player::two)],
 		_gameId,
 		_engine.getFleetForPlayer(Player::two),
 		UserView(_playerToUserMap[Player::two], _engine.boardViewForPlayer(Player::two)),
@@ -127,13 +127,13 @@ AddressedMessageBundle BattleshipSession::getSnapshotMessageBundleForUser(const 
 	snapshot.phase = _engine.phase();
 	snapshot.userView = UserView(u, _engine.boardViewForPlayer(playerFor(u)));
 	snapshot.youReady = _engine.isPlayerReady(playerFor(u));
-	snapshot.opponentReady = _engine.isPlayerReady(oponent(playerFor(u)));
+	snapshot.opponentReady = _engine.isPlayerReady(opponent(playerFor(u)));
 	answer.addMessage(ToUser(u), snapshot);
 	return answer;
 }
 
 UserId BattleshipSession::opponentForUser(const UserId& u) {
-	return _playerToUserMap[oponent(_userToPlayerMap[u])];
+	return _playerToUserMap[opponent(_userToPlayerMap[u])];
 }
 
 Player BattleshipSession::playerFor(const UserId& user) const {
@@ -212,7 +212,7 @@ SessionActionResult BattleshipSession::handleFire(Player p, const SessionAction&
 SessionActionResult BattleshipSession::handleReady(Player p) {
 	SessionActionResult answer;
 	ReadyUpResult r = _engine.readyUp(p);
-	answer.success = r.succes;
+	answer.success = r.success;
 	answer.type = SessionActionResultType::ReadyResult;
 	
 	if (answer.success) {

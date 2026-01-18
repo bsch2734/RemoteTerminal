@@ -110,7 +110,7 @@ ReadyUpResult BattleshipEngine::readyUp(Player p) {
     ReadyUpResult answer;
     auto status = checkFleetStatus(getFleetForPlayer(p));
     if (status.any()) {
-        answer.succes = false;
+        answer.success = false;
 
         if (status.test((int)FleetStatusBits::unplaced))
             answer.error = ReadyUpError::fleetNotPlaced;
@@ -127,7 +127,7 @@ ReadyUpResult BattleshipEngine::readyUp(Player p) {
         _currentPlayer = Player::one;
     }
 
-    answer.succes = true;
+    answer.success = true;
     return answer;
 }
 
@@ -158,7 +158,7 @@ FireResult BattleshipEngine::fire(Player p, coord target) {
         return answer;
     }
 
-    auto& f = getMutableFleetForPlayer(oponent(p));
+    auto& f = getMutableFleetForPlayer(opponent(p));
     auto r = f.hitFleet(target);
 
     if (r.success) {
@@ -181,7 +181,7 @@ FireResult BattleshipEngine::fire(Player p, coord target) {
     }
     else
         if (answer.success)
-            _currentPlayer = oponent(p);
+            _currentPlayer = opponent(p);
 
     return answer;
 }
@@ -250,9 +250,9 @@ GridView BattleshipEngine::ownGrid(Player p) const {
         if(s.isPlaced())
             for (const coord& c : s.getCoords())
                 occupied[c.applyTransform(s.getPos(), s.getRotation())] = SquareState::ship;
-    for (const auto& c : getMissesForPlayer(oponent(p)))
+    for (const auto& c : getMissesForPlayer(opponent(p)))
         occupied[c] = SquareState::miss;
-    for (const auto& c : getHitsForPlayer(oponent(p)))
+    for (const auto& c : getHitsForPlayer(opponent(p)))
         occupied[c] = SquareState::hit;
     return GridView(occupied);
 }
