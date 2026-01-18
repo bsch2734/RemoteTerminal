@@ -164,7 +164,7 @@ function buildGrids(rows, cols) {
 
             cell.addEventListener("click", () => handleOwnGridClick(r, c));
             cell.addEventListener("mouseenter", () => handleOwnGridHover(r, c));
-            cell.addEventListener("mouseleave", () => clearPreview());
+            cell.addEventListener("mouseleave", () => clearPreviewAndHover());
             ownGrid.appendChild(cell);
         }
     }
@@ -230,11 +230,15 @@ function handleOwnGridHover(row, col) {
 }
 
 function clearPreview() {
-    hoveredCell = null;
     // Clear preview overlay classes from all cells
     for (const cell of ownGrid.children) {
         cell.classList.remove("preview-valid", "preview-invalid");
     }
+}
+
+function clearPreviewAndHover() {
+    hoveredCell = null;
+    clearPreview();
 }
 
 function handleOppGridClick(row, col) {
