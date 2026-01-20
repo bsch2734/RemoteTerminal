@@ -1,6 +1,6 @@
-#run this once to set up the remoteterminal service
-
 #!/usr/bin/env bash
+# run this once to set up the remoteterminal service
+
 set -euo pipefail
 
 # Usage:
