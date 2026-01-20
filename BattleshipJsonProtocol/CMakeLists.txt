@@ -9,7 +9,7 @@ target_include_directories(BattleshipJsonProtocol PUBLIC
 
 target_link_libraries(BattleshipJsonProtocol PUBLIC
 	BattleshipSession
-	BattleshipMessaging
+	RemoteTerminalMessaging
     jsoncpp_static
 )
 

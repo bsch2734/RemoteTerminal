@@ -1,12 +1,12 @@
 #pragma once
 #include "BattleshipSession.h"
-#include "BattleshipMessageRouter.h"
+#include "RemoteTerminalMessageRouter.h"
 #include "BattleshipSessionManager.h"
 #include <drogon/WebSocketController.h>
 #include <string>
 #include <map>
 
-class BattleshipWebSocketManager {
+class RemoteTerminalWebSocketManager {
 public:
     void onMessage(const drogon::WebSocketConnectionPtr& conn, std::string&& message);
 
@@ -35,9 +35,9 @@ private:
 
     drogon::WebSocketConnectionPtr socketForUser(const UserId& u);
 
-    BattleshipMessageRouter _messageRouter;
+    RemoteTerminalMessageRouter _messageRouter;
 
     static ConnectionMaps connectionMaps;
 };
 
-BattleshipWebSocketManager& getBattleshipWebSocketManager();
+RemoteTerminalWebSocketManager& getRemoteTerminalWebSocketManager();

@@ -1,8 +1,8 @@
-#include "BattleshipMessageRouter.h"
+#include "RemoteTerminalMessageRouter.h"
 #include "BattleshipJsonProtocol.h"
 
 
-WireMessageResult BattleshipMessageRouter::onUnauthenticatedMessage(std::string&& message) {
+WireMessageResult RemoteTerminalMessageRouter::onUnauthenticatedMessage(std::string&& message) {
     WireMessageResult answer;
 
     JoinRequest inputJoinRequest = joinRequestFromJson(parseJson(message));
@@ -16,7 +16,7 @@ WireMessageResult BattleshipMessageRouter::onUnauthenticatedMessage(std::string&
     return answer;
 }
 
-WireMessageResult BattleshipMessageRouter::onAuthenticatedMessage(const UserId& userId, std::string&& message) {
+WireMessageResult RemoteTerminalMessageRouter::onAuthenticatedMessage(const UserId& userId, std::string&& message) {
     WireMessageResult answer;
 
 	ActionRequest inputActionRequest = actionRequestFromJson(parseJson(message));
@@ -30,7 +30,7 @@ WireMessageResult BattleshipMessageRouter::onAuthenticatedMessage(const UserId& 
     return answer;
 }
 
-AddressedWireMessageBundle BattleshipMessageRouter::routeMessagesToWireFormat(const AddressedMessageBundle& b) {
+AddressedWireMessageBundle RemoteTerminalMessageRouter::routeMessagesToWireFormat(const AddressedMessageBundle& b) {
 	AddressedWireMessageBundle wireBundle;
 
     for (const auto& addressedMessage : b) {

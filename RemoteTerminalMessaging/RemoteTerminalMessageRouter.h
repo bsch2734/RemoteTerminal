@@ -40,7 +40,7 @@ struct WireMessageResult {
 	AddressedWireMessageBundle addressedMessages; //messages to be sent in the format they travel on the wire
 };
 
-class BattleshipMessageRouter {
+class RemoteTerminalMessageRouter {
 public:
     WireMessageResult onUnauthenticatedMessage(std::string&& message);
 

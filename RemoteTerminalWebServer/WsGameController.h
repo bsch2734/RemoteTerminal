@@ -1,5 +1,5 @@
 #pragma once
-#include "BattleshipWebSocketManager.h"
+#include "RemoteTerminalWebSocketManager.h"
 #include <drogon/WebSocketController.h>
 
 class WsGameController final : public drogon::WebSocketController<WsGameController> {

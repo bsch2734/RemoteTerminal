@@ -1,17 +1,16 @@
-//BattleshipWebSocketManager.cpp
-#include "BattleshipWebSocketManager.h"
+#include "RemoteTerminalWebSocketManager.h"
 
 namespace {
-	BattleshipWebSocketManager globalManager;
+	RemoteTerminalWebSocketManager globalManager;
 }
 
-BattleshipWebSocketManager& getBattleshipWebSocketManager() {
+RemoteTerminalWebSocketManager& getRemoteTerminalWebSocketManager() {
 	return globalManager;
 }
 
-BattleshipWebSocketManager::ConnectionMaps BattleshipWebSocketManager::connectionMaps{};
+RemoteTerminalWebSocketManager::ConnectionMaps RemoteTerminalWebSocketManager::connectionMaps{};
 
-void BattleshipWebSocketManager::onMessage(const drogon::WebSocketConnectionPtr& conn, std::string&& message) {
+void RemoteTerminalWebSocketManager::onMessage(const drogon::WebSocketConnectionPtr& conn, std::string&& message) {
 	UserId u = userForSocket(conn);
 	WireMessageResult messageResult;
 	if (u == "") //socket not bound to user
@@ -21,15 +20,15 @@ void BattleshipWebSocketManager::onMessage(const drogon::WebSocketConnectionPtr&
 	processMessageResultFromConn(messageResult, conn);
 }
 
-void BattleshipWebSocketManager::onConnect(const drogon::HttpRequestPtr& req, const drogon::WebSocketConnectionPtr& conn) {
+void RemoteTerminalWebSocketManager::onConnect(const drogon::HttpRequestPtr& req, const drogon::WebSocketConnectionPtr& conn) {
 	//nothing to do, wait for first message
 }
 
-void BattleshipWebSocketManager::onDisconnect(const drogon::WebSocketConnectionPtr& conn) {
+void RemoteTerminalWebSocketManager::onDisconnect(const drogon::WebSocketConnectionPtr& conn) {
 	unbindSocket(conn);
 }
 
-bool BattleshipWebSocketManager::bindUserToSocket(const UserId& u, const drogon::WebSocketConnectionPtr& conn) {
+bool RemoteTerminalWebSocketManager::bindUserToSocket(const UserId& u, const drogon::WebSocketConnectionPtr& conn) {
 	if (socketForUser(u)) //only one connection per user to prevent cheating when UserIds are not authenticated
 		return false;
 	connectionMaps.socketToUserIdMap[conn] = u;
@@ -37,7 +36,7 @@ bool BattleshipWebSocketManager::bindUserToSocket(const UserId& u, const drogon:
 	return true;
 }
 
-void BattleshipWebSocketManager::unbindSocket(const drogon::WebSocketConnectionPtr& conn) {
+void RemoteTerminalWebSocketManager::unbindSocket(const drogon::WebSocketConnectionPtr& conn) {
 	UserId u = userForSocket(conn);
 	if (u == "")
 		return;
@@ -45,26 +44,26 @@ void BattleshipWebSocketManager::unbindSocket(const drogon::WebSocketConnectionP
 	connectionMaps.socketToUserIdMap.erase(conn);
 }
 
-void BattleshipWebSocketManager::sendToUser(const UserId& u, const std::string& s) {
+void RemoteTerminalWebSocketManager::sendToUser(const UserId& u, const std::string& s) {
 	sendToSocket(socketForUser(u), s);
 }
 
-void BattleshipWebSocketManager::sendToSocket(const drogon::WebSocketConnectionPtr& conn, const std::string& s) {
+void RemoteTerminalWebSocketManager::sendToSocket(const drogon::WebSocketConnectionPtr& conn, const std::string& s) {
 	if(conn)
 		conn->send(s);
 }
 
-UserId BattleshipWebSocketManager::userForSocket(const drogon::WebSocketConnectionPtr& conn) {
+UserId RemoteTerminalWebSocketManager::userForSocket(const drogon::WebSocketConnectionPtr& conn) {
 	auto p = connectionMaps.socketToUserIdMap.find(conn);
 	return p == connectionMaps.socketToUserIdMap.end() ? "" : p->second;
 }
 
-drogon::WebSocketConnectionPtr BattleshipWebSocketManager::socketForUser(const UserId& u) {
+drogon::WebSocketConnectionPtr RemoteTerminalWebSocketManager::socketForUser(const UserId& u) {
 	auto p = connectionMaps.userIdToSocketMap.find(u);
 	return p == connectionMaps.userIdToSocketMap.end() ? nullptr : p->second;
 }
 
-void BattleshipWebSocketManager::processMessageResultFromConn(const WireMessageResult& m, const drogon::WebSocketConnectionPtr& conn) {
+void RemoteTerminalWebSocketManager::processMessageResultFromConn(const WireMessageResult& m, const drogon::WebSocketConnectionPtr& conn) {
 	if (m.senderAction == SenderAction::Bind)
 		bindUserToSocket(m.userToBind, conn);
 

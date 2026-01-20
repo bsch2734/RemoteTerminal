@@ -2,7 +2,7 @@
 
 #include <string>
 #include <json/json.h>
-#include "BattleshipMessageRouter.h"
+#include "RemoteTerminalMessageRouter.h"
 #include "GameEntities.h"
 #include "coord.h"
 #include "Action.h"
