@@ -1,19 +1,19 @@
-#run this once to set up the battleship service
+#run this once to set up the remoteterminal service
 
 #!/usr/bin/env bash
 set -euo pipefail
 
 # Usage:
-#   APP_ROOT=/opt/battleship INSTALL_DIR=/opt/battleship/install SERVICE_NAME=battleship bash scripts/setup_systemd.sh
+#   APP_ROOT=/opt/remoteterminal INSTALL_DIR=/opt/remoteterminal/install SERVICE_NAME=remoteterminal bash scripts/setup_systemd.sh
 #
 # Defaults are chosen to match the recommended layout.
 
-SERVICE_NAME="${SERVICE_NAME:-battleship}"
-APP_ROOT="${APP_ROOT:-/opt/battleship}"
+SERVICE_NAME="${SERVICE_NAME:-remoteterminal}"
+APP_ROOT="${APP_ROOT:-/opt/remoteterminal}"
 INSTALL_DIR="${INSTALL_DIR:-${APP_ROOT}/install}"
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-UNIT_TEMPLATE="${REPO_ROOT}/infra/battleship.service"
+UNIT_TEMPLATE="${REPO_ROOT}/infra/remoteterminal.service"
 UNIT_DST="/etc/systemd/system/${SERVICE_NAME}.service"
 
 if [[ ! -f "${UNIT_TEMPLATE}" ]]; then

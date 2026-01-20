@@ -41,12 +41,12 @@ if [[ -f "${SCRIPT_DIR}/deploy.env" ]]; then
 fi
 
 # Paths (override by exporting before running deploy.sh)
-: "${APP_ROOT:=/opt/battleship}"
+: "${APP_ROOT:=/opt/remoteterminal}"
 : "${SRC_DIR:=${APP_ROOT}/src}"
 : "${BUILD_DIR:=${APP_ROOT}/build}"
 : "${INSTALL_DIR:=${APP_ROOT}/install}"
 : "${BUILD_TYPE:=Release}"
-: "${SERVICE_NAME:=battleship}"
+: "${SERVICE_NAME:=remoteterminal}"
 : "${WEBAPP_DIR:=${SRC_DIR}/webapp}"
 : "${WEB_ROOT:=${APP_ROOT}/www}"
 

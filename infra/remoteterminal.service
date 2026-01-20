@@ -1,5 +1,5 @@
 [Unit]
-Description=Battleship (Drogon)
+Description=RemoteTerminal (Drogon)
 After=network.target
 
 [Service]
