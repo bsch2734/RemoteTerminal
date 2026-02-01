@@ -1,14 +1,7 @@
 #pragma once
 #include "BattleshipSession.h"
-#include <json/json.h>
+#include "EndpointTypes.h"
 #include <map>
-
-enum class SenderAction {
-	None,
-	RejectMessage,
-	TerminateSession,
-	Bind
-};
 
 struct MessageResult {
 	SenderAction senderAction = SenderAction::None; //what the session manager requests to happen to the sender

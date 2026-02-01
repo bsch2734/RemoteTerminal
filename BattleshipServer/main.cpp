@@ -1,10 +1,10 @@
-#include "RemoteTerminalMessageRouter.h"
+#include "BattleshipEndpoint.h"
 #include "BattleshipJsonProtocol.h"
 #include <iostream>
 #include <unordered_map>
 
 int main() {
-    RemoteTerminalMessageRouter messageRouter;
+    BattleshipEndpoint messageRouter;
     
     // Track which userIds have been "authenticated" (bound) in this CLI session
     // Maps a "connection id" (line number or similar) to userId

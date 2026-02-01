@@ -2,7 +2,7 @@
 
 #include <string>
 #include <json/json.h>
-#include "RemoteTerminalMessageRouter.h"
+#include "EndpointTypes.h"
 #include "GameEntities.h"
 #include "coord.h"
 #include "Action.h"
@@ -28,9 +28,9 @@ SessionActionType sessionActionTypeFromJson(const Json::Value& v);
 
 Json::Value toJson(const SessionActionData& d);
 
-UserId gameIdFromJson(const Json::Value& v);
+GameId gameIdFromJson(const Json::Value& v);
 
-GameId userIdFromJson(const Json::Value& v);
+UserId userIdFromJson(const Json::Value& v);
 
 Json::Value toJson(const SessionActionResultType& r);
 
@@ -82,7 +82,7 @@ Json::Value toJson(const OutboundMessage& r);
 
 JoinRequest joinRequestFromJson(const Json::Value& v);
 
-Json::Value parseJson(const std::string& s);
+Json::Value parseJson(std::string_view s);
 
 ActionRequest actionRequestFromJson(const Json::Value& v);
 

@@ -11,4 +11,5 @@ target_include_directories(BattleshipSession PUBLIC
 
 target_link_libraries(BattleshipSession PUBLIC
 	BattleshipEngine
+	RemoteTerminalCore
 )

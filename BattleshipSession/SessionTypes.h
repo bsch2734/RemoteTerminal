@@ -1,13 +1,11 @@
 #pragma once
 
+#include "CoreTypes.h"
 #include "GameEntities.h"
 #include "Fleet.h"
+#include "Action.h"
 #include <string>
 #include <variant>
-
-using UserId = std::string;
-
-using GameId = std::string;
 
 enum class SessionActionResultError {
     //session-level errors
@@ -96,14 +94,6 @@ struct AddUserToGameResult {
 };
 
 using OutboundMessage = std::variant<UserSnapshot, StartupInfo, SessionActionResult, AddUserToGameResult>;
-
-struct ToSender{};
-
-struct ToUser {
-	UserId userId;
-};
-
-using OutboundMessageReciever = std::variant<ToSender, ToUser>;
 
 struct AddressedMessage {
     OutboundMessageReciever address;

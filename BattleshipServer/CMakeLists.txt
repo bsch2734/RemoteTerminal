@@ -3,6 +3,7 @@ add_executable(BattleshipServer
 )
 
 target_link_libraries(BattleshipServer PRIVATE
+    BattleshipEndpoint
     BattleshipJsonProtocol
 )
 

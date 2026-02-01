@@ -9,23 +9,38 @@ RemoteTerminalWebSocketManager& getRemoteTerminalWebSocketManager() {
 }
 
 RemoteTerminalWebSocketManager::ConnectionMaps RemoteTerminalWebSocketManager::connectionMaps{};
+std::map<drogon::WebSocketConnectionPtr, IRemoteTerminalEndpoint*> RemoteTerminalWebSocketManager::_connectionToEndpointMap;
 
-void RemoteTerminalWebSocketManager::onMessage(const drogon::WebSocketConnectionPtr& conn, std::string&& message) {
+void RemoteTerminalWebSocketManager::onMessage(const drogon::WebSocketConnectionPtr& conn, const InboundMessage& im) {
 	UserId u = userForSocket(conn);
 	WireMessageResult messageResult;
 	if (u == "") //socket not bound to user
-		messageResult = _messageRouter.onUnauthenticatedMessage(std::move(message));
+		messageResult = _connectionToEndpointMap[conn]->onUnauthenticatedMessage(std::move(im.rawMessage));
 	else
-		messageResult = _messageRouter.onAuthenticatedMessage(u, std::move(message));
+		messageResult = _connectionToEndpointMap[conn]->onAuthenticatedMessage(u, std::move(im.rawMessage));
 	processMessageResultFromConn(messageResult, conn);
 }
 
 void RemoteTerminalWebSocketManager::onConnect(const drogon::HttpRequestPtr& req, const drogon::WebSocketConnectionPtr& conn) {
-	//nothing to do, wait for first message
+	auto* endpoint = _endpointRegistry->endpointForRoute(req->path());
+
+	if (!endpoint) {
+		conn->shutdown();
+		return;
+	}
+
+	_connectionToEndpointMap[conn] = endpoint;
 }
 
 void RemoteTerminalWebSocketManager::onDisconnect(const drogon::WebSocketConnectionPtr& conn) {
 	unbindSocket(conn);
+	const auto& endpoint = _connectionToEndpointMap.find(conn);
+	if (endpoint != _connectionToEndpointMap.end())
+		_connectionToEndpointMap.erase(conn);
+}
+
+void RemoteTerminalWebSocketManager::setEndpointRegistry(RemoteTerminalEndpointRegistry* registry) {
+	_endpointRegistry = registry;
 }
 
 bool RemoteTerminalWebSocketManager::bindUserToSocket(const UserId& u, const drogon::WebSocketConnectionPtr& conn) {

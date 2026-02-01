@@ -1,18 +1,18 @@
 #pragma once
-#include "BattleshipSession.h"
-#include "RemoteTerminalMessageRouter.h"
-#include "BattleshipSessionManager.h"
+#include "RemoteTerminalEndpointRegistry.h"
 #include <drogon/WebSocketController.h>
 #include <string>
 #include <map>
 
 class RemoteTerminalWebSocketManager {
 public:
-    void onMessage(const drogon::WebSocketConnectionPtr& conn, std::string&& message);
+    void onMessage(const drogon::WebSocketConnectionPtr& conn, const InboundMessage& im);
 
     void onConnect(const drogon::HttpRequestPtr& req, const drogon::WebSocketConnectionPtr& conn);
 
     void onDisconnect(const drogon::WebSocketConnectionPtr& conn);
+
+    void setEndpointRegistry(RemoteTerminalEndpointRegistry* registry);
 
 private:
 
@@ -35,9 +35,11 @@ private:
 
     drogon::WebSocketConnectionPtr socketForUser(const UserId& u);
 
-    RemoteTerminalMessageRouter _messageRouter;
+    RemoteTerminalEndpointRegistry* _endpointRegistry;
 
     static ConnectionMaps connectionMaps;
+
+	static std::map<drogon::WebSocketConnectionPtr, IRemoteTerminalEndpoint*> _connectionToEndpointMap;
 };
 
 RemoteTerminalWebSocketManager& getRemoteTerminalWebSocketManager();

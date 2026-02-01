@@ -422,13 +422,18 @@ JoinRequest joinRequestFromJson(const Json::Value& v) {
 	return answer;
 }
 
-Json::Value parseJson(const std::string& s) {
+Json::Value parseJson(std::string_view s)
+{
 	Json::CharReaderBuilder rb;
 	Json::Value root;
 	std::string errs;
-	std::istringstream iss(s);
 
-	if (!Json::parseFromStream(rb, iss, &root, &errs))
+	std::unique_ptr<Json::CharReader> reader(rb.newCharReader());
+
+	const char* begin = s.data();
+	const char* end = s.data() + s.size();
+
+	if (!reader->parse(begin, end, &root, &errs))
 		return Json::nullValue;
 
 	return root;

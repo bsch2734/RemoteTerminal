@@ -2,7 +2,7 @@
 #include "RemoteTerminalWebSocketManager.h"
 #include <drogon/WebSocketController.h>
 
-class WsGameController final : public drogon::WebSocketController<WsGameController> {
+class RemoteTerminalWebSocketController final : public drogon::WebSocketController<RemoteTerminalWebSocketController> {
 public:
     void handleNewMessage(const drogon::WebSocketConnectionPtr& conn, std::string&& message, const drogon::WebSocketMessageType& type) override;
 
@@ -11,6 +11,6 @@ public:
     void handleConnectionClosed(const drogon::WebSocketConnectionPtr& conn) override;
 
     WS_PATH_LIST_BEGIN
-        WS_PATH_ADD("/ws");   // ws://host:8080/ws
+        WS_PATH_ADD("/com.titohq.*");
     WS_PATH_LIST_END
 };

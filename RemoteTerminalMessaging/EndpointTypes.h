@@ -1,8 +1,8 @@
 #pragma once
 
-#include "BattleshipSessionManager.h"
+#include "CoreTypes.h"
 #include <vector>
-#include <map>
+#include <string>
 
 using OutboundWireMessage = std::string;
 
@@ -34,21 +34,15 @@ private:
     std::vector<AddressedWireMessage> messages;
 };
 
-struct WireMessageResult {
-    SenderAction senderAction = SenderAction::None; //what the session manager requests to happen to the sender
-    UserId userToBind; //include the name of the user who sent the message
-	AddressedWireMessageBundle addressedMessages; //messages to be sent in the format they travel on the wire
+enum class SenderAction {
+    None,
+    RejectMessage,
+    TerminateSession,
+    Bind
 };
 
-class RemoteTerminalMessageRouter {
-public:
-    WireMessageResult onUnauthenticatedMessage(std::string&& message);
-
-    WireMessageResult onAuthenticatedMessage(const UserId& userID, std::string&& message);
-
-private:
-	BattleshipSessionManager _sessionManager;
-
-	AddressedWireMessageBundle routeMessagesToWireFormat(const AddressedMessageBundle& b);
-
+struct WireMessageResult {
+    SenderAction senderAction = SenderAction::None;
+    UserId userToBind;
+    AddressedWireMessageBundle addressedMessages;
 };

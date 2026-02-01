@@ -1,4 +1,5 @@
 #include "BattleshipSessionManager.h"
+#include "EndpointTypes.h"
 
 MessageResult BattleshipSessionManager::handleJoinRequest(const JoinRequest& request) {
 	MessageResult result; //rename to answer at some point
