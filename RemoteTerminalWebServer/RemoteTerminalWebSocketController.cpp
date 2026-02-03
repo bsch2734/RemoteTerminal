@@ -12,5 +12,13 @@ void RemoteTerminalWebSocketController::handleConnectionClosed(const drogon::Web
 }
 
 void RemoteTerminalWebSocketController::handleNewMessage(const drogon::WebSocketConnectionPtr& conn, std::string&& message, const drogon::WebSocketMessageType& type) {
+    //actual closing logic is handled in handleConnectionClosed
+	//no need to process close messages here
+	//also ignore ping/pong messages
+    if (   type == drogon::WebSocketMessageType::Close
+        || type == drogon::WebSocketMessageType::Ping
+        || type == drogon::WebSocketMessageType::Pong)
+        return;
+
     getRemoteTerminalWebSocketManager().onMessage(conn, InboundMessage(std::move(message)));
 }
