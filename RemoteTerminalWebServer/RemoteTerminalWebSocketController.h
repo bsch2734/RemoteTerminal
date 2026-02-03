@@ -11,6 +11,6 @@ public:
     void handleConnectionClosed(const drogon::WebSocketConnectionPtr& conn) override;
 
     WS_PATH_LIST_BEGIN
-        WS_PATH_ADD("/com.titohq.{gamename}");
+        WS_ADD_PATH_VIA_REGEX("^/ws(/.*)?$");
     WS_PATH_LIST_END
 };

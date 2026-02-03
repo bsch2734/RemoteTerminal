@@ -6,7 +6,7 @@
 int main(int argc, char* argv[]) {
     RemoteTerminalEndpointRegistry registry;
     BattleshipEndpoint* battleshipEndpoint = new BattleshipEndpoint();
-    registry.registerEndpoint(battleshipEndpoint->routePath(), battleshipEndpoint);
+    registry.registerEndpoint("/ws/" + battleshipEndpoint->routePath(), battleshipEndpoint);
 
 	getRemoteTerminalWebSocketManager().setEndpointRegistry(&registry);
 

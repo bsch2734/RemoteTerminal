@@ -44,5 +44,5 @@ AddressedWireMessageBundle BattleshipEndpoint::routeMessagesToWireFormat(const A
 }
 
 std::string BattleshipEndpoint::routePath() {
-	return "/com.titohq.navalbattle";
+	return "com.titohq.navalbattle";
 }
