@@ -42,5 +42,8 @@ add_subdirectory ("BattleshipServer")
 add_subdirectory ("RemoteTerminalWebServer")
 add_subdirectory ("DemoGame")
 add_subdirectory ("BattleshipEndpoint")
+add_subdirectory ("TicTacToeEngine")
+add_subdirectory ("TicTacToeRepl")
+
 
 install(TARGETS RemoteTerminalWebServer RUNTIME DESTINATION bin)
