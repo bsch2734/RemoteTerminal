@@ -1,0 +1,490 @@
+/* === Base Reset & Variables === */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    /* Colors */
+    --bg-primary: #0f172a;
+    --bg-secondary: #1e293b;
+    --bg-card: #1e293b;
+    --bg-hover: #334155;
+    
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    
+    --accent-primary: #3b82f6;
+    --accent-primary-hover: #2563eb;
+    --accent-success: #22c55e;
+    --accent-danger: #ef4444;
+    --accent-warning: #f59e0b;
+    
+    --x-color: #ef4444;
+    --o-color: #3b82f6;
+    
+    --border-color: #334155;
+    --border-radius: 8px;
+    --border-radius-sm: 6px;
+    
+    /* Typography */
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    
+    /* Shadows */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
+    
+    /* Board */
+    --cell-size: 100px;
+    --cell-gap: 8px;
+}
+
+/* === Global Styles === */
+html {
+    font-size: 14px;
+}
+
+body {
+    font-family: var(--font-family);
+    background: linear-gradient(135deg, var(--bg-primary) 0%, #1a1a2e 100%);
+    color: var(--text-primary);
+    min-height: 100vh;
+    line-height: 1.4;
+}
+
+#app {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 1rem;
+    min-height: 100vh;
+}
+
+/* === Typography === */
+h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    margin-bottom: 0.25rem;
+}
+
+.subtitle {
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+}
+
+.label {
+    font-size: 0.65rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* === Card === */
+.card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    box-shadow: var(--shadow-lg);
+    max-width: 360px;
+    margin: 3rem auto;
+    text-align: center;
+}
+
+/* === Form Elements === */
+.form-group {
+    margin-bottom: 1rem;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 0.35rem;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
+    font-family: var(--font-family);
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    color: var(--text-primary);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input[type="text"]:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+input::placeholder {
+    color: var(--text-muted);
+}
+
+/* === Buttons === */
+button {
+    font-family: var(--font-family);
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius-sm);
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-primary {
+    background: var(--accent-primary);
+    color: white;
+    width: 100%;
+    margin-top: 0.5rem;
+}
+
+.btn-primary:hover {
+    background: var(--accent-primary-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+/* === Status Badge === */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 1rem;
+    padding: 0.35rem 0.75rem;
+    background: var(--bg-primary);
+    border-radius: 9999px;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent-danger);
+}
+
+.status-badge.connected .status-dot {
+    background: var(--accent-success);
+}
+
+.status-badge.connecting .status-dot {
+    background: var(--accent-warning);
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* === Game Header === */
+.game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 0.6rem 1rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.player-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.15rem;
+    min-width: 80px;
+}
+
+.player-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.symbol-badge {
+    font-size: 1.2rem;
+    font-weight: 700;
+    padding: 0.1rem 0.5rem;
+    border-radius: 4px;
+}
+
+.symbol-badge.x {
+    color: var(--x-color);
+    background: rgba(239, 68, 68, 0.15);
+}
+
+.symbol-badge.o {
+    color: var(--o-color);
+    background: rgba(59, 130, 246, 0.15);
+}
+
+.phase-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.phase-badge {
+    background: var(--accent-primary);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.phase-badge.playing {
+    background: var(--accent-warning);
+    color: var(--bg-primary);
+}
+
+.phase-badge.finished {
+    background: var(--accent-success);
+}
+
+.turn-indicator {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--accent-success);
+    animation: pulse 1.5s infinite;
+}
+
+.turn-indicator.not-your-turn {
+    color: var(--text-muted);
+    animation: none;
+}
+
+/* === Message Toast === */
+.message-toast {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    padding: 0.6rem 1rem;
+    box-shadow: var(--shadow-lg);
+    z-index: 1000;
+    animation: slideUp 0.3s ease;
+    font-size: 0.85rem;
+}
+
+.message-toast.success {
+    border-color: var(--accent-success);
+    background: rgba(34, 197, 94, 0.15);
+    color: var(--accent-success);
+}
+
+.message-toast.error {
+    border-color: var(--accent-danger);
+    background: rgba(239, 68, 68, 0.15);
+    color: var(--accent-danger);
+}
+
+.message-toast.info {
+    border-color: var(--accent-primary);
+    background: rgba(59, 130, 246, 0.15);
+    color: var(--accent-primary);
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(1rem);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+/* === Game Over Overlay === */
+.game-over-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    animation: fadeIn 0.5s ease;
+}
+
+.game-over-content {
+    background: var(--bg-card);
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 2rem 3rem;
+    text-align: center;
+    box-shadow: var(--shadow-lg);
+}
+
+.game-over-content h2 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.game-over-content.victory h2 {
+    color: var(--accent-success);
+}
+
+.game-over-content.defeat h2 {
+    color: var(--accent-danger);
+}
+
+.game-over-content.draw h2 {
+    color: var(--accent-warning);
+}
+
+.game-over-content p {
+    color: var(--text-secondary);
+    font-size: 1rem;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* === Game Board === */
+.board-container {
+    display: flex;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(3, var(--cell-size));
+    grid-template-rows: repeat(3, var(--cell-size));
+    gap: var(--cell-gap);
+    background: var(--bg-card);
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-lg);
+}
+
+.cell {
+    width: var(--cell-size);
+    height: var(--cell-size);
+    background: var(--bg-primary);
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    font-weight: 700;
+}
+
+.cell:hover {
+    background: var(--bg-hover);
+    border-color: var(--accent-primary);
+    transform: scale(1.02);
+}
+
+.cell.x {
+    color: var(--x-color);
+    text-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+}
+
+.cell.o {
+    color: var(--o-color);
+    text-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+}
+
+/* === Debug Panel === */
+.debug-panel {
+    margin-top: 1rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
+.debug-panel summary {
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    user-select: none;
+}
+
+.debug-panel summary:hover {
+    background: var(--bg-hover);
+}
+
+.debug-panel pre {
+    padding: 0.75rem 1rem;
+    max-height: 150px;
+    overflow: auto;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    background: var(--bg-primary);
+    border-top: 1px solid var(--border-color);
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+/* === Utilities === */
+.hidden {
+    display: none !important;
+}
+
+/* === Responsive === */
+@media (max-width: 480px) {
+    :root {
+        --cell-size: 80px;
+    }
+    
+    #app {
+        padding: 0.5rem;
+    }
+    
+    .card {
+        margin: 1rem auto;
+        padding: 1.25rem;
+    }
+    
+    h1 {
+        font-size: 1.5rem;
+    }
+    
+    .game-header {
+        padding: 0.5rem;
+    }
+    
+    .board {
+        padding: 0.75rem;
+    }
+    
+    .cell {
+        font-size: 2.5rem;
+    }
+}
