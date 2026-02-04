@@ -1,7 +1,7 @@
 import "./style.css";
 
 // === Configuration ===
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
+const API_URL = import.meta.env.VITE_API_URL || "";
 
 // === DOM References ===
 const gamesLoading = document.getElementById("gamesLoading");
