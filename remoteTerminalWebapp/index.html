@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Remote Terminal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <div class="container">
+            <header class="header">
+                <h1>?? Remote Terminal</h1>
+                <p class="subtitle">Select a game to play</p>
+            </header>
+
+            <div id="gamesLoading" class="loading">
+                <span class="spinner"></span>
+                <span>Loading available games...</span>
+            </div>
+
+            <div id="gamesError" class="error-panel hidden">
+                <span class="error-icon">??</span>
+                <span class="error-text">Failed to load games</span>
+                <button id="retryBtn" class="btn-secondary btn-sm">Retry</button>
+            </div>
+
+            <div id="gamesList" class="games-grid hidden"></div>
+
+            <footer class="footer">
+                <p>Connected to <span id="serverUrl">—</span></p>
+            </footer>
+        </div>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+</body>
+</html>

@@ -47,7 +47,6 @@ fi
 : "${INSTALL_DIR:=${APP_ROOT}/install}"
 : "${BUILD_TYPE:=Release}"
 : "${SERVICE_NAME:=remoteterminal}"
-: "${WEBAPP_DIR:=${SRC_DIR}/battleshipWebapp}"
 : "${WEB_ROOT:=${APP_ROOT}/www}"
 
 cd "${SRC_DIR}"
@@ -61,25 +60,49 @@ cmake -S . -B "${BUILD_DIR}" -G Ninja \
 cmake --build "${BUILD_DIR}" -j
 cmake --install "${BUILD_DIR}"
 
-# ---- Deploy webapp (Vite) ----
-if [ -d "${WEBAPP_DIR}" ]; then
-  echo "[deploy] Building webapp in ${WEBAPP_DIR}..."
+# ---- Deploy webapps (Vite) ----
+# Each webapp: [source_dir, dest_subpath]
+# dest_subpath is relative to WEB_ROOT ("" means root)
+declare -a WEBAPPS=(
+  "remoteTerminalWebapp:"
+  "battleshipWebapp:navalbattle"
+  "ticTacToeWebapp:tictactoe"
+)
 
-  pushd "${WEBAPP_DIR}" >/dev/null
+# Prepare web root
+sudo mkdir -p "${WEB_ROOT}"
+sudo rm -rf "${WEB_ROOT:?}/"*
 
-  npm ci
-  npm run build
+for entry in "${WEBAPPS[@]}"; do
+  webapp_src="${entry%%:*}"
+  webapp_dest="${entry#*:}"
+  webapp_dir="${SRC_DIR}/${webapp_src}"
 
-  popd >/dev/null
+  if [ -d "${webapp_dir}" ]; then
+    echo "[deploy] Building ${webapp_src}..."
 
-  echo "[deploy] Publishing webapp to ${WEB_ROOT} ..."
+    pushd "${webapp_dir}" >/dev/null
+    npm ci
+    npm run build
+    popd >/dev/null
 
-  sudo mkdir -p "${WEB_ROOT}"
-  sudo rm -rf "${WEB_ROOT:?}/"*
-  sudo cp -r "${WEBAPP_DIR}/dist/"* "${WEB_ROOT}/"
+    if [ -z "${webapp_dest}" ]; then
+      dest_path="${WEB_ROOT}"
+    else
+      dest_path="${WEB_ROOT}/${webapp_dest}"
+    fi
 
-  echo "[deploy] Webapp deployed."
-fi
+    echo "[deploy] Publishing ${webapp_src} to ${dest_path}..."
+    sudo mkdir -p "${dest_path}"
+    sudo cp -r "${webapp_dir}/dist/"* "${dest_path}/"
+
+    echo "[deploy] ${webapp_src} deployed."
+  else
+    echo "[deploy] WARNING: ${webapp_dir} not found, skipping."
+  fi
+done
+
+echo "[deploy] All webapps deployed."
 
 
 sudo systemctl restart "${SERVICE_NAME}"
