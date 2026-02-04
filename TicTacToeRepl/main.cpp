@@ -3,6 +3,8 @@
 #include <sstream>
 #include "TicTacToeEngine.h"
 
+using namespace TicTacToe;
+
 char cellToChar(Player p, int index) {
     switch (p) {
         case Player::one: return 'X';

@@ -1,6 +1,8 @@
 #include "TicTacToeEndpoint.h"
 #include "TicTacToeJsonProtocol.h"
 
+using namespace TicTacToe;
+
 WireMessageResult TicTacToeEndpoint::onUnauthenticatedMessage(std::string_view message) {
     WireMessageResult answer;
 

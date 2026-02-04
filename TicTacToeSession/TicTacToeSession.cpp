@@ -1,5 +1,7 @@
 #include "TicTacToeSession.h"
 
+using namespace TicTacToe;
+
 TicTacToeSession::TicTacToeSession(const GameId& id, const UserId& playerOneId, const UserId& playerTwoId) {
 	_userToPlayerMap[playerOneId] = Player::one;
 	_userToPlayerMap[playerTwoId] = Player::two;

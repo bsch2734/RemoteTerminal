@@ -7,6 +7,8 @@
 #include <bitset>
 #include <unordered_map>
 
+namespace Battleship {
+
 class BattleshipEngine {
     public:
         BattleshipEngine();
@@ -71,3 +73,5 @@ private:
 
     std::bitset<8> checkFleetStatus(Fleet f);
 };
+
+} // namespace Battleship

@@ -4,6 +4,8 @@
 
 #include <array>
 
+namespace TicTacToe {
+
 class TicTacToeEngine {
 public:
     TicTacToeEngine();
@@ -24,3 +26,5 @@ private:
 
     std::array<Player, 9> _board;
 };
+
+} // namespace TicTacToe

@@ -7,6 +7,8 @@
 #include <string>
 #include <variant>
 
+namespace Battleship {
+
 enum class SessionActionResultError {
     //session-level errors
     shipNotFound,     //the specified shippId is not in this session
@@ -134,3 +136,5 @@ struct ActionRequest {
     UserId userId;
     SessionAction action;
 };
+
+} // namespace Battleship

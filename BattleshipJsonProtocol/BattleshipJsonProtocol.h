@@ -8,14 +8,20 @@
 #include "Action.h"
 #include "SessionTypes.h"
 
+namespace Battleship {
+
 Json::Value toJson(const coord& c);
 coord coordFromJson(const Json::Value& v);
+GameId gameIdFromJson(const Json::Value& v);
+UserId userIdFromJson(const Json::Value& v);
+Json::Value parseJson(std::string_view s);
 
 Json::Value toJson(const SessionAction& a);
 SessionAction sessionActionFromJson(const Json::Value& v);
 
 Json::Value toJson(const FireData& d);
 FireData fireDataFromJson(const Json::Value& v);
+
 
 Json::Value toJson(const ReadyData& d);
 ReadyData readyDataFromJson(const Json::Value& v);
@@ -27,10 +33,6 @@ Json::Value toJson(const SessionActionType& t);
 SessionActionType sessionActionTypeFromJson(const Json::Value& v);
 
 Json::Value toJson(const SessionActionData& d);
-
-GameId gameIdFromJson(const Json::Value& v);
-
-UserId userIdFromJson(const Json::Value& v);
 
 Json::Value toJson(const SessionActionResultType& r);
 
@@ -82,8 +84,8 @@ Json::Value toJson(const OutboundMessage& r);
 
 JoinRequest joinRequestFromJson(const Json::Value& v);
 
-Json::Value parseJson(std::string_view s);
-
 ActionRequest actionRequestFromJson(const Json::Value& v);
 
 OutboundWireMessage outboundWireMessageFromJson(const Json::Value v);
+
+} // namespace Battleship

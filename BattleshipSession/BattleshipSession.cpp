@@ -4,6 +4,8 @@
 
 #include <string>
 
+using namespace Battleship;
+
 BattleshipSession::BattleshipSession(const GameId& id, const UserId& playerOneId, const UserId& playerTwoId) {
 	_userToPlayerMap[playerOneId] = Player::one;
 	_userToPlayerMap[playerTwoId] = Player::two;

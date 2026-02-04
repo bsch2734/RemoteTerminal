@@ -13,7 +13,7 @@ public:
 	virtual std::string routePath() override;
 
 private:
-	BattleshipSessionManager _sessionManager;
+	Battleship::BattleshipSessionManager _sessionManager;
 
-	AddressedWireMessageBundle routeMessagesToWireFormat(const AddressedMessageBundle& b);
+	AddressedWireMessageBundle routeMessagesToWireFormat(const Battleship::AddressedMessageBundle& b);
 };

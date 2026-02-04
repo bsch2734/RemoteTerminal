@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <iterator>
 
+using namespace Battleship;
 
 int Ship::nextID = 0;
 

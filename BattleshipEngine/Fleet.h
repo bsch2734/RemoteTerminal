@@ -5,6 +5,8 @@
 
 //#include "GameEntities.h"
 
+namespace Battleship {
+
 class Fleet {
 private:
 	std::vector<Ship> ships;
@@ -38,3 +40,5 @@ public:
 
 
 };
+
+} // namespace Battleship

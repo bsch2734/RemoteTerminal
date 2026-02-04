@@ -1,5 +1,7 @@
 #include "TicTacToeJsonProtocol.h"
 
+namespace TicTacToe {
+
 Json::Value toJson(const SessionAction& a) {
     Json::Value answer(Json::objectValue);
     answer["type"] = toJson(a.type);
@@ -274,3 +276,5 @@ OutboundWireMessage outboundWireMessageFromJson(const Json::Value v) {
 
     return Json::writeString(wb, v);
 }
+
+} // namespace TicTacToe

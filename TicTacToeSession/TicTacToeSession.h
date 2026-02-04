@@ -5,6 +5,8 @@
 #include "SessionTypes.h"
 #include <map>
 
+namespace TicTacToe {
+
 class TicTacToeSession {
 public:
     TicTacToeSession(const GameId& id, const UserId& playerOneId, const UserId& playerTwoId);
@@ -32,3 +34,5 @@ private:
 
     TicTacToeEngine _engine;
 };
+
+} // namespace TicTacToe

@@ -1,6 +1,8 @@
 #include "Fleet.h"
 #include <vector>
 
+using namespace Battleship;
+
 Fleet::Fleet(std::vector<Ship> ships) :
 	ships(ships)
 {};

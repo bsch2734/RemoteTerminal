@@ -5,6 +5,8 @@
 #include <string>
 #include <set>
 
+namespace Battleship {
+
 class Ship {
 private:
 	coord pos;
@@ -48,3 +50,5 @@ public:
 	const static Ship battleship;
 	const static Ship carrier;
 };
+
+} // namespace Battleship

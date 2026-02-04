@@ -13,7 +13,7 @@ public:
     virtual std::string routePath() override;
 
 private:
-    TicTacToeSessionManager _sessionManager;
+    TicTacToe::TicTacToeSessionManager _sessionManager;
 
-    AddressedWireMessageBundle routeMessagesToWireFormat(const AddressedMessageBundle& b);
+    AddressedWireMessageBundle routeMessagesToWireFormat(const TicTacToe::AddressedMessageBundle& b);
 };

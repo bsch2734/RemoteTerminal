@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include "BattleshipEngine.h"
 
+using namespace Battleship;
+
 int main() {
 	BattleshipEngine e;
 

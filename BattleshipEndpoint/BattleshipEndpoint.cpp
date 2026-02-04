@@ -1,6 +1,8 @@
 #include "BattleshipEndpoint.h"
 #include "BattleshipJsonProtocol.h"
 
+using namespace Battleship;
+
 WireMessageResult BattleshipEndpoint::onUnauthenticatedMessage(std::string_view message) {
 	WireMessageResult answer;
 

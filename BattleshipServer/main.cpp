@@ -3,6 +3,8 @@
 #include <iostream>
 #include <unordered_map>
 
+using namespace Battleship;
+
 int main() {
     BattleshipEndpoint messageRouter;
     

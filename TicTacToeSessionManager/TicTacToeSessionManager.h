@@ -4,6 +4,8 @@
 #include "EndpointTypes.h"
 #include <map>
 
+namespace TicTacToe {
+
 struct MessageResult {
     SenderAction senderAction = SenderAction::None;
     UserId userToBind;
@@ -24,3 +26,5 @@ private:
     std::map<GameId, TicTacToeSession*> _gameIdToSessionMap;
     std::map<GameId, UserId> _lobbyGames;
 };
+
+} // namespace TicTacToe

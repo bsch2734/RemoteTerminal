@@ -1,5 +1,7 @@
 #pragma once
 
+namespace TicTacToe {
+
 enum class Player {
 	none = 0,
 	one = 1,
@@ -27,3 +29,5 @@ struct MoveResult {
 	bool success = false;
 	MoveError error = MoveError::notYourTurn;
 };
+
+} // namespace TicTacToe

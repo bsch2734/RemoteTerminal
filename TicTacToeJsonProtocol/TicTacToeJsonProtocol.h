@@ -5,6 +5,8 @@
 #include "EndpointTypes.h"
 #include "SessionTypes.h"
 
+namespace TicTacToe {
+
 Json::Value toJson(const SessionAction& a);
 SessionAction sessionActionFromJson(const Json::Value& v);
 
@@ -53,3 +55,5 @@ Json::Value parseJson(std::string_view s);
 ActionRequest actionRequestFromJson(const Json::Value& v);
 
 OutboundWireMessage outboundWireMessageFromJson(const Json::Value v);
+
+} // namespace TicTacToe

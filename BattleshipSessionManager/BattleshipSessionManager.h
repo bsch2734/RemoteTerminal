@@ -3,6 +3,8 @@
 #include "EndpointTypes.h"
 #include <map>
 
+namespace Battleship {
+
 struct MessageResult {
 	SenderAction senderAction = SenderAction::None; //what the session manager requests to happen to the sender
 	UserId userToBind; //include the name of the user who sent the message
@@ -24,3 +26,5 @@ private:
 	std::map<GameId, BattleshipSession*> _gameIdToSessionMap;
 	std::map<GameId, UserId> _lobbyGames;
 };
+
+} // namespace Battleship

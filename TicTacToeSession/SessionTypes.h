@@ -7,6 +7,8 @@
 #include <array>
 #include <vector>
 
+namespace TicTacToe {
+
 enum class SessionActionResultError {
     none,
     userNotFound,
@@ -106,3 +108,5 @@ struct ActionRequest {
     UserId userId;
     SessionAction action;
 };
+
+} // namespace TicTacToe

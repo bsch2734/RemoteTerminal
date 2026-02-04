@@ -1,6 +1,8 @@
 #include "TicTacToeSessionManager.h"
 #include "EndpointTypes.h"
 
+using namespace TicTacToe;
+
 MessageResult TicTacToeSessionManager::handleJoinRequest(const JoinRequest& request) {
     MessageResult result;
 

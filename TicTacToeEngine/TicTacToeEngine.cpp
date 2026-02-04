@@ -2,6 +2,8 @@
 #include "TicTacToeEngine.h"
 #include "TicTacToeEngine.h"
 
+using namespace TicTacToe;
+
 TicTacToeEngine::TicTacToeEngine()
 	: _phase(Phase::playing), _currentPlayer(Player::one), _board{ Player::none, Player::none, Player::none,
 																   Player::none, Player::none, Player::none,

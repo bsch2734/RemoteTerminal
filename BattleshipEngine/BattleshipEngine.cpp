@@ -2,6 +2,7 @@
 #include "GameEntities.h"
 #include "unordered_set"
 
+using namespace Battleship;
 
 BattleshipEngine::BattleshipEngine() :
     _currentPlayer(Player::none),

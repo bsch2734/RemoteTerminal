@@ -5,6 +5,8 @@
 #include <map>
 #include <set>
 
+namespace Battleship {
+
 enum class Player {
 	none = 0,
 	one = 1,
@@ -75,3 +77,5 @@ struct BoardView {
 	GridView ownGrid;
 	GridView opponentGrid;
 };
+
+} // namespace Battleship

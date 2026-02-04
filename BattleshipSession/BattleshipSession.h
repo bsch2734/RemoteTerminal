@@ -4,6 +4,8 @@
 #include "Action.h"
 #include "SessionTypes.h"
 
+namespace Battleship {
+
 class BattleshipSession {
 public:
     BattleshipSession(const GameId& id, const UserId& playerOneId, const UserId& playerTwoId);
@@ -38,3 +40,5 @@ private:
 
     BattleshipEngine _engine;
 };
+
+} // namespace Battleship
