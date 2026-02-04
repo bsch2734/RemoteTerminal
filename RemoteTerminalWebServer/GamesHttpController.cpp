@@ -11,7 +11,7 @@ void GamesHttpController::listGames(const drogon::HttpRequestPtr& req, std::func
     battleship["description"] = "Classic naval combat strategy game";
     battleship["route"] = "com.titohq.navalbattle";
     battleship["url"] = "/navalbattle/";
-    battleship["icon"] = "?";
+    battleship["icon"] = "\u2693";
     battleship["minPlayers"] = 2;
     battleship["maxPlayers"] = 2;
     games.append(battleship);
@@ -23,7 +23,7 @@ void GamesHttpController::listGames(const drogon::HttpRequestPtr& req, std::func
     tictactoe["description"] = "Classic X and O game";
     tictactoe["route"] = "com.titohq.tictactoe";
     tictactoe["url"] = "/tictactoe/";
-    tictactoe["icon"] = "?";
+    tictactoe["icon"] = "\u274C";
     tictactoe["minPlayers"] = 2;
     tictactoe["maxPlayers"] = 2;
     games.append(tictactoe);
