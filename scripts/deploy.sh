@@ -47,7 +47,7 @@ fi
 : "${INSTALL_DIR:=${APP_ROOT}/install}"
 : "${BUILD_TYPE:=Release}"
 : "${SERVICE_NAME:=remoteterminal}"
-: "${WEBAPP_DIR:=${SRC_DIR}/webapp}"
+: "${WEBAPP_DIR:=${SRC_DIR}/battleshipWebapp}"
 : "${WEB_ROOT:=${APP_ROOT}/www}"
 
 cd "${SRC_DIR}"
