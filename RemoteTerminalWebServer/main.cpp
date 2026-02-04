@@ -1,5 +1,6 @@
 #include "RemoteTerminalWebSocketController.h"
 #include "RemoteTerminalEndpointRegistry.h"
+#include "GamesHttpController.h"
 #include "BattleshipEndpoint.h"
 #include "TicTacToeEndpoint.h"
 #include <drogon/drogon.h>
