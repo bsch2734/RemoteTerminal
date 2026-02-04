@@ -43,6 +43,10 @@ add_subdirectory ("RemoteTerminalWebServer")
 add_subdirectory ("DemoGame")
 add_subdirectory ("BattleshipEndpoint")
 add_subdirectory ("TicTacToeEngine")
+add_subdirectory ("TicTacToeSession")
+add_subdirectory ("TicTacToeSessionManager")
+add_subdirectory ("TicTacToeJsonProtocol")
+add_subdirectory ("TicTacToeEndpoint")
 add_subdirectory ("TicTacToeRepl")
 
 
