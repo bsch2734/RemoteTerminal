@@ -19,7 +19,6 @@ enum class SessionActionResultError {
     wrongPhase,       //action cannot be performed in this game phase
     invalidPlacement, //tried to so something with invalid coordinates
     notYourTurn,      //tried to do something when not allowed to act
-    alreadyFired,     //tried to fire at a coordinate that was already fired at
 
     //catch all for engine
     internalError     //generic error

@@ -205,10 +205,6 @@ SessionActionResult BattleshipSession::handleFire(Player p, const SessionAction&
 				answer.error = SessionActionResultError::notYourTurn;
 				break;
 			}
-			case FireError::alreadyFired: {
-				answer.error = SessionActionResultError::alreadyFired;
-				break;
-			}
 		}
 	}
 

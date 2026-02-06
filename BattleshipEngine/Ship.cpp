@@ -51,7 +51,9 @@ coord Ship::getPos() const {
 Ship::hitShipResult Ship::hit(coord where) {
 	hitShipResult answer;
 
-	if (hits.find(where) != hits.end()) {
+	coord transformed = where.applyInverseTransform(pos, rotation);
+	
+	if (hits.find(transformed) != hits.end()) {
 		answer.error = hitShipError::alreadyHit;
 		answer.success = false;
 		return answer;
@@ -62,7 +64,6 @@ Ship::hitShipResult Ship::hit(coord where) {
 		coords.begin(), coords.end(), 
 		hits.begin(), hits.end(), 
 		std::inserter(unhit, unhit.end()));
-	coord transformed = where.applyInverseTransform(pos, rotation);
 	if (unhit.find(transformed) == unhit.end()) {
 		answer.success = false;
 		answer.error = hitShipError::notOnShip;

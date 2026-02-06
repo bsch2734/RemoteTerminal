@@ -298,10 +298,6 @@ Json::Value toJson(const SessionActionResultError& s) {
 			answer = "wrongphase";
 			break;
 		}
-		case SessionActionResultError::alreadyFired: {
-			answer = "alreadyfired";
-			break;
-		}
 	}
 	return answer;
 }
