@@ -360,6 +360,13 @@ button {
 .game-over-content p {
     color: var(--text-secondary);
     font-size: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.game-over-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
 }
 
 @keyframes fadeIn {

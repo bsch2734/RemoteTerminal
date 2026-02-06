@@ -24,6 +24,8 @@ const messageText = document.getElementById("messageText");
 const gameOverOverlay = document.getElementById("gameOverOverlay");
 const gameOverTitle = document.getElementById("gameOverTitle");
 const gameOverMessage = document.getElementById("gameOverMessage");
+const rematchBtn = document.getElementById("rematchBtn");
+const homeBtn = document.getElementById("homeBtn");
 
 const board = document.getElementById("board");
 const cells = board.querySelectorAll(".cell");
@@ -35,6 +37,8 @@ let lastPhase = null;
 let myUserId = null;
 let gameId = null;
 let mySymbol = null; // "X" or "O"
+let rematchRequested = false;
+let opponentWantsRematch = false;
 
 // === Utility Functions ===
 function logLine(text) {
@@ -93,6 +97,11 @@ function showGameOver(winner) {
     gameOverOverlay.classList.remove("hidden");
     const content = gameOverOverlay.querySelector(".game-over-content");
     
+    // Reset rematch state
+    rematchRequested = false;
+    opponentWantsRematch = false;
+    updateRematchButton();
+    
     if (winner === "none") {
         content.classList.remove("victory", "defeat");
         content.classList.add("draw");
@@ -109,6 +118,26 @@ function showGameOver(winner) {
         gameOverTitle.textContent = "Defeat";
         gameOverMessage.textContent = "Your opponent won.";
     }
+}
+
+function updateRematchButton() {
+    if (rematchRequested && opponentWantsRematch) {
+        rematchBtn.textContent = "Starting Rematch...";
+        rematchBtn.disabled = true;
+    } else if (rematchRequested) {
+        rematchBtn.textContent = "Waiting for opponent...";
+        rematchBtn.disabled = true;
+    } else if (opponentWantsRematch) {
+        rematchBtn.textContent = "Accept Rematch";
+        rematchBtn.disabled = false;
+    } else {
+        rematchBtn.textContent = "Rematch";
+        rematchBtn.disabled = false;
+    }
+}
+
+function hideGameOver() {
+    gameOverOverlay.classList.add("hidden");
 }
 
 // === Click Handler ===
@@ -205,6 +234,12 @@ connectBtn.addEventListener("click", () => {
                         showGameScreen();
                     }
                     break;
+                case "rematchrequest":
+                    handleRematchRequest(obj[key]);
+                    break;
+                case "rematchstart":
+                    handleRematchStart();
+                    break;
                 case "error":
                     showMessage(`Error: ${obj[key]}`, "error");
                     break;
@@ -223,6 +258,52 @@ connectBtn.addEventListener("click", () => {
         logLine("WebSocket closed");
     };
 });
+
+// === Rematch and Home Button Handlers ===
+rematchBtn.addEventListener("click", () => {
+    if (!myUserId || !gameId) return;
+    
+    rematchRequested = true;
+    updateRematchButton();
+    
+    const message = {
+        gameid: gameId,
+        userid: myUserId,
+        action: {
+            type: "rematch"
+        }
+    };
+    
+    sendMessage(message);
+    showMessage("Rematch requested", "info");
+});
+
+homeBtn.addEventListener("click", () => {
+    // Reload the page to go back to connection screen
+    window.location.reload();
+});
+
+function handleRematchRequest(data) {
+    opponentWantsRematch = true;
+    updateRematchButton();
+    showMessage("Opponent wants a rematch!", "info");
+}
+
+function handleRematchStart() {
+    // Reset game state
+    rematchRequested = false;
+    opponentWantsRematch = false;
+    hideGameOver();
+    lastPhase = null;
+    
+    // Clear the board
+    cells.forEach(cell => {
+        cell.textContent = "";
+        cell.classList.remove("x", "o");
+    });
+    
+    showMessage("Rematch starting!", "success");
+}
 
 // === Apply Server Data ===
 function showWaitingScreen() {
