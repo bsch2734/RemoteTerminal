@@ -206,7 +206,7 @@ SessionActionResult BattleshipSession::handleFire(Player p, const SessionAction&
 				break;
 			}
 			case FireError::alreadyFired: {
-				answer.error = SessionActionResultError::invalidPlacement;
+				answer.error = SessionActionResultError::alreadyFired;
 				break;
 			}
 		}
