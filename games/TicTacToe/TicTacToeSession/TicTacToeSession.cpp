@@ -43,7 +43,9 @@ AddressedMessageBundle TicTacToeSession::handleAction(const UserId& user, const 
 				_playerTwoWantsRematch = false;
 				
 				// Send rematch start to both players
-				a.addMessage(ToBoth(), RematchStart{});
+				RematchStart rematchStart{};
+				a.addMessage(ToUser(_playerToUserMap[Player::one]), rematchStart);
+				a.addMessage(ToUser(_playerToUserMap[Player::two]), rematchStart);
 				// Send new startup info to both players
 				a.addMessageBundle(getStartupInfoBundles());
 				a.addMessageBundle(getSnapshotMessageBundles());
