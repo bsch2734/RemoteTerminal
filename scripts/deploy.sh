@@ -64,9 +64,9 @@ cmake --install "${BUILD_DIR}"
 # Each webapp: [source_dir, dest_subpath]
 # dest_subpath is relative to WEB_ROOT ("" means root)
 declare -a WEBAPPS=(
-  "remoteTerminalWebapp:"
-  "battleshipWebapp:navalbattle"
-  "ticTacToeWebapp:tictactoe"
+  "platform/remoteTerminalWebapp:"
+  "games/Battleship/battleshipWebapp:navalbattle"
+  "games/TicTacToe/ticTacToeWebapp:tictactoe"
 )
 
 # Prepare web root
