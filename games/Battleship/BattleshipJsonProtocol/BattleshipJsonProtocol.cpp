@@ -121,13 +121,13 @@ SessionActionType sessionActionTypeFromJson(const Json::Value& v) {
 	std::string s = v.asString();
 	if (s == "placeship")
 		answer = SessionActionType::PlaceShip;
-	if (s == "ready")
+	else if (s == "ready")
 		answer = SessionActionType::Ready;
-	if (s == "fire")
+	else if (s == "fire")
 		answer = SessionActionType::Fire;
-	if (s == "checkplacement")
+	else if (s == "checkplacement")
 		answer = SessionActionType::CheckPlacement;
-	if (s == "rematch")
+	else if (s == "rematch")
 		answer = SessionActionType::Rematch;
 
 	return answer;

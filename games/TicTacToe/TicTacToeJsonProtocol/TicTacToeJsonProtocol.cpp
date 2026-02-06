@@ -63,7 +63,7 @@ SessionActionType sessionActionTypeFromJson(const Json::Value& v) {
     std::string s = v.asString();
     if (s == "move")
         answer = SessionActionType::Move;
-    if (s == "rematch")
+    else if (s == "rematch")
         answer = SessionActionType::Rematch;
 
     return answer;
