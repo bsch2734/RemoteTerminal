@@ -28,7 +28,8 @@ enum class SessionActionResultType {
     FireResult,
     ReadyResult,
     PlaceShipResult,
-    CheckPlacementResult
+    CheckPlacementResult,
+    RematchResult
 };
 
 struct PlaceShipResultData {
@@ -51,7 +52,11 @@ struct CheckPlacementResultData {
     std::set<coord> coords;
 };
 
-using SessionActionResultData = std::variant<PlaceShipResultData, ReadyResultData, FireResultData, CheckPlacementResultData>;
+struct RematchResultData {
+    // no data needed
+};
+
+using SessionActionResultData = std::variant<PlaceShipResultData, ReadyResultData, FireResultData, CheckPlacementResultData, RematchResultData>;
 
 struct SessionActionResult {
     bool success = false;
@@ -95,7 +100,15 @@ struct AddUserToGameResult {
     AddUserToGameError error;
 };
 
-using OutboundMessage = std::variant<UserSnapshot, StartupInfo, SessionActionResult, AddUserToGameResult>;
+struct RematchRequest {
+    UserId requestingUser;
+};
+
+struct RematchStart {
+    // Signal to both players that rematch is starting
+};
+
+using OutboundMessage = std::variant<UserSnapshot, StartupInfo, SessionActionResult, AddUserToGameResult, RematchRequest, RematchStart>;
 
 struct AddressedMessage {
     OutboundMessageReciever address;

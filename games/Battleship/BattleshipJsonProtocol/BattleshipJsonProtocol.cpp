@@ -41,6 +41,8 @@ SessionAction sessionActionFromJson(const Json::Value& v) {
 		d = fireDataFromJson(actionDataJson);
 	else if (t == SessionActionType::CheckPlacement)
 		d = placeShipDataFromJson(actionDataJson); // Uses same data format as PlaceShip
+	else if (t == SessionActionType::Rematch)
+		d = rematchDataFromJson(actionDataJson);
 
 	return SessionAction(t, d);
 }
@@ -61,6 +63,14 @@ Json::Value toJson(const ReadyData& d) {
 
 ReadyData readyDataFromJson(const Json::Value& v) {
 	return ReadyData();
+}
+
+Json::Value toJson(const RematchData& d) {
+	return Json::nullValue;
+}
+
+RematchData rematchDataFromJson(const Json::Value& v) {
+	return RematchData();
 }
 
 Json::Value toJson(const PlaceShipData& d) {
@@ -97,6 +107,10 @@ Json::Value toJson(const SessionActionType& t) {
 			answer = "checkplacement";
 			break;
 		}
+		case SessionActionType::Rematch: {
+			answer = "rematch";
+			break;
+		}
 	}
 	return answer;
 }
@@ -113,6 +127,8 @@ SessionActionType sessionActionTypeFromJson(const Json::Value& v) {
 		answer = SessionActionType::Fire;
 	if (s == "checkplacement")
 		answer = SessionActionType::CheckPlacement;
+	if (s == "rematch")
+		answer = SessionActionType::Rematch;
 
 	return answer;
 }
@@ -124,6 +140,8 @@ Json::Value toJson(const SessionActionData& d) {
 		return toJson(std::get<ReadyData>(d));
 	if (std::holds_alternative<PlaceShipData>(d))
 		return toJson(std::get<PlaceShipData>(d));
+	if (std::holds_alternative<RematchData>(d))
+		return toJson(std::get<RematchData>(d));
 	return Json::nullValue;
 }
 
@@ -153,6 +171,10 @@ Json::Value toJson(const SessionActionResultType& r) {
 		}
 		case SessionActionResultType::CheckPlacementResult: {
 			answer = "checkplacementresult";
+			break;
+		}
+		case SessionActionResultType::RematchResult: {
+			answer = "rematchresult";
 			break;
 		}
 	}
@@ -264,6 +286,8 @@ Json::Value toJson(const SessionActionResultData& s) {
 		answer = toJson(std::get<PlaceShipResultData>(s));
 	else if (std::holds_alternative<CheckPlacementResultData>(s))
 		answer = toJson(std::get<CheckPlacementResultData>(s));
+	else if (std::holds_alternative<RematchResultData>(s))
+		answer = toJson(std::get<RematchResultData>(s));
 	return answer;
 }
 
@@ -321,11 +345,25 @@ Json::Value toJson(const PlaceShipResultData& p) {
 	return Json::Value(Json::nullValue);
 }
 
+Json::Value toJson(const RematchResultData& r) {
+	return Json::Value(Json::nullValue);
+}
+
 Json::Value toJson(const CheckPlacementResultData& c) {
 	Json::Value answer(Json::objectValue);
 	answer["valid"] = c.valid;
 	answer["coords"] = toJson(c.coords);
 	return answer;
+}
+
+Json::Value toJson(const RematchRequest& r) {
+	Json::Value answer(Json::objectValue);
+	answer["user"] = toJson(r.requestingUser);
+	return answer;
+}
+
+Json::Value toJson(const RematchStart& r) {
+	return Json::Value(Json::objectValue);
 }
 
 Json::Value toJson(const StartupInfo& s) {
@@ -412,6 +450,10 @@ Json::Value toJson(const OutboundMessage& r) {
 		answer["actionresult"] = toJson(std::get<SessionActionResult>(r));
 	else if (std::holds_alternative<AddUserToGameResult>(r))
 		answer = toJson(std::get<AddUserToGameResult>(r));
+	else if (std::holds_alternative<RematchRequest>(r))
+		answer["rematchrequest"] = toJson(std::get<RematchRequest>(r));
+	else if (std::holds_alternative<RematchStart>(r))
+		answer["rematchstart"] = toJson(std::get<RematchStart>(r));
 
 	return answer;
 }

@@ -20,27 +20,33 @@ enum class SessionActionResultError {
 };
 
 enum class SessionActionResultType {
-    MoveResult
+    MoveResult,
+    RematchResult
 };
 
 enum class SessionActionType {
-    Move
+    Move,
+    Rematch
 };
 
 struct MoveData {
     int target;
 };
 
+struct RematchData {};
+
 struct MoveResultData {};
 
-using SessionActionData = std::variant<MoveData>;
+struct RematchResultData {};
+
+using SessionActionData = std::variant<MoveData, RematchData>;
 
 struct SessionAction {
     SessionActionType type;
     SessionActionData data;
 };
 
-using SessionActionResultData = std::variant<MoveResultData>;
+using SessionActionResultData = std::variant<MoveResultData, RematchResultData>;
 
 struct SessionActionResult {
     bool success = false;
@@ -74,7 +80,15 @@ struct AddUserToGameResult {
     AddUserToGameError error = AddUserToGameError::none;
 };
 
-using OutboundMessage = std::variant<UserSnapshot, SessionActionResult, AddUserToGameResult, StartupInfo>;
+struct RematchRequest {
+    UserId requestingUser;
+};
+
+struct RematchStart {
+    // Signal to both players that rematch is starting
+};
+
+using OutboundMessage = std::variant<UserSnapshot, SessionActionResult, AddUserToGameResult, StartupInfo, RematchRequest, RematchStart>;
 
 struct AddressedMessage {
     OutboundMessageReciever address;

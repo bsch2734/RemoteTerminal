@@ -18,6 +18,8 @@ SessionAction sessionActionFromJson(const Json::Value& v) {
 
     if (t == SessionActionType::Move)
         d = moveDataFromJson(actionDataJson);
+    else if (t == SessionActionType::Rematch)
+        d = rematchDataFromJson(actionDataJson);
 
     return SessionAction{t, d};
 }
@@ -32,11 +34,23 @@ MoveData moveDataFromJson(const Json::Value& v) {
     return MoveData{v["target"].asInt()};
 }
 
+Json::Value toJson(const RematchData& d) {
+    return Json::nullValue;
+}
+
+RematchData rematchDataFromJson(const Json::Value& v) {
+    return RematchData{};
+}
+
 Json::Value toJson(const SessionActionType& t) {
     Json::Value answer(Json::stringValue);
     switch (t) {
         case SessionActionType::Move: {
             answer = "move";
+            break;
+        }
+        case SessionActionType::Rematch: {
+            answer = "rematch";
             break;
         }
     }
@@ -49,6 +63,8 @@ SessionActionType sessionActionTypeFromJson(const Json::Value& v) {
     std::string s = v.asString();
     if (s == "move")
         answer = SessionActionType::Move;
+    if (s == "rematch")
+        answer = SessionActionType::Rematch;
 
     return answer;
 }
@@ -56,6 +72,8 @@ SessionActionType sessionActionTypeFromJson(const Json::Value& v) {
 Json::Value toJson(const SessionActionData& d) {
     if (std::holds_alternative<MoveData>(d))
         return toJson(std::get<MoveData>(d));
+    if (std::holds_alternative<RematchData>(d))
+        return toJson(std::get<RematchData>(d));
     return Json::nullValue;
 }
 
@@ -73,6 +91,10 @@ Json::Value toJson(const SessionActionResultType& r) {
     switch (r) {
         case SessionActionResultType::MoveResult: {
             answer = "moveresult";
+            break;
+        }
+        case SessionActionResultType::RematchResult: {
+            answer = "rematchresult";
             break;
         }
     }
@@ -142,6 +164,8 @@ Json::Value toJson(const SessionActionResultData& s) {
     Json::Value answer(Json::objectValue);
     if (std::holds_alternative<MoveResultData>(s))
         answer = toJson(std::get<MoveResultData>(s));
+    else if (std::holds_alternative<RematchResultData>(s))
+        answer = toJson(std::get<RematchResultData>(s));
     return answer;
 }
 
@@ -182,6 +206,20 @@ Json::Value toJson(const SessionActionResultError& s) {
 
 Json::Value toJson(const MoveResultData& m) {
     return Json::Value(Json::nullValue);
+}
+
+Json::Value toJson(const RematchResultData& r) {
+    return Json::Value(Json::nullValue);
+}
+
+Json::Value toJson(const RematchRequest& r) {
+    Json::Value answer(Json::objectValue);
+    answer["user"] = toJson(r.requestingUser);
+    return answer;
+}
+
+Json::Value toJson(const RematchStart& r) {
+    return Json::Value(Json::objectValue);
 }
 
 Json::Value toJson(const UserSnapshot& u) {
@@ -244,6 +282,10 @@ Json::Value toJson(const OutboundMessage& r) {
         answer = toJson(std::get<AddUserToGameResult>(r));
     else if (std::holds_alternative<StartupInfo>(r))
         answer["startupinfo"] = toJson(std::get<StartupInfo>(r));
+    else if (std::holds_alternative<RematchRequest>(r))
+        answer["rematchrequest"] = toJson(std::get<RematchRequest>(r));
+    else if (std::holds_alternative<RematchStart>(r))
+        answer["rematchstart"] = toJson(std::get<RematchStart>(r));
 
     return answer;
 }

@@ -33,6 +33,28 @@ AddressedMessageBundle TicTacToeSession::handleAction(const UserId& user, const 
 			s = handleMove(p, action);
 			break;
 		}
+		case SessionActionType::Rematch: {
+			s = handleRematch(p);
+			// Check if both players want a rematch
+			if (_playerOneWantsRematch && _playerTwoWantsRematch) {
+				// Reset the engine for a new game
+				_engine = TicTacToeEngine();
+				_playerOneWantsRematch = false;
+				_playerTwoWantsRematch = false;
+				
+				// Send rematch start to both players
+				a.addMessage(ToBoth(), RematchStart{});
+				// Send new startup info to both players
+				a.addMessageBundle(getStartupInfoBundles());
+				a.addMessageBundle(getSnapshotMessageBundles());
+				return a;
+			}
+			// Send rematch request to opponent
+			UserId opponent = opponentForUser(user);
+			a.addMessage(ToUser(opponent), RematchRequest{user});
+			a.addMessage(ToUser(user), s);
+			return a;
+		}
 		default: {
 			s.success = false;
 			s.error = SessionActionResultError::unknownAction;
@@ -118,5 +140,20 @@ SessionActionResult TicTacToeSession::handleMove(Player p, const SessionAction& 
 	return answer;
 }
 
+SessionActionResult TicTacToeSession::handleRematch(Player p) {
+	SessionActionResult answer;
+	answer.success = true;
+	answer.type = SessionActionResultType::RematchResult;
+	answer.data = RematchResultData{};
+	
+	// Mark this player as wanting a rematch
+	if (p == Player::one) {
+		_playerOneWantsRematch = true;
+	} else if (p == Player::two) {
+		_playerTwoWantsRematch = true;
+	}
+	
+	return answer;
+}
 
 

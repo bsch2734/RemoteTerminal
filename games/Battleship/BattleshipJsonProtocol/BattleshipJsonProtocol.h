@@ -29,6 +29,9 @@ ReadyData readyDataFromJson(const Json::Value& v);
 Json::Value toJson(const PlaceShipData& d);
 PlaceShipData placeShipDataFromJson(const Json::Value& v);
 
+Json::Value toJson(const RematchData& d);
+RematchData rematchDataFromJson(const Json::Value& v);
+
 Json::Value toJson(const SessionActionType& t);
 SessionActionType sessionActionTypeFromJson(const Json::Value& v);
 
@@ -65,6 +68,12 @@ Json::Value toJson(const ReadyResultData& f);
 Json::Value toJson(const PlaceShipResultData& f);
 
 Json::Value toJson(const CheckPlacementResultData& f);
+
+Json::Value toJson(const RematchResultData& f);
+
+Json::Value toJson(const RematchRequest& r);
+
+Json::Value toJson(const RematchStart& r);
 
 Json::Value toJson(const UserSnapshot& u);
 
