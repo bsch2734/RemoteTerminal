@@ -1,5 +1,6 @@
 #Build output
 out/
+build/
 
 #VS specific files
 .VS/

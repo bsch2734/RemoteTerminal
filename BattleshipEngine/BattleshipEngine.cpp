@@ -159,6 +159,14 @@ FireResult BattleshipEngine::fire(Player p, coord target) {
         return answer;
     }
 
+    // Check if this coordinate has already been fired upon
+    if (getHitsForPlayer(p).find(target) != getHitsForPlayer(p).end() ||
+        getMissesForPlayer(p).find(target) != getMissesForPlayer(p).end()) {
+        answer.success = false;
+        answer.error = FireError::alreadyFired;
+        return answer;
+    }
+
     auto& f = getMutableFleetForPlayer(opponent(p));
     auto r = f.hitFleet(target);
 

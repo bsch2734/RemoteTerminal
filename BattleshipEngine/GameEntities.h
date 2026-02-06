@@ -25,7 +25,8 @@ enum class Phase {
 
 enum class FireError {
 	outOfBounds,
-	notYourTurn
+	notYourTurn,
+	alreadyFired
 };
 
 struct FireResult {
