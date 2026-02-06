@@ -63,15 +63,15 @@ function renderGamesList() {
         card.href = game.url || `/${game.id}/`;
         
         card.innerHTML = `
-            <div class="game-card-icon">${game.icon || "??"}</div>
+            <div class="game-card-icon">${game.icon || "&#127918;"}</div>
             <div class="game-card-content">
                 <h2 class="game-card-title">${escapeHtml(game.name)}</h2>
                 <p class="game-card-description">${escapeHtml(game.description)}</p>
                 <div class="game-card-meta">
-                    <span class="player-count">${game.minPlayers}–${game.maxPlayers} players</span>
+                    <span class="player-count">${game.minPlayers}-${game.maxPlayers} players</span>
                 </div>
             </div>
-            <div class="game-card-arrow">?</div>
+            <div class="game-card-arrow">&#8594;</div>
         `;
         
         gamesList.appendChild(card);
@@ -83,3 +83,4 @@ function escapeHtml(text) {
     div.textContent = text;
     return div.innerHTML;
 }
+
