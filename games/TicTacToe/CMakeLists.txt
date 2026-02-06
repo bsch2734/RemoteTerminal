@@ -1,0 +1,6 @@
+add_subdirectory("TicTacToeEngine")
+add_subdirectory("TicTacToeSession")
+add_subdirectory("TicTacToeSessionManager")
+add_subdirectory("TicTacToeJsonProtocol")
+add_subdirectory("TicTacToeEndpoint")
+add_subdirectory("TicTacToeRepl")

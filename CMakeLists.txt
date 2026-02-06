@@ -32,22 +32,11 @@ add_subdirectory(third_party/jsoncpp)
 set_property(TARGET jsoncpp_static PROPERTY CXX_STANDARD 20)
 set_property(TARGET jsoncpp_static PROPERTY CXX_STANDARD_REQUIRED ON)
 
-add_subdirectory ("RemoteTerminalCore")
-add_subdirectory ("BattleshipEngine")
-add_subdirectory ("BattleshipSession")
-add_subdirectory ("BattleshipSessionManager")
-add_subdirectory ("RemoteTerminalMessaging")
-add_subdirectory ("BattleshipJsonProtocol")
-add_subdirectory ("BattleshipServer")
-add_subdirectory ("RemoteTerminalWebServer")
-add_subdirectory ("DemoGame")
-add_subdirectory ("BattleshipEndpoint")
-add_subdirectory ("TicTacToeEngine")
-add_subdirectory ("TicTacToeSession")
-add_subdirectory ("TicTacToeSessionManager")
-add_subdirectory ("TicTacToeJsonProtocol")
-add_subdirectory ("TicTacToeEndpoint")
-add_subdirectory ("TicTacToeRepl")
+# Platform components
+add_subdirectory("platform")
+
+# Game implementations
+add_subdirectory("games")
 
 
 install(TARGETS RemoteTerminalWebServer RUNTIME DESTINATION bin)
