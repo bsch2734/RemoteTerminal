@@ -19,6 +19,8 @@ public:
 
     AddressedMessageBundle getSnapshotMessageBundles();
 
+    AddressedMessageBundle getStartupInfoBundles();
+
     UserId opponentForUser(const UserId& u);
 
 private:

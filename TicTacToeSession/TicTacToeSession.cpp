@@ -59,6 +59,30 @@ UserId TicTacToeSession::opponentForUser(const UserId& u) {
 	return _playerToUserMap[opponent(_userToPlayerMap[u])];
 }
 
+AddressedMessageBundle TicTacToeSession::getStartupInfoBundles() {
+	AddressedMessageBundle answer;
+
+	UserId playerOne = _playerToUserMap[Player::one];
+	UserId playerTwo = _playerToUserMap[Player::two];
+
+	StartupInfo infoForPlayerOne;
+	infoForPlayerOne.you = playerOne;
+	infoForPlayerOne.opponent = playerTwo;
+	infoForPlayerOne.yourSymbol = Player::one;
+	infoForPlayerOne.opponentSymbol = Player::two;
+
+	StartupInfo infoForPlayerTwo;
+	infoForPlayerTwo.you = playerTwo;
+	infoForPlayerTwo.opponent = playerOne;
+	infoForPlayerTwo.yourSymbol = Player::two;
+	infoForPlayerTwo.opponentSymbol = Player::one;
+
+	answer.addMessage(ToUser(playerOne), infoForPlayerOne);
+	answer.addMessage(ToUser(playerTwo), infoForPlayerTwo);
+
+	return answer;
+}
+
 Player TicTacToeSession::playerFor(const UserId& user) const {
 	auto p = _userToPlayerMap.find(user);
 	if (p == _userToPlayerMap.end())

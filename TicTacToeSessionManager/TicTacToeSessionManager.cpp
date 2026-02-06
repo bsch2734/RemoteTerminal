@@ -61,6 +61,10 @@ MessageResult TicTacToeSessionManager::handleJoinRequest(const JoinRequest& requ
     messageBundle.addMessage(ToUser(u), r);
 
     // Send both users startup info
+    AddressedMessageBundle startupInfoMessages = s->getStartupInfoBundles();
+    for (const AddressedMessage& m : startupInfoMessages)
+        messageBundle.addMessage(m.address, m.message);
+
     AddressedMessageBundle startupMessages = s->getSnapshotMessageBundles();
     for (const AddressedMessage& m : startupMessages)
         messageBundle.addMessage(m.address, m.message);

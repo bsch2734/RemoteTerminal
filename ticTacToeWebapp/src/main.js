@@ -194,6 +194,9 @@ connectBtn.addEventListener("click", () => {
                 case "actionresult":
                     applyActionResult(obj[key]);
                     break;
+                case "startupinfo":
+                    applyStartupInfo(obj[key]);
+                    break;
                 case "waiting":
                     showWaitingScreen();
                     break;
@@ -237,6 +240,17 @@ function showGameScreen() {
     gameSection.classList.remove("hidden");
     
     showMessage("Game started!", "success");
+}
+
+function applyStartupInfo(info) {
+    if (!info) return;
+
+    meSpan.textContent = info.you;
+    opponentSpan.textContent = info.opponent;
+
+    mySymbol = playerToSymbol(info.yoursymbol);
+    yourSymbol.textContent = mySymbol;
+    opponentSymbol.textContent = playerToSymbol(info.opponentsymbol);
 }
 
 function applySnapshot(snapshot) {

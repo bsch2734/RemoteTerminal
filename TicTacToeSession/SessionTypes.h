@@ -55,6 +55,13 @@ struct UserSnapshot {
     std::array<Player, 9> board;
 };
 
+struct StartupInfo {
+    UserId you;
+    UserId opponent;
+    Player yourSymbol;
+    Player opponentSymbol;
+};
+
 enum class AddUserToGameError {
     none,
     userAlreadyInGame,
@@ -67,7 +74,7 @@ struct AddUserToGameResult {
     AddUserToGameError error = AddUserToGameError::none;
 };
 
-using OutboundMessage = std::variant<UserSnapshot, SessionActionResult, AddUserToGameResult>;
+using OutboundMessage = std::variant<UserSnapshot, SessionActionResult, AddUserToGameResult, StartupInfo>;
 
 struct AddressedMessage {
     OutboundMessageReciever address;

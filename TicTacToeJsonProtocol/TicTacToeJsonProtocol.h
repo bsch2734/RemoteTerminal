@@ -42,6 +42,8 @@ Json::Value toJson(const MoveResultData& m);
 
 Json::Value toJson(const UserSnapshot& u);
 
+Json::Value toJson(const StartupInfo& s);
+
 Json::Value toJson(const AddUserToGameResult& r);
 
 Json::Value toJson(const AddUserToGameError& e);

@@ -192,6 +192,15 @@ Json::Value toJson(const UserSnapshot& u) {
     return answer;
 }
 
+Json::Value toJson(const StartupInfo& s) {
+    Json::Value answer(Json::objectValue);
+    answer["you"] = toJson(s.you);
+    answer["opponent"] = toJson(s.opponent);
+    answer["yoursymbol"] = toJson(s.yourSymbol);
+    answer["opponentsymbol"] = toJson(s.opponentSymbol);
+    return answer;
+}
+
 Json::Value toJson(const AddUserToGameResult& r) {
     Json::Value answer(Json::objectValue);
 
@@ -233,6 +242,8 @@ Json::Value toJson(const OutboundMessage& r) {
         answer["actionresult"] = toJson(std::get<SessionActionResult>(r));
     else if (std::holds_alternative<AddUserToGameResult>(r))
         answer = toJson(std::get<AddUserToGameResult>(r));
+    else if (std::holds_alternative<StartupInfo>(r))
+        answer["startupinfo"] = toJson(std::get<StartupInfo>(r));
 
     return answer;
 }
