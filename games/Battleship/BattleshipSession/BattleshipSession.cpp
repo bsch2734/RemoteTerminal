@@ -297,6 +297,9 @@ AddressedMessageBundle BattleshipSession::processRematchRequest(const UserId& us
 		_playerOneWantsRematch = false;
 		_playerTwoWantsRematch = false;
 		
+		// Send rematch confirmation to the user who completed the rematch
+		a.addMessage(ToUser(user), result);
+		
 		// Send rematch start to both players
 		RematchStart rematchStart{};
 		a.addMessage(ToUser(_playerToUserMap[Player::one]), rematchStart);

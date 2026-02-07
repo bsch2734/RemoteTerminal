@@ -468,6 +468,7 @@ function handleRematchStart() {
     rematchRequested = false;
     opponentWantsRematch = false;
     hideGameOver();
+    updateRematchButton();
     placedShipIds.clear();
     rotation = 0;
     lastPhase = null;

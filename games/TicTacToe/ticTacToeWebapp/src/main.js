@@ -294,6 +294,7 @@ function handleRematchStart() {
     rematchRequested = false;
     opponentWantsRematch = false;
     hideGameOver();
+    updateRematchButton();
     lastPhase = null;
     
     // Clear the board
