@@ -53,26 +53,7 @@ AddressedMessageBundle BattleshipSession::handleAction(const UserId& user, const
 		}
 		case SessionActionType::Rematch: {
 			s = handleRematch(p);
-			// Check if both players want a rematch
-			if (_playerOneWantsRematch && _playerTwoWantsRematch) {
-				// Reset the engine for a new game
-				_engine = BattleshipEngine();
-				_playerOneWantsRematch = false;
-				_playerTwoWantsRematch = false;
-				
-				// Send rematch start to both players
-				RematchStart rematchStart{};
-				a.addMessage(ToUser(_playerToUserMap[Player::one]), rematchStart);
-				a.addMessage(ToUser(_playerToUserMap[Player::two]), rematchStart);
-				// Send new setup info to both players
-				a.addMessageBundle(getStartupInfoMessageBundles());
-				return a;
-			}
-			// Send rematch request to opponent
-			UserId opponent = opponentForUser(user);
-			a.addMessage(ToUser(opponent), RematchRequest{user});
-			a.addMessage(ToUser(user), s);
-			return a;
+			return processRematchRequest(user, p, s);
 		}
 		default: {
 			s.success = false;
@@ -278,9 +259,17 @@ SessionActionResult BattleshipSession::handleCheckPlacement(Player p, const Sess
 
 SessionActionResult BattleshipSession::handleRematch(Player p) {
 	SessionActionResult answer;
-	answer.success = true;
 	answer.type = SessionActionResultType::RematchResult;
 	answer.data = RematchResultData{};
+	
+	// Guard: Only allow rematch when game is finished
+	if (_engine.phase() != Phase::finished) {
+		answer.success = false;
+		answer.error = SessionActionResultError::notYourTurn;
+		return answer;
+	}
+	
+	answer.success = true;
 	
 	// Mark this player as wanting a rematch
 	if (p == Player::one) {
@@ -291,3 +280,36 @@ SessionActionResult BattleshipSession::handleRematch(Player p) {
 	
 	return answer;
 }
+
+AddressedMessageBundle BattleshipSession::processRematchRequest(const UserId& user, Player p, const SessionActionResult& result) {
+	AddressedMessageBundle a;
+	
+	// If rematch request failed, just send error to user
+	if (!result.success) {
+		a.addMessage(ToUser(user), result);
+		return a;
+	}
+	
+	// Check if both players want a rematch
+	if (_playerOneWantsRematch && _playerTwoWantsRematch) {
+		// Reset the engine for a new game
+		_engine = BattleshipEngine();
+		_playerOneWantsRematch = false;
+		_playerTwoWantsRematch = false;
+		
+		// Send rematch start to both players
+		RematchStart rematchStart{};
+		a.addMessage(ToUser(_playerToUserMap[Player::one]), rematchStart);
+		a.addMessage(ToUser(_playerToUserMap[Player::two]), rematchStart);
+		// Send new setup info to both players
+		a.addMessageBundle(getStartupInfoMessageBundles());
+		return a;
+	}
+	
+	// Send rematch request to opponent
+	UserId opponent = opponentForUser(user);
+	a.addMessage(ToUser(opponent), RematchRequest{user});
+	a.addMessage(ToUser(user), result);
+	return a;
+}
+

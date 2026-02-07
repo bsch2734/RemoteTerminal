@@ -29,6 +29,7 @@ private:
 
     SessionActionResult handleMove(Player p, const SessionAction& a);
     SessionActionResult handleRematch(Player p);
+    AddressedMessageBundle processRematchRequest(const UserId& user, Player p, const SessionActionResult& result);
 
 private:
     GameId _gameId;
