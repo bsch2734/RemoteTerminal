@@ -443,7 +443,7 @@ rematchBtn.addEventListener("click", () => {
     const message = {
         gameid: gameId,
         userid: myUserId,
-        action: {
+        sessionaction: {
             type: "rematch"
         }
     };
