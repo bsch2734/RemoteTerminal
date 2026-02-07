@@ -192,6 +192,10 @@ Json::Value toJson(const SessionActionResultError& s) {
             answer = "celltaken";
             break;
         }
+        case SessionActionResultError::wrongPhase: {
+            answer = "wrongphase";
+            break;
+        }
         case SessionActionResultError::unknownAction: {
             answer = "unknownaction";
             break;

@@ -16,6 +16,7 @@ enum class SessionActionResultError {
     invalidPlacement,
     cellTaken,
     notYourTurn,
+    wrongPhase,
     internalError
 };
 

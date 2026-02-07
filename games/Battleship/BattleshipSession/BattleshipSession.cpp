@@ -265,7 +265,7 @@ SessionActionResult BattleshipSession::handleRematch(Player p) {
 	// Guard: Only allow rematch when game is finished
 	if (_engine.phase() != Phase::finished) {
 		answer.success = false;
-		answer.error = SessionActionResultError::notYourTurn;
+		answer.error = SessionActionResultError::wrongPhase;
 		return answer;
 	}
 	
