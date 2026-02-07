@@ -13,6 +13,9 @@ SessionAction sessionActionFromJson(const Json::Value& v);
 Json::Value toJson(const MoveData& d);
 MoveData moveDataFromJson(const Json::Value& v);
 
+Json::Value toJson(const RematchData& d);
+RematchData rematchDataFromJson(const Json::Value& v);
+
 Json::Value toJson(const SessionActionType& t);
 SessionActionType sessionActionTypeFromJson(const Json::Value& v);
 
@@ -39,6 +42,12 @@ Json::Value toJson(const SessionActionResultData& s);
 Json::Value toJson(const SessionActionResultError& s);
 
 Json::Value toJson(const MoveResultData& m);
+
+Json::Value toJson(const RematchResultData& r);
+
+Json::Value toJson(const RematchRequest& r);
+
+Json::Value toJson(const RematchStart& r);
 
 Json::Value toJson(const UserSnapshot& u);
 

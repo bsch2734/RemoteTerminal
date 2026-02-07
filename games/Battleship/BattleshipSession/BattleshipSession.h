@@ -32,6 +32,8 @@ private:
     SessionActionResult handleFire(Player p, const SessionAction& a);
     SessionActionResult handleReady(Player p);
     SessionActionResult handleCheckPlacement(Player p, const SessionAction& a);
+    SessionActionResult handleRematch(Player p);
+    AddressedMessageBundle processRematchRequest(const UserId& user, Player p, const SessionActionResult& result);
 
 private:
     GameId _gameId;
@@ -39,6 +41,10 @@ private:
     std::map<Player, UserId> _playerToUserMap;
 
     BattleshipEngine _engine;
+    
+    // Rematch tracking
+    bool _playerOneWantsRematch = false;
+    bool _playerTwoWantsRematch = false;
 };
 
 } // namespace Battleship

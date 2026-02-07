@@ -28,6 +28,8 @@ private:
     Player playerFor(const UserId& user) const;
 
     SessionActionResult handleMove(Player p, const SessionAction& a);
+    SessionActionResult handleRematch(Player p);
+    AddressedMessageBundle processRematchRequest(const UserId& user, Player p, const SessionActionResult& result);
 
 private:
     GameId _gameId;
@@ -35,6 +37,10 @@ private:
     std::map<Player, UserId> _playerToUserMap;
 
     TicTacToeEngine _engine;
+    
+    // Rematch tracking
+    bool _playerOneWantsRematch = false;
+    bool _playerTwoWantsRematch = false;
 };
 
 } // namespace TicTacToe

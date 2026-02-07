@@ -29,6 +29,8 @@ const messageText = document.getElementById("messageText");
 const gameOverOverlay = document.getElementById("gameOverOverlay");
 const gameOverTitle = document.getElementById("gameOverTitle");
 const gameOverMessage = document.getElementById("gameOverMessage");
+const rematchBtn = document.getElementById("rematchBtn");
+const homeBtn = document.getElementById("homeBtn");
 
 const ownGrid = document.getElementById("ownGrid");
 const oppGrid = document.getElementById("oppGrid");
@@ -45,6 +47,10 @@ let messageTimeout = null;
 let lastPhase = null;
 let placedShipIds = new Set();
 let hoveredCell = null; // Track currently hovered cell for preview refresh
+let myUserId = null;
+let gameId = null;
+let rematchRequested = false;
+let opponentWantsRematch = false;
 
 // === Utility Functions ===
 function logLine(text) {
@@ -108,6 +114,11 @@ function showGameOver(isVictory) {
     gameOverOverlay.classList.remove("hidden");
     const content = gameOverOverlay.querySelector(".game-over-content");
     
+    // Reset rematch state
+    rematchRequested = false;
+    opponentWantsRematch = false;
+    updateRematchButton();
+    
     if (isVictory) {
         content.classList.add("victory");
         content.classList.remove("defeat");
@@ -119,6 +130,26 @@ function showGameOver(isVictory) {
         gameOverTitle.textContent = "Defeat";
         gameOverMessage.textContent = "Your fleet has been destroyed.";
     }
+}
+
+function updateRematchButton() {
+    if (rematchRequested && opponentWantsRematch) {
+        rematchBtn.textContent = "Starting Rematch...";
+        rematchBtn.disabled = true;
+    } else if (rematchRequested) {
+        rematchBtn.textContent = "Waiting for opponent...";
+        rematchBtn.disabled = true;
+    } else if (opponentWantsRematch) {
+        rematchBtn.textContent = "Accept Rematch";
+        rematchBtn.disabled = false;
+    } else {
+        rematchBtn.textContent = "Rematch";
+        rematchBtn.disabled = false;
+    }
+}
+
+function hideGameOver() {
+    gameOverOverlay.classList.add("hidden");
 }
 
 // === Grid Building ===
@@ -319,12 +350,16 @@ readyBtn.addEventListener("click", () => {
 
 connectBtn.addEventListener("click", () => {
     const userId = userIdInput.value.trim();
-    const gameId = gameIdInput.value.trim();
+    const gameIdValue = gameIdInput.value.trim();
 
-    if (!userId || !gameId) {
+    if (!userId || !gameIdValue) {
         showMessage("Please enter both User ID and Game ID", "error");
         return;
     }
+
+    // Store globally
+    myUserId = userId;
+    gameId = gameIdValue;
 
     setConnectionStatus("connecting");
 
@@ -342,7 +377,7 @@ connectBtn.addEventListener("click", () => {
 
         const helloMessage = {
             type: "hello",
-            userid: userId,
+            userid: myUserId,
             gameid: gameId,
         };
 
@@ -373,6 +408,12 @@ connectBtn.addEventListener("click", () => {
                 case "waiting":
                     showMessage("Waiting for opponent to join...", "info");
                     break;
+                case "rematchrequest":
+                    handleRematchRequest(obj[key]);
+                    break;
+                case "rematchstart":
+                    handleRematchStart();
+                    break;
                 case "error":
                     showMessage(`Error: ${obj[key]}`, "error");
                     break;
@@ -392,6 +433,52 @@ connectBtn.addEventListener("click", () => {
     };
 });
 
+// === Rematch and Home Button Handlers ===
+rematchBtn.addEventListener("click", () => {
+    if (!myUserId || !gameId) return;
+    
+    rematchRequested = true;
+    updateRematchButton();
+    
+    const message = {
+        gameid: gameId,
+        userid: myUserId,
+        action: {
+            type: "rematch"
+        }
+    };
+    
+    sendMessage(message);
+    showMessage("Rematch requested", "info");
+});
+
+homeBtn.addEventListener("click", () => {
+    // Reload the page to go back to connection screen
+    window.location.reload();
+});
+
+function handleRematchRequest(data) {
+    opponentWantsRematch = true;
+    updateRematchButton();
+    showMessage("Opponent wants a rematch!", "info");
+}
+
+function handleRematchStart() {
+    // Reset game state
+    rematchRequested = false;
+    opponentWantsRematch = false;
+    hideGameOver();
+    placedShipIds.clear();
+    rotation = 0;
+    lastPhase = null;
+    
+    // Clear grids
+    ownGrid.innerHTML = "";
+    oppGrid.innerHTML = "";
+    
+    showMessage("Rematch starting!", "success");
+}
+
 // === Apply Server Data ===
 function applySetupInfo(setupInfo) {
     lastSetupInfo = setupInfo;
@@ -403,8 +490,8 @@ function applySetupInfo(setupInfo) {
     gameSection.classList.remove("hidden");
 
     // Populate info
-    meSpan.textContent = setupInfo.you || "—";
-    opponentSpan.textContent = setupInfo.opponent || "—";
+    meSpan.textContent = setupInfo.you || "ï¿½";
+    opponentSpan.textContent = setupInfo.opponent || "ï¿½";
     updatePhaseDisplay(lastPhase);
 
     // Populate ship selector
