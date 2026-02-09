@@ -261,6 +261,16 @@ GridView BattleshipEngine::ownGrid(Player p) const {
 GridView BattleshipEngine::opponentGrid(Player p) const {
     std::map<coord, SquareState> occupied;
     //layer from bottom to top so only top is visible
+    
+    // Reveal opponent's ships when game is finished
+    if (_phase == Phase::finished) {
+        const Fleet& oppFleet = getFleetForPlayer(opponent(p));
+        for (const Ship& s : oppFleet.getShips())
+            if(s.isPlaced())
+                for (const coord& c : s.getCoords())
+                    occupied[c.applyTransform(s.getPos(), s.getRotation())] = SquareState::ship;
+    }
+    
     for (const auto& c : getMissesForPlayer(p))
         occupied[c] = SquareState::miss;
     for (const auto& c : getHitsForPlayer(p))
