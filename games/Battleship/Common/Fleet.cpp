@@ -33,6 +33,17 @@ const std::vector<Ship>& Fleet::getShips() const{
 	return ships;
 }
 
+Ship* getShipWithId(int shipId) {
+	Ship* answer = nullptr;
+	for (Ship& s : ships)
+		if (s.getID() == shipId) {
+			answer = &s;
+			break;
+		}
+
+	return answer;
+}
+
 Fleet::Fleet() {}
 
 Fleet::hitFleetResult Fleet::hitFleet(coord c) {

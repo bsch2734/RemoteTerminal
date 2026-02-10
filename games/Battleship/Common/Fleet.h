@@ -30,6 +30,8 @@ public:
 
 	std::vector<Ship>& getShips();
 	const std::vector<Ship>& getShips() const;
+
+	Ship* getShipWithId(int Id);
 	
 	Fleet(std::vector<Ship> ships);
 	Fleet();
