@@ -12,8 +12,8 @@ private:
 	std::vector<Ship> ships;
 	void buildHitmap();
 	std::map<coord, Ship*>& getHitmap();
-	bool hitmapUpToDate = false;
-	std::map<coord, Ship*> hitmap;
+	mutable bool hitmapUpToDate = false;
+	mutable std::map<coord, Ship*> hitmap;
 
 public:
 	enum class hitFleetError {

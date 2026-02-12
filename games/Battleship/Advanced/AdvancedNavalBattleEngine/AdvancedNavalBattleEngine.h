@@ -9,9 +9,9 @@
 
 namespace Battleship {
 
-    class BattleshipEngine {
+    class AdvancedNavalBattleEngine {
     public:
-        BattleshipEngine();
+        AdvancedNavalBattleEngine();
 
         // --- Setup ---
         const Fleet& getFleetForPlayer(Player p) const;
@@ -27,7 +27,7 @@ namespace Battleship {
         // --- Gameplay ---
         FireResult fire(Player p, coord target);
 
-        AbilityResult activateAbility(Player P, int shipId, ShipAbility ability);
+        ActivateAbilityResult activateAbility(Player p, int shipId, const ActivateAbilityAction& activateAbilityAction);
 
         // --- Queries ---
         Phase phase() const;
@@ -51,6 +51,18 @@ namespace Battleship {
 
         GridView ownGrid(Player p) const;
         GridView opponentGrid(Player p) const;
+
+        // --- Ability Handlers ---
+        ActivateAbilityResult handleTorpedoAction(Player p, TorpedoData d);
+        ActivateAbilityResult handleExocetAction(Player p, ExocetData d);
+        ActivateAbilityResult handleApacheAction(Player p, ApacheData d);
+        ActivateAbilityResult handleRelocateAction(Player p, RelocateData d);
+        ActivateAbilityResult handleScanAction(Player p, ScanData d);
+        ActivateAbilityResult handleRevealAction(Player p, RevealData d);
+
+        // --- Utility ---
+        bool hitCoord(Player p, coord target);
+        bool checkCoord(Player p, coord where);
 
         Phase _phase;
         Player _currentPlayer;

@@ -43,6 +43,7 @@ namespace Battleship {
 	};
 
 	struct RelocateData {
+		int shipId;
 		coord target;
 	};
 
@@ -70,5 +71,51 @@ namespace Battleship {
 	struct ShipAbilityAction {
 		ShipAbilityActionType type;
 		ShipAbilityActionData data;
+	};
+
+	enum class ActivateAbilityResultError {
+		none,
+		outOfBounds,
+		notYourTurn,
+		notYourShip,
+		shipSunk,
+		noSuchAbility
+	};
+
+	struct TorpedoResultData {
+		bool isHit = false;
+	};
+
+	struct ExocetResultData {
+		bool isHit = false;
+	};
+
+	struct ApacheResultData {
+		bool isHit = false;
+	};
+
+	struct RelocateResultData {}; //no data
+
+	struct ScanResultData {
+		bool isFound = false;
+	};
+
+	struct RevealResultData {
+		std::set<coord> hitsRevealed;
+	};
+
+	using ActivateAbilityResultData = std::variant<
+		TorpedoResultData,
+		ExocetResultData,
+		ApacheResultData,
+		RelocateResultData,
+		ScanResultData,
+		RevealResultData
+	>;
+
+	struct ActivateAbilityResult {
+		bool success = false;
+		ActivateAbilityResultError error = none;
+		ActivateAbilityResultData data;
 	};
 }

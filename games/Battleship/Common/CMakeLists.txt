@@ -1,6 +1,11 @@
 add_library(NavalBattleCommon
-	NavalBattleCommon.cpp
-	NavalBattleCommon.h
+	coord.cpp
+	coord.h
+	Fleet.cpp
+	Fleet.h
+	GameEntities.h
+	Ship.cpp
+	Ship.h
 )
 
 target_include_directories(NavalBattleCommon PUBLIC
