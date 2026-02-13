@@ -8,7 +8,7 @@
 namespace Battleship {
 
 class Fleet {
-private:
+protected:
 	std::vector<Ship> ships;
 	void buildHitmap();
 	std::map<coord, Ship*>& getHitmap();
