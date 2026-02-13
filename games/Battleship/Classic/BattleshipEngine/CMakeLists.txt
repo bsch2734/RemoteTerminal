@@ -4,7 +4,10 @@
 
 add_library(BattleshipEngine STATIC
     "BattleshipEngine.cpp"
- "GameEntities.h"  "Ship.h" "Ship.cpp" "Fleet.h" "Fleet.cpp" "coord.h" "coord.cpp")
+    "BattleshipEngine.h"
+)
+
+target_link_libraries(BattleshipEngine PUBLIC NavalBattleCommon)
 
 target_include_directories(BattleshipEngine PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}

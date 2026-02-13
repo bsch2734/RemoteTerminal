@@ -1,0 +1,6 @@
+add_subdirectory("BattleshipEngine")
+add_subdirectory("BattleshipSession")
+add_subdirectory("BattleshipSessionManager")
+add_subdirectory("BattleshipJsonProtocol")
+add_subdirectory("BattleshipEndpoint")
+add_subdirectory("BattleshipServer")
