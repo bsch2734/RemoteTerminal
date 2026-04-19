@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite'
 
-export default defineConfig({
-  base: '/navalbattle/',
+export default defineConfig(({ mode }) => ({
+  base: mode === 'advancednavalbattle' ? '/advancednavalbattle/' : '/navalbattle/',
   server: {
     proxy: {
       '/ws': {
@@ -10,4 +10,4 @@ export default defineConfig({
       }
     }
   }
-})
+}))
