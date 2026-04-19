@@ -18,3 +18,7 @@ dist-ssr
 .idea
 .DS_Store
 *.suo
+
+# Environment
+.env.*
+!.env.example

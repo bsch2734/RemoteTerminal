@@ -64,10 +64,10 @@ cmake --install "${BUILD_DIR}"
 # Each webapp: [source_dir, dest_subpath]
 # dest_subpath is relative to WEB_ROOT ("" means root)
 declare -a WEBAPPS=(
-  "platform/remoteTerminalWebapp:"
-  "games/NavalBattle/navalBattleWebapp:navalbattle"
-  "games/NavalBattle/navalBattleWebapp:advancednavalbattle"
-  "games/TicTacToe/ticTacToeWebapp:tictactoe"
+  "platform/remoteTerminalWebapp:production"
+  "games/NavalBattle/navalBattleWebapp:navalbattle:navalbattle"
+  "games/NavalBattle/navalBattleWebapp:advancednavalbattle:advancednavalbattle"
+  "games/TicTacToe/ticTacToeWebapp:tictactoe:production"
 )
 
 # Prepare web root
@@ -75,16 +75,15 @@ sudo mkdir -p "${WEB_ROOT}"
 sudo rm -rf "${WEB_ROOT:?}/"*
 
 for entry in "${WEBAPPS[@]}"; do
-  webapp_src="${entry%%:*}"
-  webapp_dest="${entry#*:}"
+  IFS=':' read -r webapp_src webapp_dest vite_mode <<< "${entry}"
   webapp_dir="${SRC_DIR}/${webapp_src}"
 
   if [ -d "${webapp_dir}" ]; then
-    echo "[deploy] Building ${webapp_src}..."
+    echo "[deploy] Building ${webapp_src} (mode: ${vite_mode})..."
 
     pushd "${webapp_dir}" >/dev/null
     npm ci
-    npm run build
+    npm run build -- --mode "${vite_mode}"
     popd >/dev/null
 
     if [ -z "${webapp_dest}" ]; then
@@ -93,11 +92,9 @@ for entry in "${WEBAPPS[@]}"; do
       dest_path="${WEB_ROOT}/${webapp_dest}"
     fi
 
-    echo "[deploy] Publishing ${webapp_src} to ${dest_path}..."
+    echo "[deploy] Publishing to ${dest_path}..."
     sudo mkdir -p "${dest_path}"
     sudo cp -r "${webapp_dir}/dist/"* "${dest_path}/"
-
-    echo "[deploy] ${webapp_src} deployed."
   else
     echo "[deploy] WARNING: ${webapp_dir} not found, skipping."
   fi
