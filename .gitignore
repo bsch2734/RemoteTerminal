@@ -1,6 +1,7 @@
 #Build output
 out/
 build/
+*.o
 
 #VS specific files
 .VS/

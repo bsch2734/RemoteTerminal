@@ -811,6 +811,15 @@ GridView NavalBattleEngine::ownGrid(Player p) const {
 GridView NavalBattleEngine::opponentGrid(Player p) const {
     std::map<coord, SquareState> occupied;
 
+    // Reveal opponent's ships when game is finished
+    if (_phase == Phase::finished) {
+        const Fleet& oppFleet = getFleetForPlayer(opponent(p));
+        for (const Ship& s : oppFleet.getShips())
+            if(s.isPlaced())
+                for (const coord& c : s.getCoords())
+                    occupied[c.applyTransform(s.getPos(), s.getRotation())] = SquareState::ship;
+    }
+
     for (const auto& s : getDataForPlayer(p).scansWithHits)
         for (const auto& c : s)
             occupied[c] = SquareState::scannedPositive;
