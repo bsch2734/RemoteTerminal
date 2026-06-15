@@ -10,8 +10,8 @@ Fleet::Fleet(std::vector<Ship> ships) :
 void Fleet::buildHitmap() const{
 	hitmap.clear();
 	for (const Ship& s : ships)
-		for (coord c : s.getCoords()) 
-			hitmap[c.applyTransform(s.getPos(), s.getRotation())] = const_cast<Ship*>(&s);
+		for (coord c : s.getAbsoluteCoords()) 
+			hitmap[c] = const_cast<Ship*>(&s);
 
 	hitmapUpToDate = true;
 }

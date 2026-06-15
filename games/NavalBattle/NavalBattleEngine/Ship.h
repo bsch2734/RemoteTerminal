@@ -40,13 +40,13 @@ public:
 	bool isSunk() const;
 	int getId() const;
 	std::string getName() const;
-	int getRotation() const;
 	void setRotation(int rotation);
 	coord getPos() const;
 	void setPos(coord pos);
 	hitShipResult hit(coord where);
 	bool isPlaced() const;
 	const std::set<coord>& getCoords() const;
+	std::set<coord> getAbsoluteCoords() const;
 
 	bool wouldBeHit(coord where) const;
 

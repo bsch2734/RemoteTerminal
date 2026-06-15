@@ -107,8 +107,7 @@ struct ShipView {
 	int id;
 	std::string name;
 	std::set<coord> shape;
-	std::optional<coord> pos;
-	std::optional<int> rotation;
+	std::optional<std::set<coord>> coords;
 	bool isSunk;
 	std::vector<VehicleAbility> abilities;
 };

@@ -35,8 +35,7 @@ FleetView NavalBattle::NavalBattleEngine::getViewOfOwnFleet(Player viewer) const
         sv.id = s.getId();
         sv.name = s.getName();
         sv.shape = s.getCoords();
-        sv.pos = s.getPos();
-        sv.rotation = s.getRotation();
+        sv.coords = s.isPlaced() ? std::make_optional(s.getAbsoluteCoords()) : std::nullopt;
         sv.isSunk = s.isSunk();
 		for (const VehicleAbility& a : s.getAbilities())
             sv.abilities.push_back(a);
@@ -67,8 +66,7 @@ FleetView NavalBattleEngine::getViewOfOpponentFleet(Player viewer) const {
         sv.id = s.getId();
         sv.name = s.getName();
         sv.shape = s.getCoords();
-        sv.pos = std::nullopt;
-        sv.rotation = std::nullopt;
+        sv.coords = std::nullopt;
         sv.isSunk = s.isSunk();
         for (const VehicleAbility& a : s.getAbilities())
             sv.abilities.push_back(a);
@@ -139,8 +137,8 @@ ValidateShipPlacementResult NavalBattleEngine::validateShipPlacement(Player p, i
         if (s.getId() == ID)
             continue;
         else if (s.isPlaced()) 
-            for (const coord& c : s.getCoords()) 
-                occupied.insert(c.applyTransform(s.getPos(), s.getRotation()));
+            for (const coord& c : s.getAbsoluteCoords())
+                occupied.insert(c);
     
     // Calculate placement coords and check validity
     for (const coord& c : targetShip->getCoords()) {
@@ -236,8 +234,8 @@ ValidatePlanePlacementResult NavalBattleEngine::validatePlanePlacement(Player p,
     std::unordered_set<coord> carrierSquares;
     for (const Ship& s : fleet.getShips()) 
         if (s.isPlaced() && s.canHoldPlanes()) 
-            for (const coord& c : s.getCoords()) 
-                carrierSquares.insert(c.applyTransform(s.getPos(), s.getRotation()));
+            for (const coord& c : s.getAbsoluteCoords())
+                carrierSquares.insert(c);
 
     // Check if target position is on a carrier
     if (carrierSquares.find(pos) == carrierSquares.end()) {
@@ -816,8 +814,8 @@ GridView NavalBattleEngine::opponentGrid(Player p) const {
         const Fleet& oppFleet = getFleetForPlayer(opponent(p));
         for (const Ship& s : oppFleet.getShips())
             if(s.isPlaced())
-                for (const coord& c : s.getCoords())
-                    occupied[c.applyTransform(s.getPos(), s.getRotation())] = SquareState::ship;
+                for (const coord& c : s.getAbsoluteCoords())
+                    occupied[c] = SquareState::ship;
     }
 
     for (const auto& s : getDataForPlayer(p).scansWithHits)
@@ -973,18 +971,17 @@ std::bitset<8> NavalBattleEngine::checkFleetStatus(const Fleet& f) {
     //check ships
     for (const Ship& s : f.getShips()) {
         if (s.isPlaced()) { //only check ships that are placed
-            for (coord c : s.getCoords()) {
-                coord transformed = c.applyTransform(s.getPos(), s.getRotation());
-				if (!isValidCoord(transformed)){
+            for (const coord& c : s.getAbsoluteCoords()) {
+				if (!isValidCoord(c)){
                      answer.set((int)FleetStatusBits::outOfBounds, true);
 					 continue;//cannot be out of bounds and overlapping
 				}
                 size_t occupiedSize = occupied.size();
-                occupied.insert(transformed);
+                occupied.insert(c);
                 if (occupiedSize == occupied.size())
                     answer.set((int)FleetStatusBits::overlapping, true);
                 if(s.canHoldPlanes())
-    				planeAllowedCoords.insert(transformed);
+    				planeAllowedCoords.insert(c);
             }
         }
         else {

@@ -47,10 +47,6 @@ std::string Ship::getName() const {
 	return _name;
 }
 
-int Ship::getRotation() const {
-	return rotation;
-}
-
 void Ship::setRotation(int rotation) {
 	this->rotation = rotation % 4;
 }
@@ -101,6 +97,13 @@ void Ship::setPos(coord pos) {
 
 const std::set<coord>& Ship::getCoords() const {
 	return coords;
+}
+
+std::set<coord> Ship::getAbsoluteCoords() const {
+	std::set<coord> result;
+	for (const coord& c : coords)
+		result.insert(c.applyTransform(pos, rotation));
+	return result;
 }
 
 bool NavalBattle::Ship::wouldBeHit(coord where) const {
