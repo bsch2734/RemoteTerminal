@@ -1007,12 +1007,10 @@ Json::Value toJson(const ShipView& s) {
 	Json::Value answer(Json::objectValue);
 	answer["name"] = toJson(s.name);
 	answer["id"] = s.id;
-	answer["coords"] = toJson(s.shape);
+	answer["shape"] = toJson(s.shape);
 	answer["issunk"] = s.isSunk;
-	if(s.pos)
-		answer["position"] = toJson(s.pos.value());
-	if(s.rotation)
-		answer["rotation"] = s.rotation.value();
+	if (s.coords)
+		answer["coords"] = toJson(s.coords.value());
 	Json::Value abilities(Json::arrayValue);
 	for (const VehicleAbility& a : s.abilities)
 		abilities.append(toJson(a));

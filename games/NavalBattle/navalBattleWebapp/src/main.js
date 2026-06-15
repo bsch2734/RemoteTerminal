@@ -376,8 +376,8 @@ function createShipCard(ship, isYours) {
         card.classList.add("sunk");
     }
 
-    // Mark as placed if ship has valid position
-    const isPlaced = ship.position !== undefined && ship.position !== null;
+    // Mark as placed if ship has valid coords
+    const isPlaced = ship.coords !== undefined && ship.coords !== null;
     if (isPlaced) {
         card.classList.add("placed");
     }
@@ -400,7 +400,7 @@ function createShipCard(ship, isYours) {
     card.appendChild(nameEl);
 
     // Ship form (mini grid visualization)
-    const formGrid = createShipFormGrid(ship.coords);
+    const formGrid = createShipFormGrid(ship.shape);
     card.appendChild(formGrid);
 
     // Abilities
@@ -558,35 +558,14 @@ function renderFleetPanel(container, ships, planes, isYours) {
     }
 }
 
-// Resolves a ship's intrinsic shape coords into absolute board coords by
-// applying `rotation` counterclockwise 90-degree rotations and then
-// translating by `position`. Returns null if position is not set.
-function getAbsoluteShipCoords(ship) {
-    if (!ship.position || !ship.coords || ship.coords.length === 0) return null;
-
-    const rotation = ship.rotation || 0;
-    let coords = ship.coords.map(c => ({ row: c.row, col: c.col }));
-
-    // Apply counterclockwise 90-degree rotations: (row, col) -> (-col, row)
-    for (let i = 0; i < rotation; i++) {
-        coords = coords.map(c => ({ row: -c.col, col: c.row }));
-    }
-
-    // Translate by the placed position
-    return coords.map(c => ({
-        row: c.row + ship.position.row,
-        col: c.col + ship.position.col
-    }));
-}
 
 function drawVehiclesOnGrid(vehicleView, cols) {
     if (!vehicleView) return;
 
     // Draw own ships on own grid
     for (const ship of vehicleView.yourfleet?.ships || []) {
-        const absCoords = getAbsoluteShipCoords(ship);
-        if (!absCoords) continue;
-        for (const coord of absCoords) {
+        if (!ship.coords) continue;
+        for (const coord of ship.coords) {
             const idx = coord.row * cols + coord.col;
             const cell = ownGrid.children[idx];
             if (cell && !cell.classList.contains("hit") && !cell.classList.contains("revealedhit")) cell.classList.add("ship");
@@ -975,7 +954,7 @@ function selectVehicle(type, id) {
 
 function selectNextUnplacedVehicle(vehicleView) {
     for (const ship of vehicleView.yourfleet?.ships || []) {
-        const isPlaced = ship.position !== undefined && ship.position !== null;
+        const isPlaced = ship.coords !== undefined && ship.coords !== null;
         if (!isPlaced && !placedShipIds.has(ship.id)) {
             selectVehicle('ship', ship.id);
             return;
