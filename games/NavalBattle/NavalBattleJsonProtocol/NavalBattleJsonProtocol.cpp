@@ -705,6 +705,10 @@ Json::Value toJson(const GridView& g) {
 Json::Value toJson(const SquareState& s) {
 	Json::Value answer(Json::stringValue);
 	switch (s) {
+		case SquareState::ship: {
+			answer = "ship";
+			break;
+		}
 		case SquareState::miss: {
 			answer = "miss";
 			break;
