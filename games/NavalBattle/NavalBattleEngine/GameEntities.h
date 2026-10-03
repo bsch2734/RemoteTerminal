@@ -88,7 +88,6 @@ struct ReadyUpResult {
 };
 
 enum class SquareState {
-	ship,
 	miss,
 	hit,
 	revealedMiss,

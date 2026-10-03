@@ -60,6 +60,7 @@ FleetView NavalBattle::NavalBattleEngine::getViewOfOwnFleet(Player viewer) const
 
 FleetView NavalBattleEngine::getViewOfOpponentFleet(Player viewer) const {
     FleetView answer;
+    bool revealFleetPositions = (_phase == Phase::finished);
     const auto& fleet = getFleetForPlayer(opponent(viewer));
     const auto& ships = fleet.getShips();
     for (const Ship& s : ships) {
@@ -69,6 +70,10 @@ FleetView NavalBattleEngine::getViewOfOpponentFleet(Player viewer) const {
         sv.shape = s.getCoords();
         sv.pos = std::nullopt;
         sv.rotation = std::nullopt;
+        if (revealFleetPositions) {
+            sv.pos = s.getPos();
+            sv.rotation = s.getRotation();
+        }
         sv.isSunk = s.isSunk();
         for (const VehicleAbility& a : s.getAbilities())
             sv.abilities.push_back(a);
@@ -80,6 +85,8 @@ FleetView NavalBattleEngine::getViewOfOpponentFleet(Player viewer) const {
         pv.id = p.getId();
         pv.name = p.getName();
         pv.pos = std::nullopt;
+        if (revealFleetPositions)
+            pv.pos = p.getPos();
         pv.isOnShip = p.isOnShip();
         pv.isDestroyed = p.isDestroyed();
         for (const VehicleAbility& a : p.getAbilities())
@@ -810,15 +817,6 @@ GridView NavalBattleEngine::ownGrid(Player p) const {
 
 GridView NavalBattleEngine::opponentGrid(Player p) const {
     std::map<coord, SquareState> occupied;
-
-    // Reveal opponent's ships when game is finished
-    if (_phase == Phase::finished) {
-        const Fleet& oppFleet = getFleetForPlayer(opponent(p));
-        for (const Ship& s : oppFleet.getShips())
-            if(s.isPlaced())
-                for (const coord& c : s.getCoords())
-                    occupied[c.applyTransform(s.getPos(), s.getRotation())] = SquareState::ship;
-    }
 
     for (const auto& s : getDataForPlayer(p).scansWithHits)
         for (const auto& c : s)
