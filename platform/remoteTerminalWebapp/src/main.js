@@ -68,7 +68,7 @@ function renderGamesList() {
                 <h2 class="game-card-title">${escapeHtml(game.name)}</h2>
                 <p class="game-card-description">${escapeHtml(game.description)}</p>
                 <div class="game-card-meta">
-                    <span class="player-count">${game.minPlayers}-${game.maxPlayers} players</span>
+                    <span class="player-count">${formatPlayerCount(game.minPlayers, game.maxPlayers)}</span>
                 </div>
             </div>
             <div class="game-card-arrow">&#8594;</div>
@@ -76,6 +76,14 @@ function renderGamesList() {
         
         gamesList.appendChild(card);
     }
+}
+
+function formatPlayerCount(minPlayers, maxPlayers) {
+    if (minPlayers === maxPlayers) {
+        return `${minPlayers} ${minPlayers === 1 ? "player" : "players"}`;
+    }
+
+    return `${minPlayers}-${maxPlayers} players`;
 }
 
 function escapeHtml(text) {
